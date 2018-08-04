@@ -1,0 +1,1 @@
+![VeXtract](rectangle_logo.png)
