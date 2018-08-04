@@ -1,0 +1,15 @@
+# Changelog
+此專案內所有值得被紀錄的更動都應該被紀錄於此文件。
+
+格式基於 [Keep a Changelog](http://keepachangelog.com/zh-TW/1.0.0/)
+這個項目堅持 [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
+
+## 0.0.1 - 2014-05-31
+### Added
+- 新增此更動紀錄檔案。
+- 新增大 Logo 到此專案。
+- 新增 README.md 到此專案。
+
+## 0.0.0 - 2018-08-03
+### Added
+- 建立此專案並命名為「VeXtract」。
