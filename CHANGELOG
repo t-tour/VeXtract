@@ -4,11 +4,9 @@
 格式基於 [Keep a Changelog](http://keepachangelog.com/zh-TW/1.0.0/)
 這個項目堅持 [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## 0.0.1 - 2014-05-31
+## 0.0.1 - 2018-08-05
 ### Added
 - 新增此更動紀錄檔案。
-- 新增大 Logo 到此專案。
-- 新增 README.md 到此專案。
 
 ## 0.0.0 - 2018-08-03
 ### Added
