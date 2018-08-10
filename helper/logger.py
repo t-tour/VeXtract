@@ -30,8 +30,3 @@ class Logger():
 
     def e(self, msg):
         self.log_adapter.error(msg)
-
-
-log = Logger('main')
-log.i('log a info')
-log.d('just for test12312')
