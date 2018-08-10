@@ -10,7 +10,7 @@ class Logger():
         format = '%(asctime)-15s %(message)s'
         formatter = logging.Formatter(format)
         self.file_handler = logging.FileHandler(
-            './logger/logger-{}.log'.format(datetime.now().strftime('%Y-%m-%d')), 'a')
+            './log/log-{}.log'.format(datetime.now().strftime('%Y-%m-%d')), 'a')
         self.file_handler.setFormatter(formatter)
         self.log_adapter.addHandler(self.file_handler)
 
