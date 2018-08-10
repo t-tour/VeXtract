@@ -7,8 +7,7 @@
 ## 0.0.2 - 2018-08-10
 ### Added
 - 新增 helper 資料夾
-- 在 helper 下新增 logger 模組
-- 新增
+- 在 helper 下新增 logger 模組及新增 logger 資料夾
 
 ## 0.0.1 - 2018-08-05
 ### Added
