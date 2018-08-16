@@ -4,12 +4,16 @@
 格式基於 [Keep a Changelog](http://keepachangelog.com/zh-TW/1.0.0/)
 這個項目堅持 [Semantic Versioning](http://semver.org/spec/v2.0.0.html)
 
+## [0.0.3] - 2018-08-16
+### Fixed
+- 修正 log file 不會顯示 __name__ 和 levelname 的問題
+
 ## [0.0.2] - 2018-08-10
 ### Added
 - 新增 helper 資料夾
 - 在 helper 下新增 logger 模組及新增 logger 資料夾
-### Changed
-- 將 logger 資料夾改成 log
+### Fixed
+- logger 資料夾修正成 log
 
 ## [0.0.1] - 2018-08-05
 ### Added
