@@ -9,7 +9,6 @@
 - .gitignore 增加路徑 envs/, credentials/
 - 新增 tools 資料夾
 - 在 tools 資料夾下加入 analyzer, bilibili 的 package
-- 新增 requirement.txt
 
 ## [0.0.2] - 2018-08-10
 ### Added
