@@ -4,11 +4,13 @@
 格式基於 [Keep a Changelog](http://keepachangelog.com/zh-TW/1.0.0/)
 這個項目堅持 [Semantic Versioning](http://semver.org/spec/v2.0.0.html)
 
-## [0.0.3] - 2018-08-16
+## [0.0.4] - 2018-08-17
 ### Added
-- .gitignore 增加路徑 envs/, credentials/
-- 新增 tools 資料夾
-- 在 tools 資料夾下加入 analyzer, bilibili 的 package
+- .gitignore 增加路徑 envs/, credentials/, .pytest_cache/
+- 新增 tools package
+- 在 tools package下加入 subpackage: `analyzer`, `bilibili` 的 package 合併自前專案
+- 新增 tests/bilibili 資料夾
+- 新增 `bilibili_comment_content_apt_test.py`
 
 ## [0.0.2] - 2018-08-10
 ### Added

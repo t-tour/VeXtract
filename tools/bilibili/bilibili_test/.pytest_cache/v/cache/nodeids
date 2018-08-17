@@ -1,8 +1,0 @@
-[
-  "bilibili_comment_content_api_test.py::test_fetch_bilibili_with_error_formatting",
-  "bilibili_comment_content_api_test.py::test_fetch_bilibili_with_not_found_error",
-  "bilibili_comment_content_api_test.py::test_fetch_bilibili",
-  "bilibili_comment_content_api_test.py::test_cid_xml_file",
-  "bilibili_comment_content_api_test.py::test_get_comment_data",
-  "comment_api_test.py::test_get_av_comments_list"
-]

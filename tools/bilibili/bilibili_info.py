@@ -1,10 +1,10 @@
-import sys, os
-sys.path.append(os.path.abspath(os.path.dirname(__file__) + "/../../"))
+import sys
+sys.path.append(__file__ + '/..' * (len(__file__.split('\\')) -
+                                    __file__.split('\\').index('VeXtract') - 1))
 
 import json
 
-from analyzer.text_sentiment_analyze import text_analyze
-
+from tools.analyzer.text_sentiment_analyze import text_analyze
 
 
 class Bilibili_file_info():
@@ -71,7 +71,7 @@ class Bilibili_file_info():
         for cid in self.cid:
             for comment in self.comments[cid]:
                 if test:
-                    comment.score = 10 
+                    comment.score = 10
                 else:
                     comment.score = text_analyze(comment.text)
 
@@ -110,7 +110,7 @@ class Bilibili_comment():
     user: str()
     sec: float()
     text: str()
-    score: float() 
+    score: float()
 
     def __init__(self, user, sec, text):
         self.user = user

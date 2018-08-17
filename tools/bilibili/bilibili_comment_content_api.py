@@ -1,14 +1,15 @@
-import os
 import sys
+sys.path.append(__file__ + '/..' * (len(__file__.split('\\')) -
+                                    __file__.split('\\').index('VeXtract') - 1))
+import os
 import requests
 from urllib import parse
 from bs4 import BeautifulSoup
 import re
 import json
 import xml.etree.ElementTree as ET
-sys.path.append(os.path.abspath(os.path.dirname(__file__) + "/../../"))
 
-from bilibili.bilibili import bilibili_info as b_info  # noqa
+from tools.bilibili import bilibili_info as b_info  # noqa
 
 COMMENT_REQUEST_URL = "https://comment.bilibili.com/"
 MAIN_HOST_URL = "https://www.bilibili.com/video/"
@@ -80,42 +81,8 @@ def __cid_comments_list(cid: str) -> list():
         if child.tag == "d":
             info = child.attrib["p"].split(",")
             comment_list.append(
-                {"user": info[6], "sec": info[0], "text": child.text, "score": comment_score(child.text)})
+                {"user": info[6], "sec": info[0], "text": child.text, "score": None})
     return comment_list
-
-
-
-def comment_score(text):
-    return 1
-
-def cid_xml_file(cid: str):
-    """
-    用cid在目錄下寫入檔案(cid).xml
-    """
-    fd_name = cid + ".xml"
-    req = requests.get(COMMENT_REQUEST_URL + fd_name)
-    req.encoding = 'utf-8'
-    with open(fd_name, 'w', encoding="utf-8") as f:
-        f.write(req.text)
-
-
-def get_comment_data(av_number: str, store="chat_xml_res/") -> b_info.Bilibili_file_info():
-    """
-    可以下載xml檔案給api讀取
-    預設目錄是 current work dir 的 chat_xml_res/
-    """
-    my_path = os.getcwd()
-    try:
-        os.mkdir(store)
-    except FileExistsError:
-        pass
-    b = fetch_bilibili_av(av_number)
-    os.chdir(store)
-    os.mkdir(av_number)
-    os.chdir(av_number)
-    for req_cid in b.cid:
-        cid_xml_file(req_cid)
-    os.chdir(my_path)
 
 
 def get_video_data(avnumber, p=-1, store="video_res/", known=None):
@@ -190,8 +157,7 @@ def __safe_makedir(path):
 if __name__ == "__main__":
     # get_video_data("av25233957")
     # print(fetch_bilibili_av("av13392824"))
-    a = fetch_bilibili_av("av28707590")
-    a.fetch_comment_score()
-    
-
-    print(b)
+    a = fetch_bilibili_av("av29311976")
+    # a.fetch_comment_score(test=True, limitation=5000)
+    # a.save()
+    print(a)

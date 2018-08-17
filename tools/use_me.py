@@ -1,11 +1,12 @@
+import sys
+sys.path.append(__file__ + '/..' * (len(__file__.split('\\')) -
+                                    __file__.split('\\').index('VeXtract') - 1))
 import argparse
 import traceback
 import os
-import sys
-sys.path.append(os.path.dirname(__file__))
 
 
-from bilibili.bilibili.bilibili_comment_content_api import get_comment_data  # noqa
+from bilibili.bilibili_comment_content_api import get_comment_data  # noqa
 from analyzer import text_sentiment_analyze as text_sent
 
 DEFAULT_DIR = ''

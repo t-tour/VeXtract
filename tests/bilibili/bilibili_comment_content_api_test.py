@@ -1,10 +1,11 @@
 import sys
+sys.path.append(__file__ + '/..' * (len(__file__.split('\\')) -
+                                    __file__.split('\\').index('VeXtract') - 1))
 import os
 import pytest
 import xml.etree.ElementTree as ET
-sys.path.append(os.path.abspath(os.path.dirname(__file__) + "/../../"))
 
-from danmaku.bilibili import bilibili_comment_content_api as bci  # noqa
+from tools.bilibili import bilibili_comment_content_api as bci    # noqa
 
 
 AV_NUMBER_ERROR_FORMATTING = "aa12345666d"
@@ -33,28 +34,3 @@ def test_fetch_bilibili():
     assert target.video_title == "【凹凸世界】瑞骚来袭！手办级渲染第四弹！toxic伪"
     assert [i for i in target.video_tags if i not in tags_need] == []
     assert target.timelength == 110419
-
-
-def test_cid_xml_file():
-    CID_PATH = CID + ".xml"
-    bci.cid_xml_file(CID)
-    tree = ET.parse(CID_PATH)
-    root = tree.getroot()
-    os.remove(CID_PATH)
-    assert root[1].text == "38842914"
-
-
-def test_get_comment_data():
-    bci.get_comment_data(
-        AV_NUMBER_MANY_P, os.path.dirname(__file__) + "/chat_xml_res")
-    os.chdir(os.path.dirname(__file__) + "/chat_xml_res")
-    os.chdir(AV_NUMBER_MANY_P)
-    need = ['21945130.xml', '21945131.xml']
-    now = os.listdir(".")
-    assert [i for i in now if i not in need] == []
-    for rm in os.listdir('.'):
-        os.remove(rm)
-    os.chdir('../')
-    os.rmdir(AV_NUMBER_MANY_P)
-    os.chdir('../')
-    os.rmdir('chat_xml_res')
