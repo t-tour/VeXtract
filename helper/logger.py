@@ -7,7 +7,7 @@ class Logger():
     def __init__(self, name):
         self.log_adapter = logging.getLogger(name)
         self.set_level()
-        format = '%(asctime)-15s %(message)s'
+        format = '%(asctime)-15s %(name)s [%(levelname)s] %(message)s'
         formatter = logging.Formatter(format)
         self.file_handler = logging.FileHandler(
             './log/log-{}.log'.format(datetime.now().strftime('%Y-%m-%d')), 'a')

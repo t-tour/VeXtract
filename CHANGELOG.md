@@ -12,12 +12,16 @@
 - 新增 tests/bilibili 資料夾
 - 新增 `bilibili_comment_content_apt_test.py`
 
+## [0.0.3] - 2018-08-16
+### Fixed
+- 修正 log file 不會顯示 __name__ 和 levelname 的問題
+
 ## [0.0.2] - 2018-08-10
 ### Added
 - 新增 helper 資料夾
 - 在 helper 下新增 logger 模組及新增 logger 資料夾
-### Changed
-- 將 logger 資料夾改成 log
+### Fixed
+- logger 資料夾修正成 log
 
 ## [0.0.1] - 2018-08-05
 ### Added
