@@ -10,6 +10,9 @@ import json
 import xml.etree.ElementTree as ET
 
 from tools.bilibili import bilibili_info as b_info  # noqa
+from helper import logger
+log = logger.Logger(__name__)
+log.set_level('i')
 
 COMMENT_REQUEST_URL = "https://comment.bilibili.com/"
 MAIN_HOST_URL = "https://www.bilibili.com/video/"
@@ -19,12 +22,15 @@ def fetch_bilibili_av(av_number, p=1) -> b_info.Bilibili_file_info():
     """
     用bilibili的av號，fetch B站AV號資料
     """
+    log.i('start fetch bilibili.')
     m = re.match('av[0-9]+', av_number)
     if m is None:
+        log.e('av_number mismatch \'{}\''.format(av_number))
         raise Exception("av號格式錯誤")
     av_number = m.group(0)
     req = requests.get(parse.urljoin(
         MAIN_HOST_URL, av_number) + str.format("?p={0}", p))
+    log.i('request {} finish.'.format(req.url))
     bf = BeautifulSoup(req.text, 'html.parser')
     scripts_tag = bf.find_all("script")
     start_initial = re.escape("window.__INITIAL_STATE__=")
@@ -34,10 +40,12 @@ def fetch_bilibili_av(av_number, p=1) -> b_info.Bilibili_file_info():
     start_play = re.escape("window.__playinfo__=")
     as_av_info = b_info.Bilibili_file_info()
     for tag in scripts_tag:
-        r1 = re.match(start_initial + "(.+)" + end_initial, str(tag.string))
-        r2 = re.match(start_play + "(.+)", str(tag.string))
-        m = r1 if r1 is not None else r2
-        if m is not None and m is r1:
+        re_initial = re.match(start_initial + "(.+)" +
+                              end_initial, str(tag.string))
+        re_playinfo = re.match(start_play + "(.+)", str(tag.string))
+        m = re_initial if re_initial is not None else re_playinfo
+        if m is not None and m is re_initial:
+            log.i('__initial_state__ json detected.')
             results = json.loads(m.group(1))
             if len(results["error"]) is 0:
                 as_av_info.aid = results["aid"]
@@ -51,8 +59,10 @@ def fetch_bilibili_av(av_number, p=1) -> b_info.Bilibili_file_info():
                 as_av_info.video_pubdate = results["videoData"]["pubdate"]
                 as_av_info.video_pic = results["videoData"]["pic"]
             else:
+                log.e('__initial_state__ error: {}'.format(results["error"]))
                 raise Exception(results["error"])
-        elif m is not None and m is r2:
+        elif m is not None and m is re_playinfo:
+            log.i('__playinfo__ json detected.')
             results = json.loads(m.group(1))
             for url in results["durl"]:
                 as_av_info.durl.append(url["url"])
@@ -61,13 +71,17 @@ def fetch_bilibili_av(av_number, p=1) -> b_info.Bilibili_file_info():
             as_av_info.accept_quality = results["accept_quality"]
             as_av_info.accept_description = results["accept_description"]
     comments_dict = dict()
+    log.i('start download comments.')
     for cid in as_av_info.cid:
         comments_dict.update({cid: __cid_comments_list(cid)})
         as_av_info.comments = comments_dict
     if as_av_info.aid is None:
+        log.e('target object aid is None.  initial state parse failed.')
         raise Exception("Html parse JSON failed.  INITIAL state can't parse!!")
     if as_av_info.durl[0] is None:
+        log.e('target object durl is None.  playinfo parse failed.')
         raise Exception("Html parse JSON failed.  playinfo can't parse!!")
+    log.i('fetch bilibili finish.')
     return as_av_info
 
 
@@ -100,7 +114,7 @@ def get_video_data(avnumber, p=-1, store="video_res/", known=None):
             parted_target = fetch_bilibili_av(avnumber, p)
             __safe_makedir(str(cid))
             os.chdir(str(cid))
-            print("正在下載av:cid av{0}:{1} :3 名稱:{2}".format(
+            log.i("正在下載av:cid av{0}:{1} :3 名稱:{2}".format(
                 parted_target.aid, cid, cid_name))
             for no, url in zip(range(len(parted_target.durl)), parted_target.durl):
                 # 測試代碼這裡
@@ -114,14 +128,14 @@ def get_video_data(avnumber, p=-1, store="video_res/", known=None):
         # referenced before assignment 指定錯誤的p數
         __safe_makedir(str(target.cid[p - 1]))
         os.chdir(str(target.cid[p - 1]))
-        print("正在下載av:cid av{0}:{1} :3 名稱:{2}".format(
+        log.i("正在下載av:cid av{0}:{1} :3 名稱:{2}".format(
             target.aid, target.cid[p - 1], target.cid_name[p - 1]))
         for no, url, in zip(range(len(target.durl)), target.durl):
             __download_b_video(url, p, target.cid[p - 1], target.aid, no)
     os.chdir(my_path)
 
 
-def __download_b_video(url, p, cid, aid, no, log_level=0):
+def __download_b_video(url, p, cid, aid, no):
     header = {"user-agent": ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
                              "AppleWebKit/537.36 (KHTML, like Gecko) "
                              "Chrome/67.0.3396.99 Safari/537.36"),
@@ -129,22 +143,11 @@ def __download_b_video(url, p, cid, aid, no, log_level=0):
               "origin": "https://www.bilibili.com"}
     with requests.get(url, headers=header, stream=True) as r:
         filename = "{0}-{1}.flv".format(cid, no)
-        if log_level >= 1:
-            print("{filename} downloading".format(filename=filename), end="")
+        log.i("{filename} downloading".format(filename=filename))
         with open(filename, "wb") as f:
-            c = 0
             for chunk in r.iter_content(chunk_size=1024):
-                c += 1
-                # FIXME: 在b_info中增加各檔案大小的屬性 就可以透過chunk_size辨別進度!  現在先這樣
-                # \r可以吃掉為卵的餅乾
-                if c >= 1024:
-                    if log_level >= 1:
-                        print(".", end="")
-                    sys.stdout.flush()
-                    c = 0
                 f.write(chunk)
-            if log_level >= 1:
-                print("finish")
+            log.i('finish download.')
 
 
 def __safe_makedir(path):

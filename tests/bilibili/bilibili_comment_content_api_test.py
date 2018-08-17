@@ -6,7 +6,8 @@ import pytest
 import xml.etree.ElementTree as ET
 
 from tools.bilibili import bilibili_comment_content_api as bci    # noqa
-
+from helper import logger
+log = logger.Logger(__name__)
 
 AV_NUMBER_ERROR_FORMATTING = "aa12345666d"
 AV_NUMBER_NULL = "av2"
@@ -16,16 +17,19 @@ CID = '38842914'
 
 
 def test_fetch_bilibili_with_error_formatting():
+    log.d('start test_fetch_bilibili_with_error_formatting')
     with pytest.raises(Exception, match=r'av號格式錯誤'):
         bci.fetch_bilibili_av(AV_NUMBER_ERROR_FORMATTING)
 
 
 def test_fetch_bilibili_with_not_found_error():
+    log.d('start test_fetch_bilibili_with_not_found_error')
     with pytest.raises(Exception, match=r'.*40[34].*'):
         bci.fetch_bilibili_av(AV_NUMBER_NULL)
 
 
 def test_fetch_bilibili():
+    log.d('start test_fetch_bilibili')
     target = bci.fetch_bilibili_av(AV_NUMBER_MANY_P)
     cid_need = ['21945130', '21945131']
     tags_need = ["凹凸世界", "社会摇", "格瑞", "toxic"]
