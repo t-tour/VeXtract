@@ -7,7 +7,6 @@ import xml.etree.ElementTree as ET
 
 from tools.bilibili import bilibili_comment_content_api as bci
 from tools.bilibili import bilibili_info as b_info
-from tools.analyzer import text_sentiment_analyze as text_ana
 from helper import logger
 log = logger.Logger(__name__)
 
