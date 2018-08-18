@@ -5,7 +5,9 @@ import os
 import pytest
 import xml.etree.ElementTree as ET
 
-from tools.bilibili import bilibili_comment_content_api as bci    # noqa
+from tools.bilibili import bilibili_comment_content_api as bci
+from tools.bilibili import bilibili_info as b_info
+from tools.analyzer import text_sentiment_analyze as text_ana
 from helper import logger
 log = logger.Logger(__name__)
 
@@ -38,3 +40,18 @@ def test_fetch_bilibili():
     assert target.video_title == "【凹凸世界】瑞骚来袭！手办级渲染第四弹！toxic伪"
     assert [i for i in target.video_tags if i not in tags_need] == []
     assert target.timelength == 110419
+
+
+def test_j_data_rw_and_score_analyzer():
+    log.d('start test_j_data_rw_and_score_analyzer')
+    os.chdir("tests/bilibili")
+    a = b_info.Bilibili_file_info.load("{}.json".format(AV_NUMBER_ONE_P))
+    assert a.comments[a.cid[0]][0]["score"] == None
+    a.fetch_comment_score(limitation=5000)
+    assert a.comments[a.cid[0]][0]["score"] == 10
+    a.save()
+    b = b_info.Bilibili_file_info.load("{}.json".format(AV_NUMBER_ONE_P))
+    for comment in b.comments[a.cid[0]]:
+        comment["score"] = None
+    b.save()
+    
