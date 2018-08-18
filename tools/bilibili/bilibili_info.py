@@ -72,9 +72,9 @@ class Bilibili_file_info():
         for cid in self.cid:
             for comment in self.comments[cid]:
                 if test:
-                    comment["score"] = 10
+                    comment.score = 10
                 else:
-                    comment["score"] = text_analyze(comment.text)
+                    comment.score = text_analyze(comment.text)
         log.i('av{} fetch comment finish.'.format(self.aid))
         
 

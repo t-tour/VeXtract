@@ -114,8 +114,9 @@ def get_video_data(avnumber, p=-1, store="video_res/", known=None):
             parted_target = fetch_bilibili_av(avnumber, p)
             __safe_makedir(str(cid))
             os.chdir(str(cid))
+            # FIXME: 檔名紀錄log等修復
             log.i("正在下載av:cid av{0}:{1} :3 名稱:{2}".format(
-                parted_target.aid, cid, cid_name))
+                parted_target.aid, cid, "名稱不可用"))
             for no, url in zip(range(len(parted_target.durl)), parted_target.durl):
                 # 測試代碼這裡
                 # print("{0}-{1}.flv downloading.....finish".format(cid, no))
@@ -160,7 +161,9 @@ def __safe_makedir(path):
 if __name__ == "__main__":
     # get_video_data("av25233957")
     # print(fetch_bilibili_av("av13392824"))
-    a = fetch_bilibili_av("av29311976")
     # a.fetch_comment_score(test=True, limitation=5000)
     # a.save()
-    print(a)
+    b = fetch_bilibili_av("av29311976")
+    b.fetch_comment_score(limitation=5000)
+    b.aid = 222222213
+    b.save()
