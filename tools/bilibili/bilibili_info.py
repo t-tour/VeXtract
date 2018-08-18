@@ -5,7 +5,8 @@ sys.path.append(__file__ + '/..' * (len(__file__.split('\\')) -
 import json
 
 from tools.analyzer.text_sentiment_analyze import text_analyze
-
+from helper import logger
+log = logger.Logger(__name__)
 
 class Bilibili_file_info():
     aid: str()
@@ -36,8 +37,6 @@ class Bilibili_file_info():
                     comment["user"], comment["sec"], comment["text"])
                 b_comment.score = comment["score"]
                 b_comments_list.append(b_comment)
-                if type(b_comment) != type(Bilibili_comment(None, None, None)):
-                    raise Exception("fu")
             self.__comments.update({cid: b_comments_list})
 
     def get_pages_count(self):
@@ -47,6 +46,7 @@ class Bilibili_file_info():
         with open('av{}.json'.format(self.aid), 'w', encoding='utf-8') as f:
             json.dump(self, f, default=lambda o: o.__dict__,
                       ensure_ascii=False)
+        log.i('av{}.json saved'.format(self.aid))
 
     @staticmethod
     def load(j_data):
@@ -55,6 +55,7 @@ class Bilibili_file_info():
             obj = Bilibili_file_info()
             for attr, value in loaded.items():
                 obj.__setattr__(attr, value)
+        log.i('load {} finish.'.format(j_data))
         return obj
 
     def fetch_comment_score(self, test=True, limitation=100):
@@ -74,6 +75,8 @@ class Bilibili_file_info():
                     comment.score = 10
                 else:
                     comment.score = text_analyze(comment.text)
+        log.i('av{} fetch comment finish.'.format(self.aid))
+        
 
     def __init__(self):
         self.aid = None
