@@ -10,7 +10,9 @@ class Logger():
         format = '%(asctime)-15s %(name)s [%(levelname)s] %(message)s'
         formatter = logging.Formatter(format)
         self.file_handler = logging.FileHandler(
-            './log/log-{}.log'.format(datetime.now().strftime('%Y-%m-%d')), 'a')
+            './log/log-{}.log'.format(datetime.now().strftime('%Y-%m-%d')),
+            'a',
+            encoding='utf-8')
         self.file_handler.setFormatter(formatter)
         self.log_adapter.addHandler(self.file_handler)
 
@@ -30,3 +32,7 @@ class Logger():
 
     def e(self, msg):
         self.log_adapter.error(msg)
+
+
+log = Logger(__name__)
+log.d('应')
