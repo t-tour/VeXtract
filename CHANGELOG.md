@@ -15,7 +15,7 @@
 
 ### Fixed
 - 修正 helper floder 修正成 package
-- 修正非 cmd print 資料換到log
+- 修正非 cmd print 資料換到 log
 
 ## [0.0.4] - 2018-08-17
 ### Added
