@@ -4,10 +4,15 @@
 格式基於 [Keep a Changelog](http://keepachangelog.com/zh-TW/1.0.0/)
 這個項目堅持 [Semantic Versioning](http://semver.org/spec/v2.0.0.html)
 
+## [0.0.6] - 2018-08-22
+### Fixed
+- 修正 logger file hanlder 的編碼問題
+
 ## [0.0.5] - 2018-08-18
 ### Added
 - 新增 `helper/use_me.py` 可執行cmd功能
 - 新增 bilibili 更多測試
+
 ### Fixed
 - 修正 helper floder 修正成 package
 - 修正非 cmd print 資料換到log
