@@ -4,6 +4,22 @@
 格式基於 [Keep a Changelog](http://keepachangelog.com/zh-TW/1.0.0/)
 這個項目堅持 [Semantic Versioning](http://semver.org/spec/v2.0.0.html)
 
+## [0.0.5] - 2018-08-18
+### Added
+- 新增 `helper/use_me.py` 可執行cmd功能
+- 新增 bilibili 更多測試
+### Fixed
+- 修正 helper floder 修正成 package
+- 修正非 cmd print 資料換到log
+
+## [0.0.4] - 2018-08-17
+### Added
+- .gitignore 增加路徑 envs/, credentials/, .pytest_cache/
+- 新增 tools package
+- 在 tools package下加入 subpackage: `analyzer`, `bilibili` 的 package 合併自前專案
+- 新增 tests/bilibili 資料夾
+- 新增 `bilibili_comment_content_apt_test.py`
+
 ## [0.0.3] - 2018-08-16
 ### Fixed
 - 修正 log file 不會顯示 __name__ 和 levelname 的問題
