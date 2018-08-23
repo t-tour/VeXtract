@@ -1,12 +1,18 @@
-import sys
-sys.path.append(__file__ + '/..' * (len(__file__.split('\\')) -
-                                    __file__.split('\\').index('VeXtract') - 1))
 import os
+import sys
+__root = os.path.abspath(
+    os.path.dirname(os.path.abspath(__file__)) + (os.sep + '..') * (
+        len(os.path.dirname(os.path.abspath(__file__)).split(os.sep)) -
+        os.path.dirname(os.path.abspath(__file__)).split(os.sep).index(
+            'VeXtract'
+        ) - 1
+    )) + os.sep
+sys.path.append(__root)
 import pytest
 import xml.etree.ElementTree as ET
 
-from tools.bilibili import bilibili_comment_content_api as bci
-from tools.bilibili import bilibili_info as b_info
+from crawler import bilibili
+
 from helper import logger
 log = logger.Logger(__name__)
 
@@ -20,18 +26,18 @@ CID = '38842914'
 def test_fetch_bilibili_with_error_formatting():
     log.d('start test_fetch_bilibili_with_error_formatting')
     with pytest.raises(Exception, match=r'av號格式錯誤'):
-        bci.fetch_bilibili_av(AV_NUMBER_ERROR_FORMATTING)
+        bilibili.fetch_bilibili_av(AV_NUMBER_ERROR_FORMATTING)
 
 
 def test_fetch_bilibili_with_not_found_error():
     log.d('start test_fetch_bilibili_with_not_found_error')
     with pytest.raises(Exception, match=r'.*40[34].*'):
-        bci.fetch_bilibili_av(AV_NUMBER_NULL)
+        bilibili.fetch_bilibili_av(AV_NUMBER_NULL)
 
 
 def test_fetch_bilibili():
     log.d('start test_fetch_bilibili')
-    target = bci.fetch_bilibili_av(AV_NUMBER_MANY_P)
+    target = bilibili.fetch_bilibili_av(AV_NUMBER_MANY_P)
     cid_need = ['21945130', '21945131']
     tags_need = ["凹凸世界", "社会摇", "格瑞", "toxic"]
     assert target.aid == "13392824"
@@ -43,14 +49,13 @@ def test_fetch_bilibili():
 
 def test_j_data_rw_and_score_analyzer():
     log.d('start test_j_data_rw_and_score_analyzer')
-    os.chdir("tests/bilibili")
-    a = b_info.Bilibili_file_info.load("{}.json".format(AV_NUMBER_ONE_P))
-    assert a.comments[a.cid[0]][0]["score"] == None
+    os.chdir(__root + "test/test_file/")
+    a = bilibili.Bilibili_file_info.load("{}.json".format(AV_NUMBER_ONE_P))
+    assert a.comments[a.cid[0]][0].score == None
     a.fetch_comment_score(limitation=5000)
-    assert a.comments[a.cid[0]][0]["score"] == 10
+    assert a.comments[a.cid[0]][0].score == 10
     a.save()
-    b = b_info.Bilibili_file_info.load("{}.json".format(AV_NUMBER_ONE_P))
+    b = bilibili.Bilibili_file_info.load("{}.json".format(AV_NUMBER_ONE_P))
     for comment in b.comments[a.cid[0]]:
-        comment["score"] = None
+        comment.score = None
     b.save()
-    

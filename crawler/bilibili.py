@@ -1,6 +1,13 @@
+import os
 import sys
-sys.path.append(__file__ + '/..' * (len(__file__.split('\\')) -
-                                    __file__.split('\\').index('VeXtract') - 1))
+__root = os.path.abspath(
+    os.path.dirname(os.path.abspath(__file__)) + (os.sep + '..') * (
+        len(os.path.dirname(os.path.abspath(__file__)).split(os.sep)) -
+        os.path.dirname(os.path.abspath(__file__)).split(os.sep).index(
+            'VeXtract'
+        ) - 1
+    )) + os.sep
+sys.path.append(__root)
 import os
 import requests
 from urllib import parse
@@ -9,7 +16,8 @@ import re
 import json
 import xml.etree.ElementTree as ET
 
-from tools.bilibili import bilibili_info as b_info  # noqa
+
+from analyzer.text import natural_lang_process
 from helper import logger
 log = logger.Logger(__name__)
 log.set_level('i')
@@ -18,7 +26,131 @@ COMMENT_REQUEST_URL = "https://comment.bilibili.com/"
 MAIN_HOST_URL = "https://www.bilibili.com/video/"
 
 
-def fetch_bilibili_av(av_number, p=1) -> b_info.Bilibili_file_info():
+class Bilibili_file_info():
+    aid: str()
+    cid: list()
+    cid_name: list()
+    timelength: int()
+    accept_format: list()
+    accept_quality: list()
+    accept_quailty_description: list()
+    video_title: str()
+    video_desc: str()
+    video_pubdate: int()
+    video_pic: str()
+    video_tags: list()
+    durl: list()
+    __comments: dict()
+
+    @property
+    def comments(self):
+        return self.__comments
+
+    @comments.setter
+    def comments(self, value):
+        for cid, comments in value.items():
+            b_comments_list = list()
+            for comment in comments:
+                b_comment = Bilibili_comment(
+                    comment["user"], comment["sec"], comment["text"])
+                b_comment.score = comment["score"]
+                b_comments_list.append(b_comment)
+            self.__comments.update({cid: b_comments_list})
+
+    def get_pages_count(self):
+        return len(self.cid)
+
+    def save(self):
+        with open('av{}.json'.format(self.aid), 'w', encoding='utf-8') as f:
+            json.dump(self, f, default=lambda o: o.__dict__,
+                      ensure_ascii=False)
+        log.i('av{}.json saved'.format(self.aid))
+
+    @staticmethod
+    def load(j_data):
+        with open(j_data, 'r', encoding='utf-8') as f:
+            loaded = json.load(f)
+            obj = Bilibili_file_info()
+            # FIXME: load 的時候 comment 也必須用 satter 才行
+            for attr, value in loaded.items():
+                obj.__setattr__(attr, value)
+                if attr == "_Bilibili_file_info__comments":
+                    obj.comments = value
+        log.i('load {} finish.'.format(j_data))
+        return obj
+
+    def fetch_comment_score(self, test=True, limitation=100):
+        """
+        default: test=True, limitation=100
+        test: 測試模式，分數全為10
+        limitation: 最大comment上限，包含所有cid
+        """
+        total_len = 0
+        for cid in self.cid:
+            total_len += len(self.comments[cid])
+        if total_len > limitation:
+            raise Exception("comments up to limitation!!")
+        for cid in self.cid:
+            for comment in self.comments[cid]:
+                if test:
+                    comment.score = 10
+                else:
+                    comment.score = natural_lang_process.text_analyze(comment.text)
+        log.i('av{} fetch comment finish.'.format(self.aid))
+        
+
+    def __init__(self):
+        self.aid = None
+        self.cid = list()
+        self.cid_name = list()
+        self.timelength = 0
+        self.accept_format = list()
+        self.accept_quality = list()
+        self.accept_quailty_description = list()
+        self.video_title = None
+        self.video_desc = None
+        self.video_pubdate = None
+        self.video_pic = None
+        self.video_tags = list()
+        self.durl = list()
+        self.__comments = dict()
+
+    def __str__(self):
+        return str.format(
+            "aid:{0}\tvideo_title:{1}\n" +
+            "cid:{2}\tcid_title:{3}"
+            "timelength:{4}\ttags:{5}\n" +
+            "durl:{6}",
+            self.aid,
+            self.video_title,
+            self.cid,
+            self.cid_name,
+            self.timelength,
+            self.video_tags,
+            self.durl[0])
+
+
+class Bilibili_comment():
+    user: str()
+    sec: float()
+    text: str()
+    score: float()
+
+    def __init__(self, user, sec, text):
+        self.user = user
+        self.sec = sec
+        self.text = text
+        self.score = None
+
+    def __str__(self):
+        return str.format("user:{0}\ttime:{1}\tscore:{3}\t{2}",
+                          self.user, self.sec, self.text, self.score)
+
+    def __repr__(self):
+        return self.__str__() + "\n"
+
+
+def fetch_bilibili_av(av_number, p=1) -> Bilibili_file_info():
     """
     用bilibili的av號，fetch B站AV號資料
     """
@@ -38,7 +170,7 @@ def fetch_bilibili_av(av_number, p=1) -> b_info.Bilibili_file_info():
         ";(function(){var s;(s=document.currentScript||document.scripts[document.scripts.length-1])" +
         ".parentNode.removeChild(s);}());")
     start_play = re.escape("window.__playinfo__=")
-    as_av_info = b_info.Bilibili_file_info()
+    as_av_info = Bilibili_file_info()
     for tag in scripts_tag:
         re_initial = re.match(start_initial + "(.+)" +
                               end_initial, str(tag.string))
@@ -157,7 +289,6 @@ def __safe_makedir(path):
     except FileExistsError:
         pass
 
-
 if __name__ == "__main__":
     # get_video_data("av25233957")
     # print(fetch_bilibili_av("av13392824"))
@@ -165,5 +296,6 @@ if __name__ == "__main__":
     # a.save()
     b = fetch_bilibili_av("av29311976")
     b.fetch_comment_score(limitation=5000)
-    b.aid = 222222213
     b.save()
+    a = Bilibili_file_info.load("av29311976.json")
+    print(a)
