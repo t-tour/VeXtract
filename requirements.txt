@@ -1,6 +1,8 @@
 # Sort by alphabet
 bs4
 google-api-python-client
+google-auth
+google-auth-httplib2
 numpy
 pylint
 pytest
