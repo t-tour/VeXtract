@@ -4,6 +4,12 @@
 格式基於 [Keep a Changelog](http://keepachangelog.com/zh-TW/1.0.0/)
 這個項目堅持 [Semantic Versioning](http://semver.org/spec/v2.0.0.html)
 
+## [0.0.7] - 2018-08-23
+### Fixed
+- 更改專案結構
+- 合併 `bilibili_comment_content_api.py` , `bilibili_info.py` 至 `crawler/bilibili.py` 
+- 修正 `bilibili.py` 中 `Bilibili_file_info` load
+
 ## [0.0.6] - 2018-08-22
 ### Fixed
 - 修正 logger file hanlder 的編碼問題
