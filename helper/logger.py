@@ -32,7 +32,3 @@ class Logger():
 
     def e(self, msg):
         self.log_adapter.error(msg)
-
-
-log = Logger(__name__)
-log.d('应')

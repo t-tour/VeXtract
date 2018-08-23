@@ -8,14 +8,12 @@ __root = os.path.abspath(
         ) - 1
     )) + os.sep
 sys.path.append(__root)
-import os
 import requests
 from urllib import parse
 from bs4 import BeautifulSoup
 import re
 import json
 import xml.etree.ElementTree as ET
-
 
 from analyzer.text import natural_lang_process
 from helper import logger
@@ -97,7 +95,7 @@ class Bilibili_file_info():
                 else:
                     comment.score = natural_lang_process.text_analyze(comment.text)
         log.i('av{} fetch comment finish.'.format(self.aid))
-        
+
 
     def __init__(self):
         self.aid = None
