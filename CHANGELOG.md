@@ -4,6 +4,10 @@
 格式基於 [Keep a Changelog](http://keepachangelog.com/zh-TW/1.0.0/)
 這個項目堅持 [Semantic Versioning](http://semver.org/spec/v2.0.0.html)
 
+## [0.0.9] - 2018-08-24
+## Added
+- 完善 `README.md` 的系統基礎架構
+
 ## [0.0.8] - 2018-08-23
 ### Added
 - 新增 `requirements.txt` 在根目錄
