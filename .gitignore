@@ -70,3 +70,4 @@ file/crawler
 #file
 *.mp4
 temp/
+json/
