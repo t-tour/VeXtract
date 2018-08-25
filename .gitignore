@@ -66,3 +66,6 @@ credentials/
 
 # Crawler Data
 json/
+
+#file
+*.mp4
