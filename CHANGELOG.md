@@ -4,6 +4,14 @@
 格式基於 [Keep a Changelog](http://keepachangelog.com/zh-TW/1.0.0/)
 這個項目堅持 [Semantic Versioning](http://semver.org/spec/v2.0.0.html)
 
+## [0.0.10]
+### Added
+- 新增 `crawler/bilibili` 4項標準輸出格式， `comment_crawler`仍未實作
+
+### Fixed
+- 修正 `.gitignore` crawler 輸出位置
+- 修正 `crawler/bilibili` 輸出位置
+
 ## [0.0.9] - 2018-08-24
 ## Added
 - 完善 `README.md` 的系統基礎架構
