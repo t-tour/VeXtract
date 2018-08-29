@@ -65,4 +65,4 @@ target/
 credentials/
 
 # Crawler Data
-json/
+file/crawler

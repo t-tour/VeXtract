@@ -25,20 +25,20 @@ MAIN_HOST_URL = "https://www.bilibili.com/video/"
 
 
 class Bilibili_file_info():
-    aid: str()
-    cid: list()
-    cid_name: list()
-    timelength: int()
-    accept_format: list()
-    accept_quality: list()
-    accept_quailty_description: list()
-    video_title: str()
-    video_desc: str()
-    video_pubdate: int()
-    video_pic: str()
-    video_tags: list()
-    durl: list()
-    __comments: dict()
+    aid: str
+    cid: list
+    cid_name: list
+    timelength: int
+    accept_format: list
+    accept_quality: list
+    accept_quailty_description: list
+    video_title: str
+    video_desc: str
+    video_pubdate: int
+    video_pic: str
+    video_tags: list
+    durl: list
+    __comments: dict
 
     @property
     def comments(self):
@@ -54,9 +54,6 @@ class Bilibili_file_info():
                 b_comment.score = comment["score"]
                 b_comments_list.append(b_comment)
             self.__comments.update({cid: b_comments_list})
-
-    def get_pages_count(self):
-        return len(self.cid)
 
     def save(self):
         with open('av{}.json'.format(self.aid), 'w', encoding='utf-8') as f:
@@ -93,9 +90,9 @@ class Bilibili_file_info():
                 if test:
                     comment.score = 10
                 else:
-                    comment.score = natural_lang_process.text_analyze(comment.text)
+                    comment.score = natural_lang_process.text_analyze(
+                        comment.text)
         log.i('av{} fetch comment finish.'.format(self.aid))
-
 
     def __init__(self):
         self.aid = None
@@ -129,10 +126,10 @@ class Bilibili_file_info():
 
 
 class Bilibili_comment():
-    user: str()
-    sec: float()
-    text: str()
-    score: float()
+    user: str
+    sec: float
+    text: str
+    score: float
 
     def __init__(self, user, sec, text):
         self.user = user
@@ -152,12 +149,7 @@ def fetch_bilibili_av(av_number, p=1) -> Bilibili_file_info():
     """
     用bilibili的av號，fetch B站AV號資料
     """
-    log.i('start fetch bilibili.')
-    m = re.match('av[0-9]+', av_number)
-    if m is None:
-        log.e('av_number mismatch \'{}\''.format(av_number))
-        raise Exception("av號格式錯誤")
-    av_number = m.group(0)
+    log.i('start fetch {}.'.format(av_number))
     req = requests.get(parse.urljoin(
         MAIN_HOST_URL, av_number) + str.format("?p={0}", p))
     log.i('request {} finish.'.format(req.url))
@@ -207,9 +199,10 @@ def fetch_bilibili_av(av_number, p=1) -> Bilibili_file_info():
         as_av_info.comments = comments_dict
     if as_av_info.aid is None:
         log.e('target object aid is None.  initial state parse failed.')
-        raise Exception("Html parse JSON failed.  INITIAL state can't parse!!")
-    if as_av_info.durl[0] is None:
-        log.e('target object durl is None.  playinfo parse failed.')
+        raise Exception(
+            "Html parse JSON failed.  INITIAL state can't parse!!  please check {} is correct".format(req.url))
+    if len(as_av_info.durl) == 0:
+        log.e('target object durl is None.  playinfo parse failed.  please check {} is correct'.format(req.url))
         raise Exception("Html parse JSON failed.  playinfo can't parse!!")
     log.i('fetch bilibili finish.')
     return as_av_info
@@ -229,43 +222,6 @@ def __cid_comments_list(cid: str) -> list():
     return comment_list
 
 
-def get_video_data(avnumber, p=-1, store="video_res/", known=None):
-    """
-    獲取影片資料
-    """
-    my_path = os.getcwd()
-    __safe_makedir(store)
-    os.chdir(store)
-    __safe_makedir(avnumber)
-    os.chdir(avnumber)
-    if p is -1:
-        target = fetch_bilibili_av(avnumber) if known is None else known
-        for p, cid, cid_name in zip(range(1, target.get_pages_count() + 1), target.cid, target.cid_name):
-            parted_target = fetch_bilibili_av(avnumber, p)
-            __safe_makedir(str(cid))
-            os.chdir(str(cid))
-            # FIXME: 檔名紀錄log等修復
-            log.i("正在下載av:cid av{0}:{1} :3 名稱:{2}".format(
-                parted_target.aid, cid, "名稱不可用"))
-            for no, url in zip(range(len(parted_target.durl)), parted_target.durl):
-                # 測試代碼這裡
-                # print("{0}-{1}.flv downloading.....finish".format(cid, no))
-                # with open("{0}test_{1}".format(cid, no), "w") as f:
-                #     f.write("dd")
-                __download_b_video(url, p, cid, target.aid, no)
-            os.chdir("..")
-    else:
-        target = fetch_bilibili_av(avnumber) if known is None else known
-        # referenced before assignment 指定錯誤的p數
-        __safe_makedir(str(target.cid[p - 1]))
-        os.chdir(str(target.cid[p - 1]))
-        log.i("正在下載av:cid av{0}:{1} :3 名稱:{2}".format(
-            target.aid, target.cid[p - 1], target.cid_name[p - 1]))
-        for no, url, in zip(range(len(target.durl)), target.durl):
-            __download_b_video(url, p, target.cid[p - 1], target.aid, no)
-    os.chdir(my_path)
-
-
 def __download_b_video(url, p, cid, aid, no):
     header = {"user-agent": ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
                              "AppleWebKit/537.36 (KHTML, like Gecko) "
@@ -273,7 +229,7 @@ def __download_b_video(url, p, cid, aid, no):
               "Referer": "https://www.bilibili.com/video/av{0}/?p={1}".format(aid, p),
               "origin": "https://www.bilibili.com"}
     with requests.get(url, headers=header, stream=True) as r:
-        filename = "{0}-{1}.flv".format(cid, no)
+        filename = "{0}-part{1}.flv".format(cid, no)
         log.i("{filename} downloading".format(filename=filename))
         with open(filename, "wb") as f:
             for chunk in r.iter_content(chunk_size=1024):
@@ -281,19 +237,70 @@ def __download_b_video(url, p, cid, aid, no):
             log.i('finish download.')
 
 
-def __safe_makedir(path):
-    try:
-        os.mkdir(path)
-    except FileExistsError:
-        pass
+def __url_parse(url):
+    url_parsed = parse.urlsplit(url)
+    return_value = dict()
+    if len(url_parsed.query) > 0:
+        for part in url_parsed.query.split("&"):
+            key = part.split("=")[0]
+            value = part.split("=")[1]
+            return_value.update({key: value})
+    return_value.update({"avnumber": url_parsed.path.split("/")[2]})
+    m = re.match('av[0-9]+', return_value["avnumber"])
+    if m is None:
+        log.e('av_number mismatch \'{}\''.format(return_value["avnumber"]))
+        raise Exception("av號格式錯誤")
+    return return_value
+
+
+def file_crawler(url, store_location="file/crawler/"):
+    """
+    獲取影片資料
+    """
+    url_info = __url_parse(url)
+    store = __root + store_location
+    target = fetch_bilibili_av(url_info["avnumber"])
+    ps = url_info["p"] if url_info.__contains__(
+        "p") else range(1, len(target.cid) + 1)
+    for p in ps:
+        parted_target = fetch_bilibili_av(url_info["avnumber"], p)
+        cid = parted_target.cid[p-1]
+        cid_name = parted_target.cid_name[p-1]
+        os.makedirs(
+            store + "av{}/{}_{}/".format(target.aid, p, cid), exist_ok=True)
+        os.chdir(store + "av{}/{}_{}/".format(target.aid, p, cid))
+        log.i("正在下載 av{0}_{1} cid名稱:{2}".format(
+            parted_target.aid, cid, cid_name))
+        for no, url in zip(range(len(parted_target.durl)), parted_target.durl):
+            # 測試代碼這裡
+            # print("{0}-{1}.flv downloading.....finish".format(cid, no))
+            # with open("{0}test_{1}".format(cid, no), "w") as f:
+            #     f.write("dd")
+            __download_b_video(url, p, cid, target.aid, no)
+
+
+def real_time_comment_crawler(url):
+    url_info = __url_parse(url)
+    target = fetch_bilibili_av(url_info["avnumber"])
+    return target.comments
+
+
+def info_crawler(url):
+    url_info = __url_parse(url)
+    return fetch_bilibili_av(url_info["avnumber"])
+
+
+def comment_crawler(url):
+    raise Exception("還沒實作!")
+
 
 if __name__ == "__main__":
     # get_video_data("av25233957")
     # print(fetch_bilibili_av("av13392824"))
     # a.fetch_comment_score(test=True, limitation=5000)
     # a.save()
-    b = fetch_bilibili_av("av29311976")
-    b.fetch_comment_score(limitation=5000)
-    b.save()
-    a = Bilibili_file_info.load("av29311976.json")
-    print(a)
+    # b = fetch_bilibili_av("av29311976")
+    # b.fetch_comment_score(limitation=5000)
+    # b.save()
+    file_crawler(
+        "https://www.bilibili.com/video/av30190348/?spm_id_from=333.334.bili_douga.3")
