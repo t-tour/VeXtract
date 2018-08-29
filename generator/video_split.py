@@ -6,7 +6,7 @@ import json
 import os
 from optparse import OptionParser
 
-def split_by_manifest(filename, split_start,split_length,rename_to, vcodec="copy", acodec="copy",
+def split_by_manifest(filename, split_start,split_length,rename_to,cmd_extra_code="",vcodec="copy", acodec="copy",
                       extra="", **kwargs):
     split_cmd = "ffmpeg -i %s -vcodec %s -acodec %s -y %s" % (filename,
                                                                   vcodec,
@@ -14,9 +14,9 @@ def split_by_manifest(filename, split_start,split_length,rename_to, vcodec="copy
                                                                   extra)
     split_str = " -ss " + str(split_start) + " -t " + str(split_length) +" "+ rename_to
     print("########################################################")
-    print("About to run: "+"cd temp &"+split_cmd+split_str)
+    print("About to run: "+cmd_extra_code +split_cmd+split_str)
     print("########################################################")
-    output = subprocess.Popen("cd temp &"+split_cmd+split_str,shell = True, stdout = subprocess.PIPE).stdout.read()
+    subprocess.Popen(cmd_extra_code +split_cmd+split_str,shell = True, stdout = subprocess.PIPE).stdout.read()
 
 def split_by_files(filename, manifest, vcodec="copy", acodec="copy",
                       extra="", **kwargs):
