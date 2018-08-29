@@ -13,8 +13,8 @@ def video_process(filename,split_list):
     video_type = filename.split(".")[1]
     subprocess.Popen("md temp", shell=True,stdout=subprocess.PIPE).stdout.read()
     for i in split_list:
-        split_start= int(i[0])
-        split_length = int(i[1])-split_start
+        split_start= float(i[0])
+        split_length = float(i[1])-split_start
         rename_to = video_name +"-"+str(count)+"."+video_type
         count = count+1
         video_split.split_by_manifest(os.path.join(os.getcwd(),filename),split_start,split_length,rename_to,cmd_extra_code="cd temp &")
