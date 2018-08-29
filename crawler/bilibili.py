@@ -240,10 +240,11 @@ def __download_b_video(url, p, cid, aid, no):
 def __url_parse(url):
     url_parsed = parse.urlsplit(url)
     return_value = dict()
-    for part in url_parsed.query.split("&"):
-        key = part.split("=")[0]
-        value = part.split("=")[1]
-        return_value.update({key: value})
+    if len(url_parsed.query) > 0:
+        for part in url_parsed.query.split("&"):
+            key = part.split("=")[0]
+            value = part.split("=")[1]
+            return_value.update({key: value})
     return_value.update({"avnumber": url_parsed.path.split("/")[2]})
     m = re.match('av[0-9]+', return_value["avnumber"])
     if m is None:
@@ -301,5 +302,5 @@ if __name__ == "__main__":
     # b = fetch_bilibili_av("av29311976")
     # b.fetch_comment_score(limitation=5000)
     # b.save()
-    a = real_time_comment_crawler(
-        "https://www.bilibili.com/video/av29919932/?spm_id_from=333.334.chief_recommend.16")
+    file_crawler(
+        "https://www.bilibili.com/video/av30190348/?spm_id_from=333.334.bili_douga.3")
