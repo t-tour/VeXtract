@@ -21,6 +21,7 @@ def __generate_segments(video):
     """
     隨意產生OAO
     """
+    # FIXME: 需求獲取 video 資訊的 feature
     log.i('Start generate_segments with {}'.format(video))
     ouput = subprocess.Popen("ffmpeg -i {}".format(video), stdout=subprocess.PIPE,
                              stderr=subprocess.PIPE, stdin=subprocess.PIPE)
@@ -34,6 +35,8 @@ def __generate_segments(video):
         60000 + int(float(time[2])*1000)
     log.i('err is: {}'.format(stderr))
     log.i('length is: {}'.format(video_length))
+
+
     sep = 5000
     segments_list = list()
     for i in range(0, video_length, sep):
