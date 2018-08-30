@@ -24,11 +24,19 @@ class Logger():
         elif level == 'e':
             self.log_adapter.setLevel(logging.ERROR)
 
-    def d(self, msg):
-        self.log_adapter.debug(msg)
+    def d(self, msg, *args):
+        self.log('{} {}'.format(msg, ' '.join(args)), 'd')
 
-    def i(self, msg):
-        self.log_adapter.info(msg)
+    def i(self, msg, *args):
+        self.log('{} {}'.format(msg, ' '.join(args)), 'i')
 
-    def e(self, msg):
-        self.log_adapter.error(msg)
+    def e(self, msg, *args):
+        self.log('{} {}'.format(msg, ' '.join(args)), 'e')
+
+    def log(self, msg, level):
+        if level == 'd':
+            self.log_adapter.debug(msg)
+        elif level == 'i':
+            self.log_adapter.info(msg)
+        elif level == 'e':
+            self.log_adapter.error(msg)
