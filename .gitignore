@@ -66,3 +66,7 @@ credentials/
 
 # Crawler Data
 file/crawler
+
+#file
+*.mp4
+temp/
