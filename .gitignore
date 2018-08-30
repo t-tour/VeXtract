@@ -68,4 +68,5 @@ credentials/
 json/
 
 #file
-*.mp4
+*.mp4 
+temp/
