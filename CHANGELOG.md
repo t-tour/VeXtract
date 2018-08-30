@@ -4,6 +4,12 @@
 格式基於 [Keep a Changelog](http://keepachangelog.com/zh-TW/1.0.0/)
 這個項目堅持 [Semantic Versioning](http://semver.org/spec/v2.0.0.html)
 
+## [Temp]
+### Added
+- 新增 `analyzer/algorithm/time_tagger.py`
+- 新增 `analyzer/algorithm/gen_plot.py`
+- 新增 `time_tagger` 兩種 call function
+
 ## [0.0.11] - 2018-08-30
 - 新增 `helper/logger` 中 `log` 支持多參數輸入
 
