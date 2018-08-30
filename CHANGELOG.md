@@ -4,7 +4,10 @@
 格式基於 [Keep a Changelog](http://keepachangelog.com/zh-TW/1.0.0/)
 這個項目堅持 [Semantic Versioning](http://semver.org/spec/v2.0.0.html)
 
-## [0.0.10]
+## [0.0.11] - 2018-08-30
+- 新增 `helper/logger` 中 `log` 支持多參數輸入
+
+## [0.0.10] - 2018-08-29
 ### Added
 - 新增 `crawler/bilibili` 4項標準輸出格式， `comment_crawler`仍未實作
 
