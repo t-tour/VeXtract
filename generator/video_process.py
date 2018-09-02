@@ -1,3 +1,6 @@
+import subprocess
+import re
+import math
 import os
 import sys
 __root = os.path.abspath(
@@ -13,13 +16,16 @@ log = logger.Logger(__name__)
 
 from generator import video_contact
 from generator import video_split
-import subprocess
-import re
-import math
 from optparse import OptionParser
 
 
-def video_process(filename, split_list):
+def video_process(filename, split_list, temp_Keep=False, output_name="output"):
+    ifpath = False
+    if filename[1:2] == ":":
+        ifpath = True
+        filepath = filename
+        filename = os.path.basename(filepath)
+
     count = 0
     video_name = filename.split(".")[0]
     video_type = filename.split(".")[1]
@@ -30,20 +36,26 @@ def video_process(filename, split_list):
         split_length = float(i[1])-split_start
         rename_to = video_name + "-"+str(count)+"."+video_type
         count = count+1
-        video_split.split_by_manifest(os.path.join(os.getcwd(
-        ), filename), split_start, split_length, rename_to, cmd_extra_code="cd temp &")
+        if ifpath:
+            video_split.split_by_manifest(
+                filepath, split_start, split_length, rename_to, cmd_extra_code="cd temp &", ifmove=False)
+        else:
+            video_split.split_by_manifest(os.path.join(os.getcwd(
+            ), filename), split_start, split_length, rename_to, cmd_extra_code="cd temp &", ifmove=False)
 
     video_contact.contact_by_type(
-        video_type, video_type, cmd_extra_code="cd temp &")
-    subprocess.Popen("cd temp & move output.mp4 "+os.path.join(__root,"file"), shell=True,
-                     stdout=subprocess.PIPE).stdout.read()
+        video_type, video_type, output_name=output_name, cmd_extra_code="cd temp &")
+    if temp_Keep == False:
+        subprocess.Popen("rd temp /s/q", shell=True,
+                         stdout=subprocess.PIPE).stdout.read()
 
 
 if __name__ == "__main__":
     # 測試用
 
     # 傳入的list of tuple
-    # split_list=[(5,15),(20,35),(50,70)]
-    split_list = [(5, 6), (7, 8), (9, 10)]
+    split_list = [(5, 15), (20, 35), (50, 70)]
+    #split_list = [(5, 6), (7, 8), (9, 10)]
 
-    video_process("03.mp4", split_list)  # (檔案名稱,list of tuple)
+    video_process("F:\Git\VeXtract\generator\\03.mp4", split_list,
+                  temp_Keep=False)  # (檔案名稱/檔案路徑,list of tuple)

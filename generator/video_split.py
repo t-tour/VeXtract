@@ -1,3 +1,8 @@
+import csv
+import subprocess
+import re
+import math
+import json
 import os
 import sys
 __root = os.path.abspath(
@@ -10,15 +15,11 @@ __root = os.path.abspath(
 sys.path.append(__root)
 from helper import logger
 log = logger.Logger(__name__)
-import csv
-import subprocess
-import re
-import math
-import json
+
 from optparse import OptionParser
 
 
-def split_by_manifest(filename, split_start, split_length, rename_to, cmd_extra_code="", vcodec="copy", acodec="copy",
+def split_by_manifest(filename, split_start, split_length, rename_to, cmd_extra_code="", ifmove=True, vcodec="copy", acodec="copy",
                       extra="", **kwargs):
     split_cmd = "ffmpeg -i %s -vcodec %s -acodec %s -y %s" % (filename,
                                                               vcodec,
@@ -31,6 +32,9 @@ def split_by_manifest(filename, split_start, split_length, rename_to, cmd_extra_
     log.i("########################################################")
     subprocess.Popen(cmd_extra_code + split_cmd+split_str,
                      shell=True, stdout=subprocess.PIPE).stdout.read()
+    if ifmove:
+        subprocess.Popen(cmd_extra_code + "move "+rename_to+" "+os.path.join(
+            __root, "file"), shell=True, stdout=subprocess.PIPE).stdout.read()
 
 
 def split_by_files(filename, manifest, vcodec="copy", acodec="copy",
