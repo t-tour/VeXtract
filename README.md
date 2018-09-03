@@ -1,4 +1,4 @@
-[![VeXtract](rectangle_logo.png)](https://gitlab.com/T-tour/VeXtract)
+[![VeXtract](rectangle_logo.png)=1024x100](https://gitlab.com/T-tour/VeXtract)
 # ?? VeXtract
 
 ## crawler 爬蟲
