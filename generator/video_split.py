@@ -17,6 +17,30 @@ from helper import logger
 log = logger.Logger(__name__)
 
 from optparse import OptionParser
+from analyzer.algorithm import video_algorithm
+
+
+def split_by_frame(filename, start_time, frame_number):
+    if filename[1:2] == ":":
+        video_name = os.path.basename(filename)
+        video_name = video_name.split(".")[0]
+    else:
+        video_name = filename.split(".")[0]
+        filename = os.path.join(os.getcwd(), filename)
+    subprocess.Popen("md temp", shell=True,
+                     stdout=subprocess.PIPE).stdout.read()
+    video_fps = video_algorithm.get_video_fps(filename)
+    split_cmd = "ffmpeg -i %s -ss %s -r %s -vframes %s -y %s-%s.jpg" % (
+        filename, str(start_time), str(video_fps), str(frame_number), video_name, "%d")
+    log.i("########################################################")
+    log.i("About to run: "+"cd temp &" + split_cmd)
+    log.i("########################################################")
+    subprocess.Popen("cd temp &" + split_cmd, shell=True,
+                     stdout=subprocess.PIPE).stdout.read()
+    subprocess.Popen("rd "+os.path.join(__root, "file", "temp")+" /s/q", shell=True,
+                     stdout=subprocess.PIPE).stdout.read()
+    subprocess.Popen("move temp "+os.path.join(__root, "file"),
+                     shell=True, stdout=subprocess.PIPE).stdout.read()
 
 
 def split_by_manifest(filename, split_start, split_length, rename_to, cmd_extra_code="", ifmove=True, vcodec="copy", acodec="copy",
@@ -92,6 +116,8 @@ def split_by_files(filename, manifest, vcodec="copy", acodec="copy",
                 log.i("########################################################")
                 subprocess.Popen(split_cmd+split_str,
                                  shell=True, stdout=subprocess.PIPE).stdout.read()
+                subprocess.Popen("move "+filebase + "." + fileext+" "+os.path.join(
+                    __root, "file"), shell=True, stdout=subprocess.PIPE).stdout.read()
             except KeyError as e:
                 log.i("############# Incorrect format ##############")
                 if manifest_type == "json":
@@ -111,15 +137,9 @@ def split_by_seconds(filename, split_length, vcodec="copy", acodec="copy",
         log.i("Split length can't be 0")
         raise SystemExit
 
-    ouput = subprocess.Popen("ffmpeg -i "+filename, stdout=subprocess.PIPE,
-                             stderr=subprocess.PIPE, stdin=subprocess.PIPE)
-    _, stderr = ouput.communicate()
-    stderr = str(stderr)
-    start = stderr.index("Duration")
-    time = stderr[start+10:start+18].split(":")
-    video_length = int(time[0])*3600 + int(time[1])*60 + int(time[2])
-    log.i("影片長度為："+video_length+"秒")
+    video_length = video_algorithm.get_video_length(filename)
     split_count = int(math.ceil(video_length/float(split_length)))
+
     if(split_count == 1):
         log.i("Video length is less then the target split length.")
         raise SystemExit
@@ -143,6 +163,8 @@ def split_by_seconds(filename, split_length, vcodec="copy", acodec="copy",
         log.i("About to run: "+split_cmd+split_str)
         subprocess.Popen(
             split_cmd+split_str, shell=True, stdout=subprocess.PIPE).stdout.read()
+        subprocess.Popen("move "+filebase + "-" + str(n) + "." + fileext+" "+os.path.join(
+            __root, "file"), shell=True, stdout=subprocess.PIPE).stdout.read()
 
 
 def split_by_chunks(filename, split_count, vcodec="copy", acodec="copy",
@@ -151,15 +173,7 @@ def split_by_chunks(filename, split_count, vcodec="copy", acodec="copy",
         log.i("Split counts can't be 1 or less")
         raise SystemExit
 
-    ouput = subprocess.Popen("ffmpeg -i "+filename, stdout=subprocess.PIPE,
-                             stderr=subprocess.PIPE, stdin=subprocess.PIPE)
-    _, stderr = ouput.communicate()
-    stderr = str(stderr)
-    start = stderr.index("Duration")
-    time = stderr[start+10:start+18].split(":")
-    video_length = int(time[0])*3600 + int(time[1])*60 + int(time[2])
-    log.i("影片長度為："+video_length+"秒")
-
+    video_length = video_algorithm.get_video_length(filename)
     split_length = int(math.ceil(video_length/float(split_count)))
     split_cmd = "ffmpeg -i %s -vcodec %s -acodec %s %s" % (filename, vcodec,
                                                            acodec, extra)
@@ -180,26 +194,16 @@ def split_by_chunks(filename, split_count, vcodec="copy", acodec="copy",
         log.i("About to run: "+split_cmd+split_str)
         subprocess.Popen(
             split_cmd+split_str, shell=True, stdout=subprocess.PIPE).stdout.read()
+        subprocess.Popen("move "+filebase + "-" + str(n) + "." + fileext+" "+os.path.join(
+            __root, "file"), shell=True, stdout=subprocess.PIPE).stdout.read()
 
 
 if __name__ == '__main__':
-    mode = 0
-    filename = input("請輸入檔案名稱：")
-    mode = int(input(
-        "請輸入要怎麼分割 1.用秒數分割 2.用份數分割 3.自定義檔案分割（json,csv） 4.自定義分割（輸入start_time,length）："))
-    if mode == 1:
-        split_length = int(input("請輸入每份的秒數："))
-        split_by_seconds(filename, split_length)
-    elif mode == 2:
-        split_count = int(input("請輸入要分割幾份："))
-        split_by_chunks(filename, split_count)
-    elif mode == 3:
-        split_file = input("請輸入自定義的檔案名稱：")
-        split_by_files(filename, split_file)
-    elif mode == 4:
-        split_start = int(input("請輸入開始時間："))
-        split_length = int(input("請輸入時間長度："))
-        rename_to = input("請輸入分割影片命名：")
-        split_by_manifest(filename, split_start, split_length, rename_to)
-    else:
-        log.i("輸入錯誤")
+    # 測試用
+    filename = "F:\Git\VeXtract\generator\\03.mp4"
+    split_by_frame(filename, 38, 48)
+
+    #split_by_seconds(filename, split_length)
+    #split_by_chunks(filename, split_count)
+    #split_by_files(filename, split_file)
+    #split_by_manifest(filename, split_start, split_length, rename_to)

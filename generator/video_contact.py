@@ -1,6 +1,4 @@
 import subprocess
-import re
-import math
 import os
 import sys
 __root = os.path.abspath(
