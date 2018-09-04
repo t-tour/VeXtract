@@ -1,4 +1,4 @@
-[![VeXtract](rectangle_logo.png)](https://gitlab.com/T-tour/VeXtract)
+<a href="https://gitlab.com/T-tour/VeXtract"><img src="rectangle_logo.png" alt="drawing" width="200"/></a>
 # ?? VeXtract
 
 ## crawler 爬蟲
