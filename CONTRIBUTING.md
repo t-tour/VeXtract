@@ -19,4 +19,4 @@
 
 ## 開發指南
 
-* 待補充
+* [使用 git rebase 避免無謂的 merge](https://ihower.tw/blog/archives/3843/comment-page-1#comment-72049)
