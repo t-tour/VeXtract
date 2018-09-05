@@ -1,4 +1,3 @@
-import subprocess
 import os
 import sys
 __root = os.path.abspath(
@@ -9,13 +8,17 @@ __root = os.path.abspath(
         ) - 1
     )) + os.sep
 sys.path.append(__root)
+
 from helper import logger
 log = logger.Logger(__name__)
+
+import subprocess
 
 from optparse import OptionParser
 
 
 def contact_by_type(video_type, output_type, output_name="output", cmd_extra_code=""):
+    # FIXME: 以後可能會架在 linux 上面運行 所以需要跨平台的指令
     contact_cmd = "(for %i in (*." + video_type + \
         ") do @echo file '%i') > mylist.txt"
     log.i("########################################################")
@@ -29,19 +32,20 @@ def contact_by_type(video_type, output_type, output_name="output", cmd_extra_cod
     log.i("########################################################")
     subprocess.Popen(cmd_extra_code+contact_cmd, shell=True,
                      stdout=subprocess.PIPE).stdout.read()
-    subprocess.Popen(cmd_extra_code + "del mylist.txt &move "+output_name+"."+output_type+" "+os.path.join(__root, "file"), shell=True,
+    subprocess.Popen(cmd_extra_code + "del mylist.txt &move " + output_name + "."+output_type+" " + os.path.join(__root, "file"), shell=True,
                      stdout=subprocess.PIPE).stdout.read()
 
 
 def contact_by_manifest(video_tuple, output_type, output_name="output"):
+    # FIXME: 以後可能會架在 linux 上面運行 所以需要跨平台的指令
     for i in video_tuple:
         contact_cmd = "echo file '{0}'>>mylist.txt".format(i)
         subprocess.Popen(contact_cmd, shell=True,
                          stdout=subprocess.PIPE).stdout.read()
     contact_cmd = "ffmpeg -f concat -safe 0 -i mylist.txt -c copy " + \
-        output_name+"."+output_type
+        output_name + "." + output_type
     log.i("########################################################")
-    log.i("About to run: "+contact_cmd)
+    log.i("About to run: " + contact_cmd)
     log.i("########################################################")
     subprocess.Popen(contact_cmd, shell=True,
                      stdout=subprocess.PIPE).stdout.read()
