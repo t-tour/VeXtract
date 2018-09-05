@@ -20,3 +20,23 @@
 ## 開發指南
 
 * [使用 git rebase 避免無謂的 merge](https://ihower.tw/blog/archives/3843/comment-page-1#comment-72049)
+
+### Python 檔案架構
+
+```python
+'''檔案描述'''
+import path
+空格
+import log
+空格
+import 不用安裝的 library
+...
+然後空格
+...
+import 從Pypi或github... 裝回來的 library
+還是空格
+import 內部的 library
+...
+空格
+開始寫你家的扣的
+```
