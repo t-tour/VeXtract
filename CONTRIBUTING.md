@@ -26,17 +26,17 @@
 ```python
 '''檔案描述'''
 import path
-空格
+空行
 import log
-空格
+空行
 import 不用安裝的 library
 ...
-然後空格
+然後空行
 ...
 import 從Pypi或github... 裝回來的 library
-還是空格
+還是空行
 import 內部的 library
 ...
-空格
+空行
 開始寫你家的扣的
 ```
