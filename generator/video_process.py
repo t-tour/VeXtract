@@ -1,4 +1,3 @@
-import subprocess
 import os
 import sys
 __root = os.path.abspath(
@@ -12,9 +11,12 @@ sys.path.append(__root)
 from helper import logger
 log = logger.Logger(__name__)
 
+import subprocess
+from optparse import OptionParser
+
 from generator import video_contact
 from generator import video_split
-from optparse import OptionParser
+
 
 
 def video_process(filename, split_list, temp_Keep=False, output_name="output"):

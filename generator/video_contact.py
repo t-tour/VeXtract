@@ -13,7 +13,6 @@ from helper import logger
 log = logger.Logger(__name__)
 
 import subprocess
-
 from optparse import OptionParser
 
 

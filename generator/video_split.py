@@ -1,8 +1,3 @@
-import csv
-import subprocess
-import re
-import math
-import json
 import os
 import sys
 __root = os.path.abspath(
@@ -16,7 +11,13 @@ sys.path.append(__root)
 from helper import logger
 log = logger.Logger(__name__)
 
+import csv
+import subprocess
+import re
+import math
+import json
 from optparse import OptionParser
+
 from analyzer.algorithm import video_algorithm
 
 
