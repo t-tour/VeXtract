@@ -40,7 +40,7 @@ def split_by_frame(filename, start_time, frame_number):
                      stdout=subprocess.PIPE).stdout.read()
     subprocess.Popen("rd "+os.path.join(__root, "file", "temp")+" /s/q", shell=True,
                      stdout=subprocess.PIPE).stdout.read()
-    subprocess.Popen("move temp "+os.path.join(__root, "file"),
+    subprocess.Popen("move temp "+" \"" + os.path.join(__root, "file")+"\"",
                      shell=True, stdout=subprocess.PIPE).stdout.read()
 
 
@@ -48,9 +48,9 @@ def split_by_manifest(filename, split_start, split_length, rename_to, cmd_extra_
                       extra="", **kwargs):
     rename_to = "\""+rename_to+"\""
     split_cmd = "ffmpeg -i \"%s\" -vcodec %s -acodec %s -y %s" % (filename,
-                                                              vcodec,
-                                                              acodec,
-                                                              extra)
+                                                                  vcodec,
+                                                                  acodec,
+                                                                  extra)
     split_str = " -ss " + str(split_start) + " -t " + \
         str(split_length) + " " + rename_to
     log.i("########################################################")
@@ -59,8 +59,8 @@ def split_by_manifest(filename, split_start, split_length, rename_to, cmd_extra_
     subprocess.Popen(cmd_extra_code + split_cmd+split_str,
                      shell=True, stdout=subprocess.PIPE).stdout.read()
     if ifmove:
-        subprocess.Popen(cmd_extra_code + "move "+rename_to+" "+os.path.join(
-            __root, "file"), shell=True, stdout=subprocess.PIPE).stdout.read()
+        subprocess.Popen(cmd_extra_code + "move "+rename_to+" \"" + os.path.join(
+            __root, "file")+"\"", shell=True, stdout=subprocess.PIPE).stdout.read()
 
 
 def split_by_files(filename, manifest, vcodec="copy", acodec="copy",
@@ -90,9 +90,9 @@ def split_by_files(filename, manifest, vcodec="copy", acodec="copy",
             raise SystemExit
 
         split_cmd = "ffmpeg -i \"%s\" -vcodec %s -acodec %s -y %s" % (filename,
-                                                                  vcodec,
-                                                                  acodec,
-                                                                  extra)
+                                                                      vcodec,
+                                                                      acodec,
+                                                                      extra)
         #split_count = 1
         #split_error = []
         try:
@@ -118,8 +118,8 @@ def split_by_files(filename, manifest, vcodec="copy", acodec="copy",
                 log.i("########################################################")
                 subprocess.Popen(split_cmd+split_str,
                                  shell=True, stdout=subprocess.PIPE).stdout.read()
-                subprocess.Popen("move "+filebase + "." + fileext+" "+os.path.join(
-                    __root, "file"), shell=True, stdout=subprocess.PIPE).stdout.read()
+                subprocess.Popen("move "+filebase + "." + fileext+" \"" + os.path.join(
+                    __root, "file")+"\"", shell=True, stdout=subprocess.PIPE).stdout.read()
             except KeyError as e:
                 log.i("############# Incorrect format ##############")
                 if manifest_type == "json":
@@ -147,7 +147,7 @@ def split_by_seconds(filename, split_length, vcodec="copy", acodec="copy",
         raise SystemExit
 
     split_cmd = "ffmpeg -i \"%s\" -vcodec %s -acodec %s %s" % (filename, vcodec,
-                                                           acodec, extra)
+                                                               acodec, extra)
     try:
         filebase = ".".join(filename.split(".")[:-1])
         fileext = filename.split(".")[-1]
@@ -165,8 +165,8 @@ def split_by_seconds(filename, split_length, vcodec="copy", acodec="copy",
         log.i("About to run: "+split_cmd+split_str)
         subprocess.Popen(
             split_cmd+split_str, shell=True, stdout=subprocess.PIPE).stdout.read()
-        subprocess.Popen("move "+filebase + "-" + str(n) + "." + fileext+" "+os.path.join(
-            __root, "file"), shell=True, stdout=subprocess.PIPE).stdout.read()
+        subprocess.Popen("move "+filebase + "-" + str(n) + "." + fileext+" \"" + os.path.join(
+            __root, "file")+"\"", shell=True, stdout=subprocess.PIPE).stdout.read()
 
 
 def split_by_chunks(filename, split_count, vcodec="copy", acodec="copy",
@@ -178,7 +178,7 @@ def split_by_chunks(filename, split_count, vcodec="copy", acodec="copy",
     video_length = video_algorithm.get_video_length(filename)
     split_length = int(math.ceil(video_length/float(split_count)))
     split_cmd = "ffmpeg -i \"%s\" -vcodec %s -acodec %s %s" % (filename, vcodec,
-                                                           acodec, extra)
+                                                               acodec, extra)
     try:
         filebase = ".".join(filename.split(".")[:-1])
         fileext = filename.split(".")[-1]
@@ -196,8 +196,8 @@ def split_by_chunks(filename, split_count, vcodec="copy", acodec="copy",
         log.i("About to run: "+split_cmd+split_str)
         subprocess.Popen(
             split_cmd+split_str, shell=True, stdout=subprocess.PIPE).stdout.read()
-        subprocess.Popen("move "+filebase + "-" + str(n) + "." + fileext+" "+os.path.join(
-            __root, "file"), shell=True, stdout=subprocess.PIPE).stdout.read()
+        subprocess.Popen("move "+filebase + "-" + str(n) + "." + fileext+" \"" + os.path.join(
+            __root, "file")+"\"", shell=True, stdout=subprocess.PIPE).stdout.read()
 
 
 if __name__ == '__main__':

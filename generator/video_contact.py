@@ -32,7 +32,7 @@ def contact_by_type(video_type, output_type, output_name="output", cmd_extra_cod
     log.i("########################################################")
     subprocess.Popen(cmd_extra_code+contact_cmd, shell=True,
                      stdout=subprocess.PIPE).stdout.read()
-    subprocess.Popen(cmd_extra_code + "del mylist.txt &move " + output_name + "."+output_type+" " + os.path.join(__root, "file"), shell=True,
+    subprocess.Popen(cmd_extra_code + "del mylist.txt &move " + output_name + "."+output_type+" \""+ os.path.join(__root, "file")+"\"", shell=True,
                      stdout=subprocess.PIPE).stdout.read()
 
 
