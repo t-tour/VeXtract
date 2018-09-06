@@ -18,7 +18,6 @@
 * 連結到源代碼或任何有用的鏈接：
 ### 工作區資訊
 * 版本：  
-<!-- Check with "x"  -->
   - [ ] Master
   - [ ] Latest Release
   - [ ] Old version - 
