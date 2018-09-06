@@ -14,8 +14,8 @@ log = logger.Logger(__name__)
 import subprocess
 from optparse import OptionParser
 
-from generator import video_contact
-from generator import video_split
+from generator.video import video_contact
+from generator.video import video_split
 
 
 def video_process(filename, split_list, temp_Keep=False, output_name="output"):
@@ -55,6 +55,6 @@ if __name__ == "__main__":
     # 傳入的list of tuple
     split_list = [(5, 15), (20, 30), (50, 60)]
     #split_list = [(5, 6), (7, 8), (9, 10)]
-    filename="C:\\Users\\admin10\\Documents\\GitLab\\VeXtract\\file\\03.mp4"
+    filename = "C:\\Users\\admin10\\Documents\\GitLab\\VeXtract\\file\\03.mp4"
     video_process(filename, split_list,
                   temp_Keep=True)  # (檔案名稱/檔案路徑,list of tuple)

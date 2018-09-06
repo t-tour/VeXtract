@@ -202,7 +202,7 @@ def split_by_chunks(filename, split_count, vcodec="copy", acodec="copy",
 
 if __name__ == '__main__':
     # 測試用
-    filename = "F:\Git\VeXtract\\file\\03.mp4"
+    filename = "F:\\Git\\VeXtract\\file\\03.mp4"
     split_by_frame(filename, 38, 48)
 
     #split_by_seconds(filename, split_length)

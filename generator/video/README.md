@@ -1,4 +1,10 @@
-# video_processor主要功能說明
+
+## ffmepg環境設定
+> 1.先到這個網頁 https://jsnwork.kiiuo.com/archives/2705/ffmpeg-windows-%E5%AE%89%E8%A3%9D/  
+> 2.照上面的說明安裝ffmpeg，並設定環境變數  
+> 3.檔案若非在執行的根目錄底下，就要輸入檔案的完整路徑（路徑不要加"" or ''）
+
+# 主要功能說明
 
 ## 變數filename
 >
@@ -28,8 +34,8 @@
 ## video_contact（位於generator）
 >
  contact_by_manifest(video_tuple, output_type, output_name="output")  
- 說明：傳入一個video_tuple（複數的個filename），並合併成一個影片，output_type為輸出的影片格式，  
-        output_name則是輸出的影片名稱，若不輸入則預設為"output"。  
+ 說明：傳入一個video_tuple（複數的個filename），並合併成一個影片，  
+        output_name則是輸出的影片名稱，可輸入路徑或影片名稱.副檔名，若不輸入則預設為"output"。  
 
 ## video_process（位於generator）
 >
