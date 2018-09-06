@@ -11,6 +11,7 @@ sys.path.append(__root)
 from helper import logger
 log = logger.Logger(__name__)
 
+import shutil
 import subprocess
 from optparse import OptionParser
 
@@ -19,6 +20,7 @@ from generator.video import video_split
 
 
 def video_process(filename, split_list, temp_Keep=False, output_name="output"):
+    log.i("--------------- Start video_process() --------------- ")
     ifpath = False
     if filename.find(os.sep) != -1:
         ifpath = True
@@ -28,13 +30,12 @@ def video_process(filename, split_list, temp_Keep=False, output_name="output"):
     count = 0
     video_name = filename.split(".")[0]
     video_type = filename.split(".")[1]
-    subprocess.Popen("md temp", shell=True,
-                     stdout=subprocess.PIPE).stdout.read()
+    os.makedirs("temp")
     for i in split_list:
         split_start = float(i[0])
-        split_length = float(i[1])-split_start
-        rename_to = video_name + "-"+str(count)+"."+video_type
-        count = count+1
+        split_length = float(i[1]) - split_start
+        rename_to = video_name+"-"+str(count)+"."+video_type
+        count = count + 1
         if ifpath:
             video_split.split_by_manifest(
                 filepath, split_start, split_length, rename_to, cmd_extra_code="cd temp &", ifmove=False)
@@ -45,8 +46,14 @@ def video_process(filename, split_list, temp_Keep=False, output_name="output"):
     video_contact.contact_by_type(
         video_type, video_type, output_name=output_name, cmd_extra_code="cd temp &")
     if temp_Keep == False:
-        subprocess.Popen("rd temp /s/q", shell=True,
-                         stdout=subprocess.PIPE).stdout.read()
+        shutil.rmtree("temp", ignore_errors=True)
+    else:
+        shutil.rmtree(os.path.join(__root, "file", "temp"), ignore_errors=True)
+        log.i("About to run: " + "move temp " +
+              " \""+os.path.join(__root, "file")+"\"")
+        subprocess.Popen("move temp " + " \""+os.path.join(__root, "file") +
+                         "\"", shell=True, stdout=subprocess.PIPE).stdout.read()
+    log.i("--------------- End video_process() --------------- ")
 
 
 if __name__ == "__main__":
@@ -55,6 +62,6 @@ if __name__ == "__main__":
     # 傳入的list of tuple
     split_list = [(5, 15), (20, 30), (50, 60)]
     #split_list = [(5, 6), (7, 8), (9, 10)]
-    filename = "C:\\Users\\admin10\\Documents\\GitLab\\VeXtract\\file\\03.mp4"
+    filename = os.path.join(__root, "file", "03.mp4")
     video_process(filename, split_list,
                   temp_Keep=True)  # (檔案名稱/檔案路徑,list of tuple)
