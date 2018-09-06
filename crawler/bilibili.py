@@ -27,6 +27,28 @@ MAIN_HOST_URL = "https://www.bilibili.com/video/"
 
 
 class Bilibili_file_info():
+    """
+    Attributes:
+      aid: AV號數字的部分
+      cid: AV號內所有影片的id
+      cid_name: 各集的名稱
+      timelength: 這集的毫秒數ms
+      accept_format: 看看就好
+      accept_quality: 看看就好
+      accept_quailty_description: 看看就好
+      video_title: AV號標題
+      video_desc: AV號說明
+      video_pubdate: AV號上傳日期
+      video_pic: 封面URI
+      video_tags: AV號標籤
+      durl: 下載位址(需要refer)
+      comments: {
+          user: 
+          sec: 
+          text: 
+          score: default none
+      }
+    """
     aid: str
     cid: list
     cid_name: list
@@ -247,7 +269,7 @@ if __name__ == "__main__":
     # b.fetch_comment_score(limitation=5000)
     # b.save()
     a = info_crawler(
-        "https://www.bilibili.com/video/av30190348/?spm_id_from=333.334.bili_douga.3")
+        "https://www.bilibili.com/video/av5275610")
     print(a)
     a.save(os.path.join(__root, "file\\crawler\\"))
     b = Bilibili_file_info.load(os.path.join(__root, "file\\crawler\\av{}.json".format(a.aid)))
