@@ -22,7 +22,7 @@ def video_process(filename, split_list, temp_Keep=False, output_name="output"):
     ifpath = False
     if filename.find(os.sep) != -1:
         ifpath = True
-        filepath = "\""+filename+"\""
+        filepath = filename
         filename = os.path.basename(filepath)
 
     count = 0

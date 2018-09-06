@@ -22,7 +22,7 @@ from analyzer.algorithm import video_algorithm
 
 
 def split_by_frame(filename, start_time, frame_number):
-    if filename[1:2] == ":":
+    if filename.find(os.sep) != -1:
         video_name = os.path.basename(filename)
         video_name = video_name.split(".")[0]
     else:
@@ -31,7 +31,7 @@ def split_by_frame(filename, start_time, frame_number):
     subprocess.Popen("md temp", shell=True,
                      stdout=subprocess.PIPE).stdout.read()
     video_fps = video_algorithm.get_video_fps(filename)
-    split_cmd = "ffmpeg -i %s -ss %s -r %s -vframes %s -y %s-%s.jpg" % (
+    split_cmd = "ffmpeg -i \"%s\" -ss %s -r %s -vframes %s -y %s-%s.jpg" % (
         filename, str(start_time), str(video_fps), str(frame_number), video_name, "%d")
     log.i("########################################################")
     log.i("About to run: "+"cd temp &" + split_cmd)
@@ -46,7 +46,8 @@ def split_by_frame(filename, start_time, frame_number):
 
 def split_by_manifest(filename, split_start, split_length, rename_to, cmd_extra_code="", ifmove=True, vcodec="copy", acodec="copy",
                       extra="", **kwargs):
-    split_cmd = "ffmpeg -i %s -vcodec %s -acodec %s -y %s" % (filename,
+    rename_to = "\""+rename_to+"\""
+    split_cmd = "ffmpeg -i \"%s\" -vcodec %s -acodec %s -y %s" % (filename,
                                                               vcodec,
                                                               acodec,
                                                               extra)
@@ -88,7 +89,7 @@ def split_by_files(filename, manifest, vcodec="copy", acodec="copy",
             log.i("Format not supported. File must be a csv or json file")
             raise SystemExit
 
-        split_cmd = "ffmpeg -i %s -vcodec %s -acodec %s -y %s" % (filename,
+        split_cmd = "ffmpeg -i \"%s\" -vcodec %s -acodec %s -y %s" % (filename,
                                                                   vcodec,
                                                                   acodec,
                                                                   extra)
@@ -145,7 +146,7 @@ def split_by_seconds(filename, split_length, vcodec="copy", acodec="copy",
         log.i("Video length is less then the target split length.")
         raise SystemExit
 
-    split_cmd = "ffmpeg -i %s -vcodec %s -acodec %s %s" % (filename, vcodec,
+    split_cmd = "ffmpeg -i \"%s\" -vcodec %s -acodec %s %s" % (filename, vcodec,
                                                            acodec, extra)
     try:
         filebase = ".".join(filename.split(".")[:-1])
@@ -176,7 +177,7 @@ def split_by_chunks(filename, split_count, vcodec="copy", acodec="copy",
 
     video_length = video_algorithm.get_video_length(filename)
     split_length = int(math.ceil(video_length/float(split_count)))
-    split_cmd = "ffmpeg -i %s -vcodec %s -acodec %s %s" % (filename, vcodec,
+    split_cmd = "ffmpeg -i \"%s\" -vcodec %s -acodec %s %s" % (filename, vcodec,
                                                            acodec, extra)
     try:
         filebase = ".".join(filename.split(".")[:-1])
@@ -201,7 +202,7 @@ def split_by_chunks(filename, split_count, vcodec="copy", acodec="copy",
 
 if __name__ == '__main__':
     # 測試用
-    filename = "F:\Git\VeXtract\generator\\03.mp4"
+    filename = "F:\Git\VeXtract\\file\\03.mp4"
     split_by_frame(filename, 38, 48)
 
     #split_by_seconds(filename, split_length)
