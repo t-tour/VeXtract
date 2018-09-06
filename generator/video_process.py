@@ -18,12 +18,11 @@ from generator import video_contact
 from generator import video_split
 
 
-
 def video_process(filename, split_list, temp_Keep=False, output_name="output"):
     ifpath = False
-    if filename[1:2] == ":":
+    if filename.find(os.sep) != -1:
         ifpath = True
-        filepath = filename
+        filepath = "\""+filename+"\""
         filename = os.path.basename(filepath)
 
     count = 0
@@ -56,6 +55,5 @@ if __name__ == "__main__":
     # 傳入的list of tuple
     split_list = [(5, 15), (20, 35), (50, 70)]
     #split_list = [(5, 6), (7, 8), (9, 10)]
-
-    video_process("F:\Git\VeXtract\generator\\03.mp4", split_list,
+    video_process("F:\Git\VeXtract\\file\\03.mp4", split_list,
                   temp_Keep=False)  # (檔案名稱/檔案路徑,list of tuple)
