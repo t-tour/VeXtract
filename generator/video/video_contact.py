@@ -56,8 +56,8 @@ def contact_by_manifest(video_tuple, output_name="output"):
     log.i("########################################################")
     log.i("About to run: " + contact_cmd)
     log.i("########################################################")
-    subprocess.Popen(contact_cmd, stdout=subprocess.PIPE,
-                     stderr=subprocess.PIPE, stdin=subprocess.PIPE)
+    subprocess.Popen(contact_cmd, shell=True, stdout=subprocess.PIPE,
+                     stderr=subprocess.PIPE, stdin=subprocess.PIPE).stdout.read()
     subprocess.Popen("del mylist.txt", shell=True,
                      stdout=subprocess.PIPE).stdout.read()
 
@@ -65,11 +65,7 @@ def contact_by_manifest(video_tuple, output_name="output"):
 if __name__ == '__main__':
     # 測試用
 
-    video_tuple = [__root + "file\\crawler\\av30285383\\1_52826704\\" + i
-                   for i in os.listdir(__root + "file\\crawler\\av30285383\\1_52826704\\")]
-    video_tuple = ("52826704-part0.flv", "52826704-part1.flv")
-    video_tuple = tuple(video_tuple)
+    video_tuple = ("C:\\Users\\admin10\\Documents\\GitLab\\VeXtract\\temp\\03-0.mp4",
+                   "C:\\Users\\admin10\\Documents\\GitLab\\VeXtract\\temp\\03-1.mp4", "C:\\Users\\admin10\\Documents\\GitLab\\VeXtract\\temp\\03-2.mp4")
 
-    print(video_tuple)
-    contact_by_manifest(video_tuple,
-                        output_name=__root + "file/generator/output.mp4")
+    contact_by_manifest(video_tuple)
