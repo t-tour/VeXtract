@@ -8,17 +8,19 @@ __root = os.path.abspath(
         ) - 1
     )) + os.sep
 sys.path.append(__root)
-import requests
+
+from helper import logger
+log = logger.Logger(__name__)
+
 from urllib import parse
-from bs4 import BeautifulSoup
 import re
 import json
 import xml.etree.ElementTree as ET
 
+import requests
+from bs4 import BeautifulSoup
+
 from analyzer.text import natural_lang_process
-from helper import logger
-log = logger.Logger(__name__)
-log.set_level('i')
 
 COMMENT_REQUEST_URL = "https://comment.bilibili.com/"
 MAIN_HOST_URL = "https://www.bilibili.com/video/"
@@ -38,25 +40,10 @@ class Bilibili_file_info():
     video_pic: str
     video_tags: list
     durl: list
-    __comments: dict
+    comments: dict
 
-    @property
-    def comments(self):
-        return self.__comments
-
-    @comments.setter
-    def comments(self, value):
-        for cid, comments in value.items():
-            b_comments_list = list()
-            for comment in comments:
-                b_comment = Bilibili_comment(
-                    comment["user"], comment["sec"], comment["text"])
-                b_comment.score = comment["score"]
-                b_comments_list.append(b_comment)
-            self.__comments.update({cid: b_comments_list})
-
-    def save(self):
-        with open('av{}.json'.format(self.aid), 'w', encoding='utf-8') as f:
+    def save(self, path):
+        with open(os.path.join(path, 'av{}.json'.format(self.aid)), 'w', encoding='utf-8') as f:
             json.dump(self, f, default=lambda o: o.__dict__,
                       ensure_ascii=False)
         log.i('av{}.json saved'.format(self.aid))
@@ -66,33 +53,10 @@ class Bilibili_file_info():
         with open(j_data, 'r', encoding='utf-8') as f:
             loaded = json.load(f)
             obj = Bilibili_file_info()
-            # FIXME: load 的時候 comment 也必須用 satter 才行
             for attr, value in loaded.items():
                 obj.__setattr__(attr, value)
-                if attr == "_Bilibili_file_info__comments":
-                    obj.comments = value
         log.i('load {} finish.'.format(j_data))
         return obj
-
-    def fetch_comment_score(self, test=True, limitation=100):
-        """
-        default: test=True, limitation=100
-        test: 測試模式，分數全為10
-        limitation: 最大comment上限，包含所有cid
-        """
-        total_len = 0
-        for cid in self.cid:
-            total_len += len(self.comments[cid])
-        if total_len > limitation:
-            raise Exception("comments up to limitation!!")
-        for cid in self.cid:
-            for comment in self.comments[cid]:
-                if test:
-                    comment.score = 10
-                else:
-                    comment.score = natural_lang_process.text_analyze(
-                        comment.text)
-        log.i('av{} fetch comment finish.'.format(self.aid))
 
     def __init__(self):
         self.aid = None
@@ -108,7 +72,7 @@ class Bilibili_file_info():
         self.video_pic = None
         self.video_tags = list()
         self.durl = list()
-        self.__comments = dict()
+        self.comments = dict()
 
     def __str__(self):
         return str.format(
@@ -123,26 +87,6 @@ class Bilibili_file_info():
             self.timelength,
             self.video_tags,
             self.durl[0])
-
-
-class Bilibili_comment():
-    user: str
-    sec: float
-    text: str
-    score: float
-
-    def __init__(self, user, sec, text):
-        self.user = user
-        self.sec = sec
-        self.text = text
-        self.score = None
-
-    def __str__(self):
-        return str.format("user:{0}\ttime:{1}\tscore:{3}\t{2}",
-                          self.user, self.sec, self.text, self.score)
-
-    def __repr__(self):
-        return self.__str__() + "\n"
 
 
 def fetch_bilibili_av(av_number, p=1) -> Bilibili_file_info():
@@ -302,5 +246,10 @@ if __name__ == "__main__":
     # b = fetch_bilibili_av("av29311976")
     # b.fetch_comment_score(limitation=5000)
     # b.save()
-    file_crawler(
+    a = info_crawler(
         "https://www.bilibili.com/video/av30190348/?spm_id_from=333.334.bili_douga.3")
+    print(a)
+    a.save(os.path.join(__root, "file\\crawler\\"))
+    b = Bilibili_file_info.load(os.path.join(__root, "file\\crawler\\av{}.json".format(a.aid)))
+    print(b)
+    
