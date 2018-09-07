@@ -29,8 +29,7 @@ def info_crawler(url):
 def file_crawler(url, des=DESTENATION):
     video_id = youtube_info.get_video_by_url(url).videoid
     des = des + os.sep + video_id
-    if not os.path.exists(des):
-        os.makedirs(des)
+    os.makedirs(des, exist_ok=True)
     log.i('download:', video_id, 'to', des)
     status = youtube_video.download_video(url, des)
     log.i('download:', video_id, 'finished')
@@ -41,8 +40,7 @@ def comment_crawler(url, des=DESTENATION):
     video_id = youtube_info.get_video_by_url(url).videoid
     video_comments = youtube_comment.download_comments(video_id)
     des = des + os.sep + video_id
-    if not os.path.exists(des):
-        os.makedirs(des)
+    os.makedirs(des, exist_ok=True)
     with open(des + os.sep + video_id + '.json', 'w', encoding='utf-8') as fp:
         for comment in video_comments:
             fp.write(json.dumps(comment))
