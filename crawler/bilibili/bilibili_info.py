@@ -12,19 +12,16 @@ sys.path.append(__root)
 from helper import logger
 log = logger.Logger(__name__)
 
+import json
 from urllib import parse
 import re
-import json
 import xml.etree.ElementTree as ET
 
 import requests
 from bs4 import BeautifulSoup
 
-from analyzer.text import natural_lang_process
-
 COMMENT_REQUEST_URL = "https://comment.bilibili.com/"
 MAIN_HOST_URL = "https://www.bilibili.com/video/"
-
 
 class Bilibili_file_info():
     """
@@ -110,8 +107,7 @@ class Bilibili_file_info():
             self.video_tags,
             self.durl[0])
 
-
-def fetch_bilibili_av(av_number, p=1) -> Bilibili_file_info():
+def fetch_bilibili_av(av_number, p):
     """
     用bilibili的av號，fetch B站AV號資料
     """
@@ -174,9 +170,9 @@ def fetch_bilibili_av(av_number, p=1) -> Bilibili_file_info():
     return as_av_info
 
 
-def __cid_comments_list(cid: str) -> list():
-    fd_name = cid + ".xml"
-    req = requests.get(COMMENT_REQUEST_URL + fd_name)
+def __cid_comments_list(cid: str):
+    require_link = COMMENT_REQUEST_URL + cid + ".xml"
+    req = requests.get(require_link)
     req.encoding = 'utf-8'
     root = ET.fromstring(req.text)
     comment_list = list()
@@ -185,6 +181,7 @@ def __cid_comments_list(cid: str) -> list():
             info = child.attrib["p"].split(",")
             comment_list.append(
                 {"user": info[6], "sec": info[0], "text": child.text, "score": None})
+    log.i('comment fetch finish {}'.format(require_link))
     return comment_list
 
 
@@ -201,77 +198,3 @@ def __download_b_video(url, p, cid, aid, no):
             for chunk in r.iter_content(chunk_size=1024):
                 f.write(chunk)
             log.i('finish download.')
-
-
-def __url_parse(url):
-    url_parsed = parse.urlsplit(url)
-    return_value = dict()
-    if len(url_parsed.query) > 0:
-        for part in url_parsed.query.split("&"):
-            key = part.split("=")[0]
-            value = part.split("=")[1]
-            return_value.update({key: value})
-    return_value.update({"avnumber": url_parsed.path.split("/")[2]})
-    m = re.match('av[0-9]+', return_value["avnumber"])
-    if m is None:
-        log.e('av_number mismatch \'{}\''.format(return_value["avnumber"]))
-        raise Exception("av號格式錯誤")
-    return return_value
-
-
-def file_crawler(url, store_location="file/crawler/"):
-    """
-    獲取影片資料
-    """
-    url_info = __url_parse(url)
-    store = __root + store_location
-    target = fetch_bilibili_av(url_info["avnumber"])
-    ps = url_info["p"] if url_info.__contains__(
-        "p") else range(1, len(target.cid) + 1)
-    for p in ps:
-        parted_target = fetch_bilibili_av(url_info["avnumber"], p)
-        cid = parted_target.cid[p-1]
-        cid_name = parted_target.cid_name[p-1]
-        os.makedirs(
-            store + "av{}/{}_{}/".format(target.aid, p, cid), exist_ok=True)
-        os.chdir(store + "av{}/{}_{}/".format(target.aid, p, cid))
-        log.i("正在下載 av{0}_{1} cid名稱:{2}".format(
-            parted_target.aid, cid, cid_name))
-        for no, url in zip(range(len(parted_target.durl)), parted_target.durl):
-            # 測試代碼這裡
-            # print("{0}-{1}.flv downloading.....finish".format(cid, no))
-            # with open("{0}test_{1}".format(cid, no), "w") as f:
-            #     f.write("dd")
-            __download_b_video(url, p, cid, target.aid, no)
-
-
-def real_time_comment_crawler(url):
-    url_info = __url_parse(url)
-    target = fetch_bilibili_av(url_info["avnumber"])
-    return target.comments
-
-
-def info_crawler(url):
-    url_info = __url_parse(url)
-    return fetch_bilibili_av(url_info["avnumber"])
-
-
-def comment_crawler(url):
-    raise Exception("還沒實作!")
-
-
-if __name__ == "__main__":
-    # get_video_data("av25233957")
-    # print(fetch_bilibili_av("av13392824"))
-    # a.fetch_comment_score(test=True, limitation=5000)
-    # a.save()
-    # b = fetch_bilibili_av("av29311976")
-    # b.fetch_comment_score(limitation=5000)
-    # b.save()
-    a = info_crawler(
-        "https://www.bilibili.com/video/av5275610")
-    print(a)
-    a.save(os.path.join(__root, "file\\crawler\\"))
-    b = Bilibili_file_info.load(os.path.join(__root, "file\\crawler\\av{}.json".format(a.aid)))
-    print(b)
-    

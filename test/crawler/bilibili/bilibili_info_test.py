@@ -11,7 +11,7 @@ sys.path.append(__root)
 import pytest
 import xml.etree.ElementTree as ET
 
-from crawler import bilibili
+from crawler.bilibili import bilibili
 
 from helper import logger
 log = logger.Logger(__name__)
