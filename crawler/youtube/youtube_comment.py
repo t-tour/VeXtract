@@ -1,5 +1,17 @@
 import os
 import sys
+__root = os.path.abspath(
+    os.path.dirname(os.path.abspath(__file__)) + (os.sep + '..') * (
+        len(os.path.dirname(os.path.abspath(__file__)).split(os.sep)) -
+        os.path.dirname(os.path.abspath(__file__)).split(os.sep).index(
+            'VeXtract'
+        ) - 1
+    )) + os.sep
+sys.path.append(__root)
+
+from helper import logger
+log = logger.Logger(__name__)
+
 import time
 import json
 import requests
@@ -126,6 +138,9 @@ def download_comments(youtube_id, sleep=1):
 
 
 def main(argv):
+    """
+    cli 專用
+    """
     parser = ArgumentParser()
     parser.add_argument(
         '--youtubeid', '-y', help='影片ID')
@@ -146,7 +161,7 @@ def main(argv):
             raise ValueError(
                 '必須設定 Youtube ID 和 輸出的檔案名稱')
 
-        print('下載影片評論中:', youtube_id)
+        log.i('下載影片評論中:', youtube_id)
         count = 0
         with open(output, 'w', encoding='utf-8') as fp:
             for comment in download_comments(youtube_id):
@@ -159,7 +174,7 @@ def main(argv):
         print('\n完成!')
 
     except Exception as e:
-        print('錯誤:', str(e))
+        log.e('錯誤:', str(e))
         sys.exit(1)
 
 
