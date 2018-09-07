@@ -40,7 +40,8 @@ def file_crawler(url, des=DESTENATION):
 def comment_crawler(url, des=DESTENATION):
     video_id = youtube_info.get_video_by_url(url).videoid
     video_comments = youtube_comment.download_comments(video_id)
-    with open(DESTENATION + os.sep + video_id + '.json', 'w', encoding='utf-8') as fp:
+    des = des + os.sep + video_id
+    with open(des + os.sep + video_id + '.json', 'w', encoding='utf-8') as fp:
         for comment in video_comments:
             fp.write(json.dumps(comment))
     return True
