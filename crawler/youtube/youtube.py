@@ -42,7 +42,7 @@ def comment_crawler(url, des=DESTENATION):
     video_comments = youtube_comment.download_comments(video_id)
     with open(DESTENATION + os.sep + video_id + '.json', 'w', encoding='utf-8') as fp:
         for comment in video_comments:
-            fp.write(json.dumps(comment), file=fp)
+            fp.write(json.dumps(comment))
     return True
 
 
