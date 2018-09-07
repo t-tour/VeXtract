@@ -36,13 +36,11 @@ def file_crawler(url, des=DESTENATION):
     return status
 
 
-def comment_crawler(url, des=DESTENATION, limit=-1):
+def comment_crawler(url, des=DESTENATION):
     video_id = youtube_info.get_video_by_url(url).videoid
     video_comments = youtube_comment.download_comments(video_id)
     des = des + os.sep + video_id
     os.makedirs(des, exist_ok=True)
-    if limit > 0:
-        video_comments = video_comments[:limit]
     with open(des + os.sep + video_id + '.json', 'w', encoding='utf-8') as fp:
         for comment in video_comments:
             fp.write(json.dumps(comment, ensure_ascii=False))
@@ -52,3 +50,6 @@ def comment_crawler(url, des=DESTENATION, limit=-1):
 def real_time_comment_crawler(url):
     # TODO: 記得要寫及時留言爬蟲
     pass
+
+if __name__ == '__main__':
+    comment_crawler('https://www.youtube.com/watch?v=M2apWwvOqko')
