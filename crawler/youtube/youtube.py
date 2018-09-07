@@ -43,7 +43,7 @@ def comment_crawler(url, des=DESTENATION):
     os.makedirs(des, exist_ok=True)
     with open(des + os.sep + video_id + '.json', 'w', encoding='utf-8') as fp:
         for comment in video_comments:
-            fp.write(json.dumps(comment))
+            fp.write(json.dumps(comment, ensure_ascii=False))
     return True
 
 
