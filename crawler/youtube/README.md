@@ -1,6 +1,11 @@
 # Youtube Crawler
 
 ## 檔案說明
+### `youtube.py`
+跟架構圖一樣就是吃影片 url
+
+---
+## 以下是給開發者本人看的
 
 ### `youtube_info.py`
 
