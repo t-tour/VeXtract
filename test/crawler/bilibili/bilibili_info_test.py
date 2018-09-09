@@ -11,7 +11,7 @@ sys.path.append(__root)
 import pytest
 import xml.etree.ElementTree as ET
 
-from crawler import bilibili
+from crawler.bilibili import bilibili
 
 from helper import logger
 log = logger.Logger(__name__)
@@ -22,7 +22,7 @@ AV_NUMBER_MANY_P = "av13392824"
 
 def test_fetch_bilibili():
     log.d('start test_fetch_bilibili')
-    target = bilibili.fetch_bilibili_av(AV_NUMBER_MANY_P)
+    target = bilibili.fetch_bilibili_av(AV_NUMBER_MANY_P, "1")
     cid_need = ['21945130', '21945131']
     tags_need = ["凹凸世界", "社会摇", "格瑞", "toxic"]
     assert target.aid == "13392824"
