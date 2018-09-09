@@ -9,5 +9,6 @@ numpy
 pafy
 pylint
 pytest
+pytube
 requests
 youtube-dl
