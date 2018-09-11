@@ -26,6 +26,7 @@ def __generate_segments(video):
     video_length = video_algorithm.get_video_length(video)
     video_length = int(video_length*1000)
     sep = 5000
+    
 
     segments_list = list()
     for i in range(0, video_length, sep):
