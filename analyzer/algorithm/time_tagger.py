@@ -15,29 +15,17 @@ log = logger.Logger(__name__)
 import subprocess
 
 from crawler import bilibili
+from analyzer.algorithm import video_algorithm
 
 
 def __generate_segments(video):
     """
     隨意產生OAO
     """
-    # FIXME: 需求獲取 video 資訊的 feature
     log.i('Start generate_segments with {}'.format(video))
-    ouput = subprocess.Popen("ffmpeg -i {}".format(video), stdout=subprocess.PIPE,
-                             stderr=subprocess.PIPE, stdin=subprocess.PIPE)
-    stdout, stderr = ouput.communicate()
-    stderr = str(stderr)
-    start = stderr.index("Duration")
-    log.i('Start is: {}'.format(start))
-    time = stderr[start+10:start+21].split(":")
-    log.i('Time is: {}'.format(time))
-    video_length = int(time[0])*3600000 + int(time[1]) * \
-        60000 + int(float(time[2])*1000)
-    log.i('err is: {}'.format(stderr))
-    log.i('length is: {}'.format(video_length))
-
-
+    video_length = video_algorithm.get_video_length(video)
     sep = 5000
+
     segments_list = list()
     for i in range(0, video_length, sep):
         if i+sep > video_length:
@@ -51,7 +39,7 @@ def __generate_segments(video):
 
 def __grade_segments(segments, real_time_comments=None, comments=None, audio=None, video=None):
     """
-    segments: 切分的影片片段
+    segments: 切分的影片片段p
     real_time_comments, comments, audio, video: 評分用的資料
     list
     {
