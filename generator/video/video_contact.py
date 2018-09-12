@@ -25,15 +25,17 @@ def contact_by_type(video_type, output_type, output_location="", output_name="ou
     log.i("About to run: " + cmd_extra_code + contact_cmd)
     subprocess.Popen(cmd_extra_code + contact_cmd, shell=True,
                      stdout=subprocess.PIPE).stdout.read()
-    contact_cmd = "ffmpeg -f concat -i mylist.txt -c copy " + output_name+"."+output_type
+    if output_name.split(".")[-1] == output_name:
+        output_name = output_name+"."+output_type
+    contact_cmd = "ffmpeg -f concat -i mylist.txt -c copy " + output_name
     log.i("About to run: " + cmd_extra_code + contact_cmd)
     subprocess.Popen(cmd_extra_code + contact_cmd, shell=True,
                      stdout=subprocess.PIPE).stdout.read()
     if output_location == "":
         output_location = os.path.join(__root, "file")
     log.i("About to run: " + cmd_extra_code + "del mylist.txt &move " +
-          output_name + "."+output_type + " \""+output_location+"\"")
-    subprocess.Popen(cmd_extra_code + "del mylist.txt &move " + output_name+"."+output_type + " \""+os.path.join(__root, "file")+"\"", shell=True,
+          output_name + " \""+output_location+"\"")
+    subprocess.Popen(cmd_extra_code + "del mylist.txt &move " + output_name + " \""+os.path.join(__root, "file")+"\"", shell=True,
                      stdout=subprocess.PIPE).stdout.read()
     log.i("--------------- End contact_by_type() --------------- ")
 

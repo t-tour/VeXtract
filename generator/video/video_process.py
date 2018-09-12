@@ -66,4 +66,4 @@ if __name__ == "__main__":
     #split_list = [(5, 6), (7, 8), (9, 10)]
     filename = os.path.join(__root, "file", "03.mp4")
     video_process(filename, split_list,
-                  temp_Keep=True)  # (檔案名稱/檔案路徑,list of tuple)
+                  temp_Keep=True, output_name="03-666.flv")  # (檔案名稱/檔案路徑,list of tuple)
