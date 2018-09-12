@@ -19,7 +19,7 @@ from generator.video import video_contact
 from generator.video import video_split
 
 
-def video_process(filename, split_list, temp_Keep=False, output_name="output"):
+def video_process(filename, split_list, temp_Keep=False, output_location="", output_name="output"):
     log.i("--------------- Start video_process() --------------- ")
     ifpath = False
     if filename.find(os.sep) != -1:
@@ -42,17 +42,19 @@ def video_process(filename, split_list, temp_Keep=False, output_name="output"):
         else:
             video_split.split_by_manifest(os.path.join(os.getcwd(
             ), filename), split_start, split_length, rename_to, cmd_extra_code="cd temp &", ifmove=False)
-
+    if output_location == "":
+        output_location = os.path.join(__root, "file")
     video_contact.contact_by_type(
-        video_type, video_type, output_name=output_name, cmd_extra_code="cd temp &")
+        video_type, video_type, output_location=output_location, output_name=output_name, cmd_extra_code="cd temp &")
     if temp_Keep == False:
         shutil.rmtree("temp", ignore_errors=True)
     else:
-        shutil.rmtree(os.path.join(__root, "file", "temp"), ignore_errors=True)
+        shutil.rmtree(os.path.join(output_location, "temp"),
+                      ignore_errors=True)
         log.i("About to run: " + "move temp " +
-              " \""+os.path.join(__root, "file")+"\"")
-        subprocess.Popen("move temp " + " \""+os.path.join(__root, "file") +
-                         "\"", shell=True, stdout=subprocess.PIPE).stdout.read()
+              " \""+output_location+"\"")
+        subprocess.Popen("move temp " +
+                         " \""+output_location+"\"", shell=True, stdout=subprocess.PIPE).stdout.read()
     log.i("--------------- End video_process() --------------- ")
 
 

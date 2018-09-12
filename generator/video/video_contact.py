@@ -16,7 +16,7 @@ import subprocess
 from optparse import OptionParser
 
 
-def contact_by_type(video_type, output_type, output_name="output", cmd_extra_code=""):
+def contact_by_type(video_type, output_type, output_location="", output_name="output", cmd_extra_code=""):
     # FIXME: 以後可能會架在 linux 上面運行 所以需要跨平台的指令
     # FIXME: 沒有修過喔~
     log.i("--------------- Start contact_by_type() --------------- ")
@@ -29,22 +29,24 @@ def contact_by_type(video_type, output_type, output_name="output", cmd_extra_cod
     log.i("About to run: " + cmd_extra_code + contact_cmd)
     subprocess.Popen(cmd_extra_code + contact_cmd, shell=True,
                      stdout=subprocess.PIPE).stdout.read()
+    if output_location == "":
+        output_location = os.path.join(__root, "file")
     log.i("About to run: " + cmd_extra_code + "del mylist.txt &move " +
-          output_name + "."+output_type+" \"" + os.path.join(__root, "file")+"\"")
+          output_name + "."+output_type + " \""+output_location+"\"")
     subprocess.Popen(cmd_extra_code + "del mylist.txt &move " + output_name+"."+output_type + " \""+os.path.join(__root, "file")+"\"", shell=True,
                      stdout=subprocess.PIPE).stdout.read()
     log.i("--------------- End contact_by_type() --------------- ")
 
 
-def contact_by_manifest(video_tuple, output_name="output"):
+def contact_by_manifest(video_tuple, output_location="", output_name="output"):
     # FIXME: 以後可能會架在 linux 上面運行 所以需要跨平台的指令
     log.i("--------------- Start contact_by_manifest() --------------- ")
     defalut_ext = video_tuple[0].split(".").pop()
     prefer_ext = output_name.split(".").pop()
     if output_name == "output":
         output_name = output_name+"."+defalut_ext
-    if output_name.find(os.sep) == -1:
-        output_name = os.path.join(__root, "file", output_name)
+    if output_location == "":
+        output_location = os.path.join(__root, "file")
     if prefer_ext != defalut_ext:
         log.i('input format is {}  and your output format is {}'.format(
             defalut_ext, prefer_ext))
@@ -54,7 +56,7 @@ def contact_by_manifest(video_tuple, output_name="output"):
         subprocess.Popen(contact_cmd, shell=True,
                          stdout=subprocess.PIPE).stdout.read()
     contact_cmd = "ffmpeg -y -f concat -safe 0 -i mylist.txt -c copy \"{}\"".format(
-        output_name)
+        os.path.join(output_location, output_name))
     log.i("About to run: " + contact_cmd)
     subprocess.Popen(contact_cmd, shell=True, stdout=subprocess.PIPE,
                      stderr=subprocess.PIPE, stdin=subprocess.PIPE).stdout.read()

@@ -22,7 +22,7 @@ from optparse import OptionParser
 from analyzer.algorithm import video_algorithm
 
 
-def split_by_frame(filename, start_time, frame_number):
+def split_by_frame(filename, start_time, frame_number, output_location=""):
     log.i("--------------- Start split_by_frame() --------------- ")
     if filename.find(os.sep) != -1:
         video_name = os.path.basename(filename)
@@ -37,15 +37,17 @@ def split_by_frame(filename, start_time, frame_number):
     log.i("About to run: " + "cd temp &" + split_cmd)
     subprocess.Popen("cd temp &" + split_cmd, shell=True,
                      stdout=subprocess.PIPE).stdout.read()
-    shutil.rmtree(os.path.join(__root, "file", "temp"), ignore_errors=True)
+    if output_location == "":
+        output_location = os.path.join(__root, "file")
+    shutil.rmtree(os.path.join(output_location, "temp"), ignore_errors=True)
     log.i("About to run: " + "move temp " +
-          " \""+os.path.join(__root, "file")+"\"")
-    subprocess.Popen("move temp " + " \""+os.path.join(__root, "file")+"\"",
+          " \""+output_location+"\"")
+    subprocess.Popen("move temp " + " \""+output_location+"\"",
                      shell=True, stdout=subprocess.PIPE).stdout.read()
     log.i("--------------- End split_by_frame() --------------- ")
 
 
-def split_by_manifest(filename, split_start, split_length, rename_to, cmd_extra_code="", ifmove=True, vcodec="copy", acodec="copy",
+def split_by_manifest(filename, split_start, split_length, rename_to, output_location="", cmd_extra_code="", ifmove=True, vcodec="copy", acodec="copy",
                       extra="", **kwargs):
     log.i("--------------- Start split_by_manifest() --------------- ")
     rename_to = "\""+rename_to+"\""
@@ -58,15 +60,17 @@ def split_by_manifest(filename, split_start, split_length, rename_to, cmd_extra_
     log.i("About to run: " + cmd_extra_code + split_cmd+split_str)
     subprocess.Popen(cmd_extra_code + split_cmd+split_str,
                      shell=True, stdout=subprocess.PIPE).stdout.read()
+    if output_location == "":
+        output_location = os.path.join(__root, "file")
     if ifmove:
-        log.i("About to run: " + cmd_extra_code + "move " + rename_to + " \""+os.path.join(
-            __root, "file")+"\"",)
-        subprocess.Popen(cmd_extra_code + "move " + rename_to + " \""+os.path.join(
-            __root, "file")+"\"", shell=True, stdout=subprocess.PIPE).stdout.read()
+        log.i("About to run: " + cmd_extra_code + "move " +
+              rename_to + " \""+output_location+"\"")
+        subprocess.Popen(cmd_extra_code + "move " + rename_to +
+                         " \""+output_location+"\"", shell=True, stdout=subprocess.PIPE).stdout.read()
     log.i("--------------- End split_by_manifest() --------------- ")
 
 
-def split_by_files(filename, manifest, vcodec="copy", acodec="copy",
+def split_by_files(filename, manifest, output_location="", vcodec="copy", acodec="copy",
                    extra="", **kwargs):
     """ Split video into segments based on the given manifest file.
     Arguments:
@@ -106,6 +110,8 @@ def split_by_files(filename, manifest, vcodec="copy", acodec="copy",
         except IndexError as e:
             log.i("--------------- End split_by_files() --------------- ")
             raise IndexError("No . in filename. Error: ", str(e))
+        if output_location == "":
+            output_location = os.path.join(__root, "file")
         for video_config in config:
             split_str = ""
             try:
@@ -123,10 +129,10 @@ def split_by_files(filename, manifest, vcodec="copy", acodec="copy",
                 log.i("About to run: " + split_cmd+split_str)
                 subprocess.Popen(split_cmd+split_str,
                                  shell=True, stdout=subprocess.PIPE).stdout.read()
-                log.i("About to run: " + "move " + filebase+"."+fileext + " \""+os.path.join(
-                    __root, "file")+"\"")
-                subprocess.Popen("move " + filebase+"."+fileext + " \""+os.path.join(
-                    __root, "file")+"\"", shell=True, stdout=subprocess.PIPE).stdout.read()
+                log.i("About to run: " + "move " + filebase +
+                      "."+fileext + " \""+output_location+"\"")
+                subprocess.Popen("move " + filebase+"."+fileext +
+                                 " \""+output_location + "\"", shell=True, stdout=subprocess.PIPE).stdout.read()
             except KeyError as e:
                 log.i("############# Incorrect format ##############")
                 if manifest_type == "json":
@@ -142,7 +148,7 @@ def split_by_files(filename, manifest, vcodec="copy", acodec="copy",
         log.i("--------------- End split_by_files() --------------- ")
 
 
-def split_by_seconds(filename, split_length, vcodec="copy", acodec="copy",
+def split_by_seconds(filename, split_length, output_location="", vcodec="copy", acodec="copy",
                      extra="", **kwargs):
     log.i("--------------- Start split_by_seconds() --------------- ")
     if split_length and split_length <= 0:
@@ -166,6 +172,8 @@ def split_by_seconds(filename, split_length, vcodec="copy", acodec="copy",
     except IndexError as e:
         log.i("--------------- End split_by_seconds() --------------- ")
         raise IndexError("No . in filename. Error: " + str(e))
+    if output_location == "":
+        output_location = os.path.join(__root, "file")
     for n in range(0, split_count):
         split_str = ""
         if n == 0:
@@ -178,14 +186,14 @@ def split_by_seconds(filename, split_length, vcodec="copy", acodec="copy",
         log.i("About to run: " + split_cmd + split_str)
         subprocess.Popen(
             split_cmd+split_str, shell=True, stdout=subprocess.PIPE).stdout.read()
-        log.i("About to run: " + "move " + filebase+"-"+str(n)+"."+fileext + " \""+os.path.join(
-            __root, "file")+"\"")
-        subprocess.Popen("move " + filebase+"-"+str(n)+"."+fileext + " \""+os.path.join(
-            __root, "file")+"\"", shell=True, stdout=subprocess.PIPE).stdout.read()
+        log.i("About to run: " + "move " + filebase+"-" +
+              str(n)+"."+fileext + " \""+output_location+"\"")
+        subprocess.Popen("move " + filebase+"-"+str(n)+"."+fileext +
+                         " \""+output_location+"\"", shell=True, stdout=subprocess.PIPE).stdout.read()
     log.i("--------------- End split_by_seconds() --------------- ")
 
 
-def split_by_chunks(filename, split_count, vcodec="copy", acodec="copy",
+def split_by_chunks(filename, split_count, output_location="", vcodec="copy", acodec="copy",
                     extra="", **kwargs):
     log.i("--------------- Start split_by_seconds() --------------- ")
     if split_count and split_count <= 1:
@@ -203,6 +211,8 @@ def split_by_chunks(filename, split_count, vcodec="copy", acodec="copy",
     except IndexError as e:
         log.i("--------------- End split_by_seconds() --------------- ")
         raise IndexError("No . in filename. Error: " + str(e))
+    if output_location == "":
+        output_location = os.path.join(__root, "file")
     for n in range(0, split_count):
         split_str = ""
         if n == 0:
@@ -215,10 +225,10 @@ def split_by_chunks(filename, split_count, vcodec="copy", acodec="copy",
         log.i("About to run: " + split_cmd + split_str)
         subprocess.Popen(
             split_cmd+split_str, shell=True, stdout=subprocess.PIPE).stdout.read()
-        log.i("About to run: " + "move " + filebase+"-"+str(n)+"."+fileext + " \""+os.path.join(
-            __root, "file")+"\"")
-        subprocess.Popen("move " + filebase+"-"+str(n)+"."+fileext + " \""+os.path.join(
-            __root, "file")+"\"", shell=True, stdout=subprocess.PIPE).stdout.read()
+        log.i("About to run: " + "move " + filebase+"-" +
+              str(n)+"."+fileext + " \""+output_location+"\"")
+        subprocess.Popen("move " + filebase+"-"+str(n)+"."+fileext +
+                         " \""+output_location+"\"", shell=True, stdout=subprocess.PIPE).stdout.read()
     log.i("--------------- End split_by_seconds() --------------- ")
 
 
