@@ -8,23 +8,44 @@ __root = os.path.abspath(
         ) - 1
     )) + os.sep
 sys.path.append(__root)
-import requests
-from urllib import parse
-from bs4 import BeautifulSoup
-import re
-import json
-import xml.etree.ElementTree as ET
 
-from analyzer.text import natural_lang_process
 from helper import logger
 log = logger.Logger(__name__)
-log.set_level('i')
+
+import json
+from urllib import parse
+import re
+import xml.etree.ElementTree as ET
+
+import requests
+from bs4 import BeautifulSoup
 
 COMMENT_REQUEST_URL = "https://comment.bilibili.com/"
 MAIN_HOST_URL = "https://www.bilibili.com/video/"
 
-
 class Bilibili_file_info():
+    """
+    Attributes:
+      aid: AV號數字的部分
+      cid: AV號內所有影片的id
+      cid_name: 各集的名稱
+      timelength: 這集的毫秒數ms
+      accept_format: 看看就好
+      accept_quality: 看看就好
+      accept_quailty_description: 看看就好
+      video_title: AV號標題
+      video_desc: AV號說明
+      video_pubdate: AV號上傳日期
+      video_pic: 封面URI
+      video_tags: AV號標籤
+      durl: 下載位址(需要refer)
+      comments: {
+          user: 
+          sec: 
+          text: 
+          score: default none
+      }
+    """
     aid: str
     cid: list
     cid_name: list
@@ -38,25 +59,10 @@ class Bilibili_file_info():
     video_pic: str
     video_tags: list
     durl: list
-    __comments: dict
+    comments: dict
 
-    @property
-    def comments(self):
-        return self.__comments
-
-    @comments.setter
-    def comments(self, value):
-        for cid, comments in value.items():
-            b_comments_list = list()
-            for comment in comments:
-                b_comment = Bilibili_comment(
-                    comment["user"], comment["sec"], comment["text"])
-                b_comment.score = comment["score"]
-                b_comments_list.append(b_comment)
-            self.__comments.update({cid: b_comments_list})
-
-    def save(self):
-        with open('av{}.json'.format(self.aid), 'w', encoding='utf-8') as f:
+    def save(self, path):
+        with open(os.path.join(path, 'av{}.json'.format(self.aid)), 'w', encoding='utf-8') as f:
             json.dump(self, f, default=lambda o: o.__dict__,
                       ensure_ascii=False)
         log.i('av{}.json saved'.format(self.aid))
@@ -66,33 +72,10 @@ class Bilibili_file_info():
         with open(j_data, 'r', encoding='utf-8') as f:
             loaded = json.load(f)
             obj = Bilibili_file_info()
-            # FIXME: load 的時候 comment 也必須用 satter 才行
             for attr, value in loaded.items():
                 obj.__setattr__(attr, value)
-                if attr == "_Bilibili_file_info__comments":
-                    obj.comments = value
         log.i('load {} finish.'.format(j_data))
         return obj
-
-    def fetch_comment_score(self, test=True, limitation=100):
-        """
-        default: test=True, limitation=100
-        test: 測試模式，分數全為10
-        limitation: 最大comment上限，包含所有cid
-        """
-        total_len = 0
-        for cid in self.cid:
-            total_len += len(self.comments[cid])
-        if total_len > limitation:
-            raise Exception("comments up to limitation!!")
-        for cid in self.cid:
-            for comment in self.comments[cid]:
-                if test:
-                    comment.score = 10
-                else:
-                    comment.score = natural_lang_process.text_analyze(
-                        comment.text)
-        log.i('av{} fetch comment finish.'.format(self.aid))
 
     def __init__(self):
         self.aid = None
@@ -108,7 +91,7 @@ class Bilibili_file_info():
         self.video_pic = None
         self.video_tags = list()
         self.durl = list()
-        self.__comments = dict()
+        self.comments = dict()
 
     def __str__(self):
         return str.format(
@@ -124,28 +107,7 @@ class Bilibili_file_info():
             self.video_tags,
             self.durl[0])
 
-
-class Bilibili_comment():
-    user: str
-    sec: float
-    text: str
-    score: float
-
-    def __init__(self, user, sec, text):
-        self.user = user
-        self.sec = sec
-        self.text = text
-        self.score = None
-
-    def __str__(self):
-        return str.format("user:{0}\ttime:{1}\tscore:{3}\t{2}",
-                          self.user, self.sec, self.text, self.score)
-
-    def __repr__(self):
-        return self.__str__() + "\n"
-
-
-def fetch_bilibili_av(av_number, p=1) -> Bilibili_file_info():
+def fetch_bilibili_av(av_number, p):
     """
     用bilibili的av號，fetch B站AV號資料
     """
@@ -208,9 +170,9 @@ def fetch_bilibili_av(av_number, p=1) -> Bilibili_file_info():
     return as_av_info
 
 
-def __cid_comments_list(cid: str) -> list():
-    fd_name = cid + ".xml"
-    req = requests.get(COMMENT_REQUEST_URL + fd_name)
+def __cid_comments_list(cid: str):
+    require_link = COMMENT_REQUEST_URL + cid + ".xml"
+    req = requests.get(require_link)
     req.encoding = 'utf-8'
     root = ET.fromstring(req.text)
     comment_list = list()
@@ -219,6 +181,7 @@ def __cid_comments_list(cid: str) -> list():
             info = child.attrib["p"].split(",")
             comment_list.append(
                 {"user": info[6], "sec": info[0], "text": child.text, "score": None})
+    log.i('comment fetch finish {}'.format(require_link))
     return comment_list
 
 
@@ -235,72 +198,3 @@ def __download_b_video(url, p, cid, aid, no):
             for chunk in r.iter_content(chunk_size=1024):
                 f.write(chunk)
             log.i('finish download.')
-
-
-def __url_parse(url):
-    url_parsed = parse.urlsplit(url)
-    return_value = dict()
-    if len(url_parsed.query) > 0:
-        for part in url_parsed.query.split("&"):
-            key = part.split("=")[0]
-            value = part.split("=")[1]
-            return_value.update({key: value})
-    return_value.update({"avnumber": url_parsed.path.split("/")[2]})
-    m = re.match('av[0-9]+', return_value["avnumber"])
-    if m is None:
-        log.e('av_number mismatch \'{}\''.format(return_value["avnumber"]))
-        raise Exception("av號格式錯誤")
-    return return_value
-
-
-def file_crawler(url, store_location="file/crawler/"):
-    """
-    獲取影片資料
-    """
-    url_info = __url_parse(url)
-    store = __root + store_location
-    target = fetch_bilibili_av(url_info["avnumber"])
-    ps = url_info["p"] if url_info.__contains__(
-        "p") else range(1, len(target.cid) + 1)
-    for p in ps:
-        parted_target = fetch_bilibili_av(url_info["avnumber"], p)
-        cid = parted_target.cid[p-1]
-        cid_name = parted_target.cid_name[p-1]
-        os.makedirs(
-            store + "av{}/{}_{}/".format(target.aid, p, cid), exist_ok=True)
-        os.chdir(store + "av{}/{}_{}/".format(target.aid, p, cid))
-        log.i("正在下載 av{0}_{1} cid名稱:{2}".format(
-            parted_target.aid, cid, cid_name))
-        for no, url in zip(range(len(parted_target.durl)), parted_target.durl):
-            # 測試代碼這裡
-            # print("{0}-{1}.flv downloading.....finish".format(cid, no))
-            # with open("{0}test_{1}".format(cid, no), "w") as f:
-            #     f.write("dd")
-            __download_b_video(url, p, cid, target.aid, no)
-
-
-def real_time_comment_crawler(url):
-    url_info = __url_parse(url)
-    target = fetch_bilibili_av(url_info["avnumber"])
-    return target.comments
-
-
-def info_crawler(url):
-    url_info = __url_parse(url)
-    return fetch_bilibili_av(url_info["avnumber"])
-
-
-def comment_crawler(url):
-    raise Exception("還沒實作!")
-
-
-if __name__ == "__main__":
-    # get_video_data("av25233957")
-    # print(fetch_bilibili_av("av13392824"))
-    # a.fetch_comment_score(test=True, limitation=5000)
-    # a.save()
-    # b = fetch_bilibili_av("av29311976")
-    # b.fetch_comment_score(limitation=5000)
-    # b.save()
-    file_crawler(
-        "https://www.bilibili.com/video/av30190348/?spm_id_from=333.334.bili_douga.3")

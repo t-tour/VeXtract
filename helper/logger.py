@@ -11,8 +11,7 @@ class Logger():
         formatter = logging.Formatter(format)
         self.file_handler = logging.FileHandler(
             './log/log-{}.log'.format(datetime.now().strftime('%Y-%m-%d')),
-            'a',
-            encoding='utf-8')
+            mode='a', encoding='utf-8')
         self.file_handler.setFormatter(formatter)
         self.log_adapter.addHandler(self.file_handler)
 

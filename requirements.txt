@@ -1,9 +1,14 @@
 # Sort by alphabet
 bs4
+cssselect
 google-api-python-client
 google-auth
 google-auth-httplib2
+lxml
 numpy
+pafy
 pylint
 pytest
+pytube
 requests
+youtube-dl

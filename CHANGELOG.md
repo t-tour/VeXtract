@@ -10,6 +10,10 @@
 - 新增 `analyzer/algorithm/gen_plot.py`
 - 新增 `time_tagger` 兩種 call function
 
+## [0.0.12] - 2018-09-06
+### Fixed
+- 刪除 `bilibili_test` 中不必要的測試
+
 ## [0.0.11] - 2018-08-30
 - 新增 `helper/logger` 中 `log` 支持多參數輸入
 
