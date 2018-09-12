@@ -29,7 +29,7 @@ def video_process(filename, split_list, temp_Keep=False, output_location="", out
 
     count = 0
     video_name = filename.split(".")[0]
-    video_type = filename.split(".")[1]
+    video_type = filename.split(".")[-1]
     os.makedirs("temp")
     for i in split_list:
         split_start = float(i[0])
