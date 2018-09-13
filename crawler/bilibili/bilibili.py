@@ -23,6 +23,7 @@ from bs4 import BeautifulSoup
 from analyzer.text import natural_lang_process
 from crawler.bilibili.bilibili_info import Bilibili_file_info,\
     fetch_bilibili_av, __download_b_video
+from generator.video import video_contact
 
 
 def __url_parse(url):
@@ -62,11 +63,10 @@ def file_crawler(url, des=__root + os.path.join("file", "crawler", "bilibili\\")
     log.i("正在下載 av{0}_{1} cid名稱:{2}".format(
         target.aid, target.cid[p-1], target.cid_name[p-1]))
     for no, url in zip(range(len(target.durl)), target.durl):
-        # 測試代碼這裡
-        # print("{0}-{1}.flv downloading.....finish".format(cid, no))
-        # with open("{0}test_{1}".format(cid, no), "w") as f:
-        #     f.write("dd")
         __download_b_video(url, p, target.cid[p-1], target.aid, no)
+    concat_list = os.listdir(".")
+    video_contact.contact_by_manifest(
+        concat_list, des + "av{}/{}.flv".format(target.aid, target.cid[p-1]))
 
 
 def real_time_comment_crawler(url):
@@ -120,6 +120,4 @@ if __name__ == "__main__":
     # b = fetch_bilibili_av("av29311976")
     # b.fetch_comment_score(limitation=5000)
     # b.save()
-    a = info_crawler(
-        "https://www.bilibili.com/video/av30758200", save=True)
-    file_crawler("https://www.bilibili.com/video/av30758200")
+    file_crawler("https://www.bilibili.com/video/av8733186?from=search&seid=4119483458303784416")
