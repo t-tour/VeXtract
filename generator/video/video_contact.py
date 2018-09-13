@@ -16,7 +16,7 @@ import subprocess
 from optparse import OptionParser
 
 
-def contact_by_type(video_type, output_type, output_location="", output_name="output", cmd_extra_code=""):
+def contact_by_type(video_type, output_location="", output_name="output", cmd_extra_code=""):
     # FIXME: 以後可能會架在 linux 上面運行 所以需要跨平台的指令
     # FIXME: 沒有修過喔~
     log.i("--------------- Start contact_by_type() --------------- ")
@@ -26,16 +26,16 @@ def contact_by_type(video_type, output_type, output_location="", output_name="ou
     subprocess.Popen(cmd_extra_code + contact_cmd, shell=True,
                      stdout=subprocess.PIPE).stdout.read()
     if output_name.split(".")[-1] == output_name:
-        output_name = output_name+"."+output_type
-    contact_cmd = "ffmpeg -f concat -i mylist.txt -c copy " + output_name
+        output_name = output_name+"."+video_type
+    contact_cmd = "ffmpeg -f concat -i mylist.txt -c copy " + "\""+output_name+"\""
     log.i("About to run: " + cmd_extra_code + contact_cmd)
     subprocess.Popen(cmd_extra_code + contact_cmd, shell=True,
                      stdout=subprocess.PIPE).stdout.read()
     if output_location == "":
         output_location = os.path.join(__root, "file")
     log.i("About to run: " + cmd_extra_code + "del mylist.txt &move " +
-          output_name + " \""+output_location+"\"")
-    subprocess.Popen(cmd_extra_code + "del mylist.txt &move " + output_name +
+          "\""+output_name+"\"" + " \""+output_location+"\"")
+    subprocess.Popen(cmd_extra_code + "del mylist.txt &move " + "\""+output_name+"\"" +
                      " \""+output_location+"\"", shell=True,
                      stdout=subprocess.PIPE).stdout.read()
     log.i("--------------- End contact_by_type() --------------- ")

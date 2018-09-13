@@ -30,7 +30,7 @@ def video_process(filename, split_list, temp_Keep=False, output_location="", out
     count = 0
     video_name = filename.split(".")[0]
     video_type = filename.split(".")[-1]
-    os.makedirs("temp")
+    os.makedirs("temp", exist_ok=True)
     for i in split_list:
         split_start = float(i[0])
         split_length = float(i[1]) - split_start
@@ -45,23 +45,23 @@ def video_process(filename, split_list, temp_Keep=False, output_location="", out
     if output_location == "":
         output_location = os.path.join(__root, "file")
     video_contact.contact_by_type(
-        video_type, video_type, output_location=output_location, output_name=output_name, cmd_extra_code="cd temp &")
+        video_type, output_location=output_location, output_name=output_name, cmd_extra_code="cd temp &")
     if temp_Keep == False:
         shutil.rmtree("temp", ignore_errors=True)
     else:
-        shutil.rmtree(os.path.join(output_location, "temp"),
-                      ignore_errors=True)
-        log.i("About to run: " + "move temp " +
-              " \""+output_location+"\"")
-        subprocess.Popen("move temp " +
-                         " \""+output_location+"\"", shell=True, stdout=subprocess.PIPE).stdout.read()
+        if os.path.samefile(output_location, os.getcwd()) == False:
+            shutil.rmtree(os.path.join(output_location, "temp"),
+                          ignore_errors=True)
+            log.i("About to run: " + "move temp" + " \""+output_location+"\"")
+            subprocess.Popen("move temp" +
+                             " \""+output_location + "\"", shell=True, stdout=subprocess.PIPE).stdout.read()
     log.i("--------------- End video_process() --------------- ")
 
 
 if __name__ == "__main__":
     # 傳入的list of tuple
-    split_list = [(5, 35)]
+    split_list = [(5, 20), (30, 45), (60, 75)]
     #split_list = [(5, 6), (7, 8), (9, 10)]
-    filename = os.path.join(__root, "file", "output.mp4")
-    video_process(filename, split_list, output_location=__root,
-                  temp_Keep=False, output_name="03-666.flv")  # (檔案名稱/檔案路徑,list of tuple)
+    filename = os.path.join(__root, "file", "03.mp4")
+    video_process(filename, split_list, output_location=os.path.join(__root, "file", "generator"),
+                  temp_Keep=True, output_name="03-666.flv")  # (檔案名稱/檔案路徑,list of tuple)

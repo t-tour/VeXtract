@@ -30,9 +30,9 @@ def split_by_frame(filename, start_time, frame_number, output_location=""):
     else:
         video_name = filename.split(".")[0]
         filename = os.path.join(os.getcwd(), filename)
-    os.makedirs("temp")
+    os.makedirs("temp", exist_ok=True)
     video_fps = video_algorithm.get_video_fps(filename)
-    split_cmd = "ffmpeg -i \"%s\" -ss %s -r %s -vframes %s -y %s-%s.jpg" % (
+    split_cmd = "ffmpeg -i \"%s\" -ss %s -r %s -vframes %s -y \"%s-%s.jpg\"" % (
         filename, str(start_time), str(video_fps), str(frame_number), video_name, "%d")
     log.i("About to run: " + "cd temp &" + split_cmd)
     subprocess.Popen("cd temp &" + split_cmd, shell=True,
@@ -122,15 +122,15 @@ def split_by_files(filename, manifest, output_location="", vcodec="copy", acodec
                 filebase = video_config["rename_to"]
                 if fileext in filebase:
                     filebase = ".".join(filebase.split(".")[:-1])
-
+                ouput_name = "\""+filebase+"."+fileext+"\""
                 split_str += " -ss " + str(split_start) + " -t " + \
                     str(split_length) + " " + \
-                    filebase + "." + fileext
+                    ouput_name
                 log.i("About to run: " + split_cmd+split_str)
                 subprocess.Popen(split_cmd+split_str,
                                  shell=True, stdout=subprocess.PIPE).stdout.read()
-                log.i("About to run: " + "move " + filebase +
-                      "."+fileext + " \""+output_location+"\"")
+                log.i("About to run: " + "move " +
+                      ouput_name + " \""+output_location+"\"")
                 subprocess.Popen("move " + filebase+"."+fileext +
                                  " \""+output_location + "\"", shell=True, stdout=subprocess.PIPE).stdout.read()
             except KeyError as e:
@@ -180,14 +180,14 @@ def split_by_seconds(filename, split_length, output_location="", vcodec="copy", 
             split_start = 0
         else:
             split_start = split_length * n
-
+        ouput_name = "\""+filebase+"-"+str(n)+"."+fileext+"\""
         split_str += " -ss " + str(split_start) + " -t " + str(split_length) + \
-            " " + filebase+"-"+str(n)+"."+fileext
+            " " + ouput_name
         log.i("About to run: " + split_cmd + split_str)
         subprocess.Popen(
             split_cmd+split_str, shell=True, stdout=subprocess.PIPE).stdout.read()
-        log.i("About to run: " + "move " + filebase+"-" +
-              str(n)+"."+fileext + " \""+output_location+"\"")
+        log.i("About to run: " + "move " +
+              ouput_name + " \""+output_location+"\"")
         subprocess.Popen("move " + filebase+"-"+str(n)+"."+fileext +
                          " \""+output_location+"\"", shell=True, stdout=subprocess.PIPE).stdout.read()
     log.i("--------------- End split_by_seconds() --------------- ")
@@ -219,14 +219,14 @@ def split_by_chunks(filename, split_count, output_location="", vcodec="copy", ac
             split_start = 0
         else:
             split_start = split_length * n
-
+        ouput_name = "\""+filebase+"-"+str(n)+"."+fileext+"\""
         split_str += " -ss " + str(split_start) + " -t " + str(split_length) + \
-            " " + filebase+"-"+str(n)+"."+fileext
+            " " + ouput_name
         log.i("About to run: " + split_cmd + split_str)
         subprocess.Popen(
             split_cmd+split_str, shell=True, stdout=subprocess.PIPE).stdout.read()
-        log.i("About to run: " + "move " + filebase+"-" +
-              str(n)+"."+fileext + " \""+output_location+"\"")
+        log.i("About to run: " + "move " +
+              ouput_name + " \""+output_location+"\"")
         subprocess.Popen("move " + filebase+"-"+str(n)+"."+fileext +
                          " \""+output_location+"\"", shell=True, stdout=subprocess.PIPE).stdout.read()
     log.i("--------------- End split_by_seconds() --------------- ")
