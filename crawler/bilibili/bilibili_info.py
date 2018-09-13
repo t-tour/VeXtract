@@ -195,11 +195,9 @@ def __cid_comments_list(cid: str):
 
 
 def __download_b_video(url, p, cid, aid, no):
-    header = {"user-agent": ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-                             "AppleWebKit/537.36 (KHTML, like Gecko) "
-                             "Chrome/67.0.3396.99 Safari/537.36"),
-              "Referer": "https://www.bilibili.com/video/av{0}/?p={1}".format(aid, p),
-              "origin": "https://www.bilibili.com"}
+    header = HEADER.copy()
+    header.update(
+        {"Referer": "https://www.bilibili.com/video/av{0}/?p={1}".format(aid, p)})
     with requests.get(url, headers=header, stream=True) as r:
         filename = "{0}-part{1}.flv".format(cid, no)
         log.i("{filename} downloading".format(filename=filename))
