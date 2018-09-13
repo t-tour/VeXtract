@@ -54,10 +54,10 @@ def __grade_segments(segments, real_time_comments=None, comments=None, audio=Non
         total_score = 0
         if real_time_comments:
             for comment in real_time_comments:
-                if comment["time"] >= segment[0] and comment["time"] < segment[1]:
+                if float(comment["sec"]) >= segment[0] and float(comment["sec"]) < segment[1]:
                     total_score += 1
         graded_list.append({
-            "time": segment,
+            "sec": segment,
             "total_score": total_score
         })
     log.i('grade_list is: {}'.format(graded_list))
@@ -77,8 +77,8 @@ def wanted_length(length, video, real_time_comments=None, comments=None):
     segments_list = list()
     total_length = 0
     for segment in segments_graded:
-        segments_list.append(segment["time"])
-        total_length += segment["time"][1] - segment["time"][0]
+        segments_list.append(segment["sec"])
+        total_length += segment["sec"][1] - segment["sec"][0]
         if total_length > length:
             segments_list.pop()
             break
