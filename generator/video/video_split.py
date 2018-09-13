@@ -39,6 +39,8 @@ def split_by_frame(filename, start_time, frame_number, output_location=""):
                      stdout=subprocess.PIPE).stdout.read()
     if output_location == "":
         output_location = os.path.join(__root, "file")
+    if not os.path.exists(output_location):
+        os.makedirs(output_location, exist_ok=True)
     shutil.rmtree(os.path.join(output_location, "temp"), ignore_errors=True)
     log.i("About to run: " + "move temp " +
           " \""+output_location+"\"")
@@ -62,6 +64,8 @@ def split_by_manifest(filename, split_start, split_length, rename_to, output_loc
                      shell=True, stdout=subprocess.PIPE).stdout.read()
     if output_location == "":
         output_location = os.path.join(__root, "file")
+    if not os.path.exists(output_location):
+        os.makedirs(output_location, exist_ok=True)
     if ifmove:
         log.i("About to run: " + cmd_extra_code + "move " +
               rename_to + " \""+output_location+"\"")
@@ -112,6 +116,8 @@ def split_by_files(filename, manifest, output_location="", vcodec="copy", acodec
             raise IndexError("No . in filename. Error: ", str(e))
         if output_location == "":
             output_location = os.path.join(__root, "file")
+        if not os.path.exists(output_location):
+            os.makedirs(output_location, exist_ok=True)
         for video_config in config:
             split_str = ""
             try:
@@ -174,6 +180,8 @@ def split_by_seconds(filename, split_length, output_location="", vcodec="copy", 
         raise IndexError("No . in filename. Error: " + str(e))
     if output_location == "":
         output_location = os.path.join(__root, "file")
+    if not os.path.exists(output_location):
+        os.makedirs(output_location, exist_ok=True)
     for n in range(0, split_count):
         split_str = ""
         if n == 0:
@@ -213,6 +221,8 @@ def split_by_chunks(filename, split_count, output_location="", vcodec="copy", ac
         raise IndexError("No . in filename. Error: " + str(e))
     if output_location == "":
         output_location = os.path.join(__root, "file")
+    if not os.path.exists(output_location):
+        os.makedirs(output_location, exist_ok=True)
     for n in range(0, split_count):
         split_str = ""
         if n == 0:

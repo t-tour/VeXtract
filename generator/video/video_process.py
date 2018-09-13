@@ -44,6 +44,8 @@ def video_process(filename, split_list, temp_Keep=False, output_location="", out
             ), filename), split_start, split_length, rename_to, cmd_extra_code="cd temp &", ifmove=False)
     if output_location == "":
         output_location = os.path.join(__root, "file")
+    if not os.path.exists(output_location):
+        os.makedirs(output_location, exist_ok=True)
     video_contact.contact_by_type(
         video_type, output_location=output_location, output_name=output_name, cmd_extra_code="cd temp &")
     if temp_Keep == False:
