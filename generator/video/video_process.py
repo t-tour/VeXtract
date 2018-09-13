@@ -53,8 +53,8 @@ if __name__ == "__main__":
     # 測試用
 
     # 傳入的list of tuple
-    split_list = [(5, 15), (20, 30), (50, 60)]
+    split_list = [(5, 33.5)]
     #split_list = [(5, 6), (7, 8), (9, 10)]
-    filename = "C:\\Users\\admin10\\Documents\\GitLab\\VeXtract\\file\\03.mp4"
+    filename = os.path.join(__root, "file/output.mp4")
     video_process(filename, split_list,
-                  temp_Keep=True)  # (檔案名稱/檔案路徑,list of tuple)
+                  temp_Keep=False)  # (檔案名稱/檔案路徑,list of tuple)
