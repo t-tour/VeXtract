@@ -39,10 +39,10 @@ def video_process(filename, split_list, temp_Keep=False, output_location="", out
         count = count + 1
         if ifpath:
             video_split.split_by_manifest(
-                filepath, split_start, split_length, rename_to, cmd_extra_code="cd temp &", ifmove=False)
+                filepath, split_start, split_length, rename_to, cmd_extra_code="cd temp &", ifmove=False, vcodec=video_type)
         else:
             video_split.split_by_manifest(os.path.join(os.getcwd(
-            ), filename), split_start, split_length, rename_to, cmd_extra_code="cd temp &", ifmove=False)
+            ), filename), split_start, split_length, rename_to, cmd_extra_code="cd temp &", ifmove=False, vcodec=video_type)
     if output_location == "":
         output_location = os.path.join(__root, "file")
     if not os.path.exists(output_location):
