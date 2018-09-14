@@ -18,7 +18,7 @@ import pytest
 
 from generator.video import video_process
 
-filename = os.path.join(__root, "file", "03.mp4")
+filename = os.path.join(__root, "file", "14391479.flv")
 output_location = os.path.join(__root, "file", "generator")
 output_name = "666.mp4"
 ouput = os.path.join(output_location, output_name)
