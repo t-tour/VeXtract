@@ -39,3 +39,5 @@ ___
 ## video_process（位於generator）
 > ### video_process(filename, split_list, output_location="", temp_Keep=False, output_name="output")  
 > > 說明：傳入影片，並且傳入複數切割的時間點split_list（格式為 [(開始的秒數,要切割的長度),(開始的秒數,要切割的長度),....]），最後合併成一個影片，temp_keep為切割過程產生的分割檔是否要保留（預設為false），output_name則是輸出的影片名稱，若不輸入則預設為"output"。  
+> ### video_encoding(filename, output_location="", output_name="output.mp4")  
+> > 說明：傳入影片，並且輸入output_name ，副檔名預設mp4，若都不輸入則預設為output.mp4。   
