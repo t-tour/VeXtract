@@ -21,12 +21,13 @@ from analyzer.algorithm import video_algorithm
 
 filename = os.path.join(__root, "file", "14391479.flv")
 output_location = os.path.join(__root, "file", "generator")
-output_name = "14391479.mp4"
+output_name = "14391479_666.flv"
 ouput = os.path.join(output_location, output_name)
 
 
 def test_split_by_frame():
     log.i('start split_by_frame_test.')
+    filename = os.path.join(__root, "test\\test_file", "test_video.mp4")
     start_time = 5
     frame_number = 30
     video_name = os.path.basename(filename)
@@ -41,8 +42,11 @@ def test_split_by_frame():
 
 def test_split_by_manifest():
     log.i('start split_by_manifest_test.')
+    filename = os.path.join(__root, "test\\test_file", "test_video.mp4")
+    output_name = "test_video_666.mp4"
+    ouput = os.path.join(output_location, output_name)
     split_start = 0
-    split_length = video_algorithm.get_video_length(filename)
+    split_length = 30
     video_split.split_by_manifest(
         filename, split_start, split_length, output_name, output_location)
     assert os.path.exists(ouput) == True

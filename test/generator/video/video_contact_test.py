@@ -25,7 +25,11 @@ ouput = os.path.join(output_location, output_name)
 
 def test_contact_by_type():
     log.i('start contact_by_type_test.')
-    cmd_extra_code = "cd %s &" % (os.path.join(output_location, "temp"))
+    output_name = "test_video_666.mp4"
+    ouput = os.path.join(output_location, output_name)
+    cmd_extra_code = "cd %s &" % (
+        os.path.join(__root, "test\\test_file\\test_video_temp"))
+    #cmd_extra_code = "cd %s &" % (os.path.join(output_location, "temp"))
     video_contact.contact_by_type(
         "mp4", output_location, output_name, cmd_extra_code)
     assert os.path.exists(ouput) == True
@@ -33,9 +37,21 @@ def test_contact_by_type():
 
 def test_contact_by_manifest():
     log.i('start contact_by_manifest_test.')
+    output_name = "test_video_666.mp4"
+    ouput = os.path.join(output_location, output_name)
+    video_tuple = (os.path.join(
+        __root, "test\\test_file\\test_video_temp", "test_video-0.mp4"),
+        os.path.join(
+        __root, "test\\test_file\\test_video_temp", "test_video-1.mp4"),
+        os.path.join(
+        __root, "test\\test_file\\test_video_temp", "test_video-2.mp4"),
+        os.path.join(
+        __root, "test\\test_file\\test_video_temp", "test_video-3.mp4"))
+    """
     video_tuple = (os.path.join(__root, "file", "temp", "03-0.mp4"),
                    os.path.join(__root, "file", "temp", "03-1.mp4"),
                    os.path.join(__root, "file", "temp", "03-2.mp4"))
+    """
     video_contact.contact_by_manifest(
         video_tuple, output_location, output_name)
     assert os.path.exists(ouput) == True
