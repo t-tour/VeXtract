@@ -18,17 +18,16 @@ import pytest
 
 from generator.video import video_process
 
-filename = os.path.join(__root, "file", "14391479.flv")
-output_location = os.path.join(__root, "file", "generator")
-output_name = "14391479_666.flv"
+filename = os.path.join(__root, "test\\test_file", "test_video.mp4")
+output_location = os.path.join(__root, "test\\test_file\\test_temp")
+output_name = "test_video_666.mp4"
 ouput = os.path.join(output_location, output_name)
 
 
 def test_video_process_with_temp():
     log.i('start video_process_with_temp_test.')
-    filename = os.path.join(__root, "test\\test_file", "test_video.mp4")
-    output_name = "test_video_666.mp4"
-    ouput = os.path.join(output_location, output_name)
+    shutil.rmtree(ouput, ignore_errors=True)
+    shutil.rmtree(os.path.join(output_location, "temp"), ignore_errors=True)
     split_list = [(0.0, 4.0), (6.0, 10.0), (13.0, 17.0), (24.0, 28.0)]
     """
     split_list = [(115.0, 120.0), (425.0, 430.0), (750.0, 755.0), (755.0, 760.0),
@@ -49,19 +48,20 @@ def test_video_process_with_temp():
     video_process.video_process(
         filename, split_list, True, output_location, output_name)
     assert os.path.exists(ouput) == True
+    shutil.rmtree(ouput, ignore_errors=True)
     video_name = os.path.basename(filename).split(".")[0]
     video_type = os.path.basename(filename).split(".")[-1]
     for i in range(len(split_list)):
         ouput_temp = os.path.join(
             output_location, "temp", video_name+"-"+str(i)+"."+video_type)
         assert os.path.exists(ouput_temp) == True
+        shutil.rmtree(ouput_temp, ignore_errors=True)
+    shutil.rmtree(output_location, ignore_errors=True)
 
 
 def test_video_process_without_temp():
     log.i('start video_process_without_temp_test.')
-    filename = os.path.join(__root, "test\\test_file", "test_video.mp4")
-    output_name = "test_video_666.mp4"
-    ouput = os.path.join(output_location, output_name) 
+    shutil.rmtree(ouput, ignore_errors=True)
     split_list = [(0.0, 4.0), (6.0, 10.0), (13.0, 17.0), (24.0, 28.0)]
     """
     split_list = [(115.0, 120.0), (425.0, 430.0), (750.0, 755.0), (755.0, 760.0),
@@ -72,6 +72,8 @@ def test_video_process_without_temp():
     video_process.video_process(
         filename, split_list, False, output_location, output_name)
     assert os.path.exists(ouput) == True
+    shutil.rmtree(ouput, ignore_errors=True)
+    shutil.rmtree(output_location, ignore_errors=True)
 
 
 def test_video_encoding():
@@ -79,5 +81,8 @@ def test_video_encoding():
     filename = os.path.join(__root, "test\\test_file", "test_video.mp4")
     output_name = "test_video_666.flv"
     ouput = os.path.join(output_location, output_name)
+    shutil.rmtree(ouput, ignore_errors=True)
     video_process.video_encoding(filename, output_location, output_name)
     assert os.path.exists(ouput) == True
+    shutil.rmtree(ouput, ignore_errors=True)
+    shutil.rmtree(output_location, ignore_errors=True)
