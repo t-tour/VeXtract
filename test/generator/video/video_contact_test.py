@@ -24,6 +24,7 @@ ouput = os.path.join(output_location, output_name)
 
 
 def test_contact_by_type():
+    log.i('start contact_by_type_test.')
     cmd_extra_code = "cd %s &" % (os.path.join(output_location, "temp"))
     video_contact.contact_by_type(
         "mp4", output_location, output_name, cmd_extra_code)
@@ -31,6 +32,7 @@ def test_contact_by_type():
 
 
 def test_contact_by_manifest():
+    log.i('start contact_by_manifest_test.')
     video_tuple = (os.path.join(__root, "file", "temp", "03-0.mp4"),
                    os.path.join(__root, "file", "temp", "03-1.mp4"),
                    os.path.join(__root, "file", "temp", "03-2.mp4"))
