@@ -71,10 +71,15 @@ def video_encoding(filename, output_location="", output_name="output.mp4"):
     if output_name.split(".")[0] == output_name:
         output_name = output_name+".mp4"
     prefer_ext = output_name.split(".")[-1]
-    split_start = 0
-    split_length = video_algorithm.get_video_length(filename)
-    video_split.split_by_manifest(
-        filename, split_start, split_length, output_name, output_location)
+    encoding_cmd = "ffmpeg -i \"%s\" -f %s \"%s\"" % (
+        filename, prefer_ext, output_name)
+    log.i("About to run: " + encoding_cmd)
+    subprocess.Popen(encoding_cmd, shell=True,
+                     stdout=subprocess.PIPE).stdout.read()
+    log.i("About to run: " + "move " +
+          "\"" + output_name+"\"" + " \""+output_location+"\"")
+    subprocess.Popen("move "+"\""+output_name+"\"" + " \""+output_location+"\"", shell=True,
+                     stdout=subprocess.PIPE).stdout.read()
     log.i('input format is {}  and your output format is {}'.format(
         defalut_ext, prefer_ext))
     log.i("--------------- End video_encoding() --------------- ")
