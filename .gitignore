@@ -65,9 +65,8 @@ target/
 credentials/
 
 # Crawler Data
-file/crawler
+file/
 
 # File
-*.mp4
 temp/
-json/
+
