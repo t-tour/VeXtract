@@ -23,7 +23,8 @@
 
 ## video_split（位於generator）
 > split_by_frame(filename, start_time, frame_number, output_location="")   
-> 說明：對影片切出一張一張的frame，start_time為切割開始的時間（以秒數輸入），frame_number為要切割的張數，輸出會產生一個temp資料夾，圖片會以影片名稱-編號.jpg命名。   --------------------------------------------------------------------------------------------------         
+> 說明：對影片切出一張一張的frame，start_time為切割開始的時間（以秒數輸入），frame_number為要切割的張數，輸出會產生一個temp資料夾，圖片會以影片名稱-編號.jpg命名。   
+___    
 > split_by_manifest(filename, split_start, split_length, rename_to, output_location="", cmd_extra_code="", ifmove=True)   
 > 說明：對影片進行自定義切割，split_start為切割開始的時間（以秒數輸入），split_length為切割的長度，rename_to為輸出檔案的命名（須加附檔名），cmd_extra_code為在切割前進行的額外cmd指令，不用理會，ifmove代表要不要移動切割後的影片到file資料夾裡。  
 
