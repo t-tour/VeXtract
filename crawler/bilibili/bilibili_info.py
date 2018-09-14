@@ -22,6 +22,14 @@ from bs4 import BeautifulSoup
 
 COMMENT_REQUEST_URL = "https://comment.bilibili.com/"
 MAIN_HOST_URL = "https://www.bilibili.com/video/"
+HEADER = {
+    "user-agent": ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                   "AppleWebKit/537.36 (KHTML, like Gecko) "
+                   "Chrome/67.0.3396.99 Safari/537.36"),
+    "Referer": "https://www.bilibili.com",
+    "origin": "https://www.bilibili.com"
+}
+
 
 class Bilibili_file_info():
     """
@@ -107,13 +115,14 @@ class Bilibili_file_info():
             self.video_tags,
             self.durl[0])
 
+
 def fetch_bilibili_av(av_number, p):
     """
     用bilibili的av號，fetch B站AV號資料
     """
     log.i('start fetch {}.'.format(av_number))
     req = requests.get(parse.urljoin(
-        MAIN_HOST_URL, av_number) + str.format("?p={0}", p))
+        MAIN_HOST_URL, av_number) + str.format("?p={0}", p), headers=HEADER)
     log.i('request {} finish.'.format(req.url))
     bf = BeautifulSoup(req.text, 'html.parser')
     scripts_tag = bf.find_all("script")
@@ -186,11 +195,9 @@ def __cid_comments_list(cid: str):
 
 
 def __download_b_video(url, p, cid, aid, no):
-    header = {"user-agent": ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-                             "AppleWebKit/537.36 (KHTML, like Gecko) "
-                             "Chrome/67.0.3396.99 Safari/537.36"),
-              "Referer": "https://www.bilibili.com/video/av{0}/?p={1}".format(aid, p),
-              "origin": "https://www.bilibili.com"}
+    header = HEADER.copy()
+    header.update(
+        {"Referer": "https://www.bilibili.com/video/av{0}/?p={1}".format(aid, p)})
     with requests.get(url, headers=header, stream=True) as r:
         filename = "{0}-part{1}.flv".format(cid, no)
         log.i("{filename} downloading".format(filename=filename))
