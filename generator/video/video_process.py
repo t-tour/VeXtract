@@ -21,6 +21,13 @@ from analyzer.algorithm import video_algorithm
 
 
 def video_process(filename, split_list, temp_Keep=False, output_location="", output_name="output"):
+    """
+    影片的裁切與合併
+    filename: 影片路徑
+    split_list:[(str_time, end_time), ()...]
+    output_location: 輸出位置(不包含檔案)
+    output_name: 檔名，副檔名參照輸入檔案
+    """
     log.i("--------------- Start video_process() --------------- ")
     ifpath = False
     if filename.find(os.sep) != -1:
