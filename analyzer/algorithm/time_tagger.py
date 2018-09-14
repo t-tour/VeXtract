@@ -14,7 +14,7 @@ log = logger.Logger(__name__)
 
 import subprocess
 
-from crawler import bilibili
+from crawler.bilibili import bilibili, bilibili_info
 from analyzer.algorithm import video_algorithm
 
 
@@ -97,14 +97,47 @@ def wanted_grade_above(grade, video, comments):
 
 
 if __name__ == "__main__":
+    from generator.video import video_process as vp
+    from analyzer.text import natural_lang_process
     log.i('time_tagger Start!')
-    print(__root + "file\\crawler\\av30199696\\1_52660766\\52660766-part0.flv")
-    b_info = bilibili.fetch_bilibili_av("av30199696")
-    real_time_comments = list()
-    for comment in b_info.comments["52660766"]:
-        real_time_comments.append(
-            {"time": float(comment.sec), "text": comment.text})
-    # print(real_time_comments)
-    os.chdir(__root + "file\\crawler\\av30199696\\1_52660766\\")
-    wanted_length(
-        100, "\"" + __root + "file\\crawler\\av30199696\\1_52660766\\52660766-part0.flv\"", real_time_comments)
+    URL = "https://www.bilibili.com/video/av8733186?from=search&seid=4119483458303784416"
+    b_info = bilibili.Bilibili_file_info.load(
+        os.path.join(__root, "av8733186.json"))
+    VIDEO_PATH = os.path.join(
+        __root, "file\\crawler\\bilibili\\av{}\\{}.flv".format(b_info.aid, b_info.cid[0]))
+    b_info.save(os.path.join(__root, "file\\algorithm\\"))
+    wanted_tuple_list = wanted_length(
+        600, VIDEO_PATH, b_info.comments[b_info.cid[0]])
+    wanted_tuple_list = sorted(wanted_tuple_list, key=lambda i: i[0])
+    segs = __generate_segments(VIDEO_PATH)
+    graded_segs = __grade_segments(segs, b_info.comments[b_info.cid[0]])
+    vp.video_process(VIDEO_PATH, wanted_tuple_list, True, "ten_min.mp4")
+
+"""
+    from matplotlib import pyplot as pt
+    pt.figure(1)
+    pt.subplot(211).set_title("abs value")
+    pt.plot(range(5, int(b_info.timelength/1000), 5),
+            [i["total_score"] for i in graded_segs])
+    pt.xlabel("time")
+    pt.ylabel("score")
+    pt.subplot(212).set_title("avs value(K)")
+    y = 0
+    y_ax = list()
+    for i, graded_seg in zip(range(len(graded_segs)), graded_segs):
+        y += graded_seg["total_score"]
+        if i < 5:
+            opt = y/(i+1)
+        else:
+            y -= graded_segs[i-5]["total_score"]
+            opt = y/5
+        y_ax.append(opt)
+    pt.plot(range(5, int(b_info.timelength/1000), 5), y_ax)
+    pt.ylim([0,25])
+    pt.xlabel("time")
+    pt.ylabel("25s avs score")
+    pt.show()
+"""
+
+    # 做裁剪
+    # vp.video_process(VIDEO_PATH, wanted_tuple_list, temp_Keep=True, output_name="ss")
