@@ -46,8 +46,8 @@ def contact_by_type(video_type, output_location="", output_name="output", cmd_ex
 def contact_by_manifest(video_tuple, output_location="", output_name="output"):
     # FIXME: 以後可能會架在 linux 上面運行 所以需要跨平台的指令
     log.i("--------------- Start contact_by_manifest() --------------- ")
-    defalut_ext = video_tuple[0].split(".").pop()
-    prefer_ext = output_name.split(".").pop()
+    defalut_ext = video_tuple[0].split(".")[-1]
+    prefer_ext = output_name.split(".")[-1]
     if output_name == "output":
         output_name = output_name+"."+defalut_ext
     if output_location == "":

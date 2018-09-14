@@ -17,6 +17,7 @@ from optparse import OptionParser
 
 from generator.video import video_contact
 from generator.video import video_split
+from analyzer.algorithm import video_algorithm
 
 
 def video_process(filename, split_list, temp_Keep=False, output_location="", output_name="output"):
@@ -58,6 +59,25 @@ def video_process(filename, split_list, temp_Keep=False, output_location="", out
             subprocess.Popen("move temp" +
                              " \""+output_location + "\"", shell=True, stdout=subprocess.PIPE).stdout.read()
     log.i("--------------- End video_process() --------------- ")
+
+
+def video_encoding(filename, output_location="", output_name="output.mp4"):
+    log.i("--------------- Start video_encoding() --------------- ")
+    if output_location == "":
+        output_location = os.path.join(__root, "file")
+    if not os.path.exists(output_location):
+        os.makedirs(output_location, exist_ok=True)
+    defalut_ext = os.path.basename(filename).split(".")[-1]
+    if output_name.split(".")[0] == output_name:
+        output_name = output_name+".mp4"
+    prefer_ext = output_name.split(".")[-1]
+    split_start = 0
+    split_length = video_algorithm.get_video_length(filename)
+    video_split.split_by_manifest(
+        filename, split_start, split_length, output_name, output_location)
+    log.i('input format is {}  and your output format is {}'.format(
+        defalut_ext, prefer_ext))
+    log.i("--------------- End video_encoding() --------------- ")
 
 
 if __name__ == "__main__":
