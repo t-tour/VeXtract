@@ -14,25 +14,12 @@ log = logger.Logger(__name__)
 
 from analyzer.algorithm import time_tagger
 from analyzer.algorithm import video_algorithm
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> test_wanted_length not complete
 from crawler.bilibili import bilibili_info
 
 AVNUMBER = "av23315808"
 AVJSON_PATH = os.path.join(
     __root, "test\\test_file\\{av}.json".format(av=AVNUMBER))
 VIDEO = os.path.join(__root, "test\\test_file\\{av}.mp4".format(av=AVNUMBER))
-<<<<<<< HEAD
-
-=======
-
-VIDEO = os.path.join(__root, "test\\test_file\\analyzer_file.mp4")
->>>>>>> __generate)segments 測試
-=======
-
->>>>>>> test_wanted_length not complete
 
 def test__generate_segments():
     log.i('Strat test__generate_segments.')
@@ -41,10 +28,6 @@ def test__generate_segments():
     total_length = 0
     for time in a:
         total_length += time[1] - time[0]
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> test_wanted_length not complete
     assert assert_total_length == total_length
 
 
@@ -58,9 +41,3 @@ def test_wanted_length():
     for tagged in tagged_list:
         total_length += tagged[1] - tagged[0]
     assert asserted_total_length >= total_length
-<<<<<<< HEAD
-=======
-    assert assert_total_length == total_length
->>>>>>> __generate)segments 測試
-=======
->>>>>>> test_wanted_length not complete
