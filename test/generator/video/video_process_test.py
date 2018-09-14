@@ -25,7 +25,7 @@ ouput = os.path.join(output_location, output_name)
 
 
 def test_video_process_with_temp():
-    log.i('start video_process_test.')
+    log.i('start video_process_with_temp_test.')
     split_list = [(115.0, 120.0), (425.0, 430.0), (750.0, 755.0), (755.0, 760.0),
                   (760.0, 765.0), (830.0, 835.0), (930.0, 935.0), (985.0, 990.0),
                   (990.0, 995.0), (1135.0, 1140.0), (1140.0, 1145.0), (1585.0, 1590.0)]
@@ -34,3 +34,21 @@ def test_video_process_with_temp():
     ouput_temp = os.path.join(output_location, "temp")
     assert os.path.exists(ouput) == True
     assert os.path.exists(ouput_temp) == True
+
+
+def test_video_process_without_temp():
+    log.i('start video_process_without_temp_test.')
+    split_list = [(115.0, 120.0), (425.0, 430.0), (750.0, 755.0), (755.0, 760.0),
+                  (760.0, 765.0), (830.0, 835.0), (930.0, 935.0), (985.0, 990.0),
+                  (990.0, 995.0), (1135.0, 1140.0), (1140.0, 1145.0), (1585.0, 1590.0)]
+    video_process.video_process(
+        filename, split_list, False, output_location, output_name)
+    assert os.path.exists(ouput) == True
+
+
+def test_video_encoding():
+    log.i('start video_encoding_test.')
+    output_name = "14391479.mp4"
+    ouput = os.path.join(output_location, output_name)
+    video_process.video_encoding(filename, output_location, output_name)
+    assert os.path.exists(ouput) == True
