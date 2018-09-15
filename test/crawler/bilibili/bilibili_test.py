@@ -20,6 +20,7 @@ from crawler.bilibili import bilibili
 
 URL = "https://www.bilibili.com/video/av5275610"
 URL_WITH_P = "https://www.bilibili.com/video/av5275610?p=5"
+URL_WITH_ERROR = "https://gitlab.com/T-tour/VeXtract/network/master"
 
 
 def test_info_crawler():
@@ -59,3 +60,10 @@ def test__url_parse_with_p():
     a = bilibili.__url_parse(URL_WITH_P)
     assert a["avnumber"] == "av5275610"
     assert a["p"] == "5"
+
+
+def test__url_parse_with_error():
+    log.i('start test__url_parse_with_error')
+    with pytest.raises(Exception, match=r'av號格式錯誤'):
+        bilibili.__url_parse(URL_WITH_ERROR)
+        

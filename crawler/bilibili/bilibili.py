@@ -91,6 +91,7 @@ def info_crawler(url, des=__root + os.path.join("file", "crawler", "bilibili"), 
     獲取影片資料
     url: b站影片網址
     des: 儲存位置
+    save: 是否儲存
     -> Bilibili_file_info
     """
     url_info = __url_parse(url)
