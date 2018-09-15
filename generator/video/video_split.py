@@ -51,16 +51,22 @@ def split_by_frame(filename, start_time, frame_number, output_location=""):
     log.i("--------------- End split_by_frame() --------------- ")
 
 
-def split_by_manifest(filename, split_start, split_length, rename_to, output_location="", cmd_extra_code="", ifmove=True, vcodec="copy", acodec="copy",
+def split_by_manifest(filename, split_start, split_length, output_name="", output_location="", cmd_extra_code="", ifmove=True, vcodec="copy", acodec="copy",
                       extra="", **kwargs):
     log.i("--------------- Start split_by_manifest() --------------- ")
-    rename_to = "\""+rename_to+"\""
+    defalut_ext = os.path.basename(filename).split(".")[-1]
+    video_name = os.path.basename(filename).split(".")[0]
+    if output_name == "":
+        output_name = video_name+"_ouput"
+    if output_name.split(".")[-1] == output_name:
+        output_name = output_name+"."+defalut_ext
+    output_name = "\""+output_name+"\""
     split_cmd = "ffmpeg -i \"%s\" -vcodec %s -acodec %s -y %s" % (filename,
                                                                   vcodec,
                                                                   acodec,
                                                                   extra)
     split_str = " -ss " + str(split_start) + " -t " + \
-        str(split_length) + " " + rename_to
+        str(split_length) + " " + output_name
     split_cmd = cmd_extra_code + split_cmd + split_str
     log.i("About to run: " + split_cmd)
     subprocess.Popen(split_cmd, shell=True,
@@ -70,7 +76,7 @@ def split_by_manifest(filename, split_start, split_length, rename_to, output_loc
     if not os.path.exists(output_location):
         os.makedirs(output_location, exist_ok=True)
     if ifmove:
-        split_cmd = cmd_extra_code + "move " + rename_to + " \""+output_location+"\""
+        split_cmd = cmd_extra_code + "move " + output_name + " \""+output_location+"\""
         log.i("About to run: " + split_cmd)
         subprocess.Popen(split_cmd, shell=True,
                          stdout=subprocess.PIPE).stdout.read()
@@ -82,4 +88,4 @@ if __name__ == '__main__':
     filename = os.path.join(__root, "file", "03.mp4")
     split_by_frame(filename, 38, 48)
 
-    #split_by_manifest(filename, split_start, split_length, rename_to)
+    #split_by_manifest(filename, split_start, split_length, output_name)

@@ -20,13 +20,13 @@ from generator.video import video_split
 from analyzer.algorithm import video_algorithm
 
 
-def video_process(filename, split_list, temp_Keep=False, output_location="", output_name="output"):
+def video_process(filename, split_list, temp_Keep=False, output_location="", output_name=""):
     """
     影片的裁切與合併
     filename: 影片路徑
     split_list:[(str_time, end_time), ()...]
     output_location: 輸出位置(不包含檔案)
-    output_name: 檔名，副檔名參照輸入檔案
+    output_name: [影片名稱].[副檔名]，若不輸入則預設為[filename的檔名]+_output，副檔名則參照輸入檔案
     """
     log.i("--------------- Start video_process() --------------- ")
     ifpath = False
@@ -34,10 +34,11 @@ def video_process(filename, split_list, temp_Keep=False, output_location="", out
         ifpath = True
         filepath = filename
         filename = os.path.basename(filepath)
-
     count = 0
     video_name = filename.split(".")[0]
     video_type = filename.split(".")[-1]
+    if output_name == "":
+        output_name = video_name+"_ouput"
     if video_type == "flv":
         vcodec = "flv"
     else:
@@ -74,13 +75,22 @@ def video_process(filename, split_list, temp_Keep=False, output_location="", out
     log.i("--------------- End video_process() --------------- ")
 
 
-def video_encoding(filename, output_location="", output_name="output.mp4"):
+def video_encoding(filename, output_location="", output_name=""):
+    """
+    影片的轉檔
+    filename: 影片路徑
+    output_location: 輸出位置(不包含檔案)
+    output_name: [影片名稱].[副檔名]，若不輸入則預設為[filename的檔名]+_output，副檔名則預設為mp4
+    """
     log.i("--------------- Start video_encoding() --------------- ")
     if output_location == "":
         output_location = os.path.join(__root, "file")
     if not os.path.exists(output_location):
         os.makedirs(output_location, exist_ok=True)
     defalut_ext = os.path.basename(filename).split(".")[-1]
+    video_name = os.path.basename(filename).split(".")[0]
+    if output_name == "":
+        output_name = video_name+"_ouput"
     if output_name.split(".")[0] == output_name:
         output_name = output_name+".mp4"
     prefer_ext = output_name.split(".")[-1]
