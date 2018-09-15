@@ -84,14 +84,14 @@ def video_encoding(filename, output_location="", output_name="output.mp4"):
     if output_name.split(".")[0] == output_name:
         output_name = output_name+".mp4"
     prefer_ext = output_name.split(".")[-1]
-    encoding_cmd = "ffmpeg -i \"%s\" -f %s \"%s\"" % (
+    process_cmd = "ffmpeg -i \"%s\" -f %s \"%s\"" % (
         filename, prefer_ext, output_name)
-    log.i("About to run: " + encoding_cmd)
-    subprocess.Popen(encoding_cmd, shell=True,
+    log.i("About to run: " + process_cmd)
+    subprocess.Popen(process_cmd, shell=True,
                      stdout=subprocess.PIPE).stdout.read()
-    log.i("About to run: " + "move " +
-          "\"" + output_name+"\"" + " \""+output_location+"\"")
-    subprocess.Popen("move "+"\""+output_name+"\"" + " \""+output_location+"\"", shell=True,
+    process_cmd = "move " + "\""+output_name+"\"" + " \""+output_location+"\""
+    log.i("About to run: " + process_cmd)
+    subprocess.Popen(process_cmd, shell=True,
                      stdout=subprocess.PIPE).stdout.read()
     log.i('input format is {}  and your output format is {}'.format(
         defalut_ext, prefer_ext))

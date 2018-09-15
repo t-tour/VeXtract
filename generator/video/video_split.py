@@ -61,18 +61,19 @@ def split_by_manifest(filename, split_start, split_length, rename_to, output_loc
                                                                   extra)
     split_str = " -ss " + str(split_start) + " -t " + \
         str(split_length) + " " + rename_to
-    log.i("About to run: " + cmd_extra_code + split_cmd+split_str)
-    subprocess.Popen(cmd_extra_code + split_cmd+split_str,
-                     shell=True, stdout=subprocess.PIPE).stdout.read()
+    split_cmd = cmd_extra_code + split_cmd + split_str
+    log.i("About to run: " + split_cmd)
+    subprocess.Popen(split_cmd, shell=True,
+                     stdout=subprocess.PIPE).stdout.read()
     if output_location == "":
         output_location = os.path.join(__root, "file")
     if not os.path.exists(output_location):
         os.makedirs(output_location, exist_ok=True)
     if ifmove:
-        log.i("About to run: " + cmd_extra_code + "move " +
-              rename_to + " \""+output_location+"\"")
-        subprocess.Popen(cmd_extra_code + "move " + rename_to +
-                         " \""+output_location+"\"", shell=True, stdout=subprocess.PIPE).stdout.read()
+        split_cmd = cmd_extra_code + "move " + rename_to + " \""+output_location+"\""
+        log.i("About to run: " + split_cmd)
+        subprocess.Popen(split_cmd, shell=True,
+                         stdout=subprocess.PIPE).stdout.read()
     log.i("--------------- End split_by_manifest() --------------- ")
 
 

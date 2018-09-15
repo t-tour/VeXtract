@@ -35,10 +35,10 @@ def contact_by_type(video_type, output_location="", output_name="output", cmd_ex
         output_location = os.path.join(__root, "file")
     if not os.path.exists(output_location):
         os.makedirs(output_location, exist_ok=True)
-    log.i("About to run: " + cmd_extra_code + "del mylist.txt &move " +
-          "\""+output_name+"\"" + " \""+output_location+"\"")
-    subprocess.Popen(cmd_extra_code + "del mylist.txt &move " + "\""+output_name+"\"" +
-                     " \""+output_location+"\"", shell=True,
+    contact_cmd = cmd_extra_code + "del mylist.txt &move " + \
+        "\""+output_name+"\"" + " \""+output_location+"\""
+    log.i("About to run: " + contact_cmd)
+    subprocess.Popen(contact_cmd, shell=True,
                      stdout=subprocess.PIPE).stdout.read()
     log.i("--------------- End contact_by_type() --------------- ")
 
@@ -67,8 +67,9 @@ def contact_by_manifest(video_tuple, output_location="", output_name="output"):
     log.i("About to run: " + contact_cmd)
     subprocess.Popen(contact_cmd, shell=True, stdout=subprocess.PIPE,
                      stderr=subprocess.PIPE, stdin=subprocess.PIPE).stdout.read()
-    log.i("About to run: " + "del mylist.txt")
-    subprocess.Popen("del mylist.txt", shell=True,
+    contact_cmd = "del mylist.txt"
+    log.i("About to run: " + contact_cmd)
+    subprocess.Popen(contact_cmd, shell=True,
                      stdout=subprocess.PIPE).stdout.read()
     log.i("--------------- End contact_by_manifest() --------------- ")
 
