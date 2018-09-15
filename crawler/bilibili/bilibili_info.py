@@ -166,7 +166,7 @@ def fetch_bilibili_av(av_number, p):
     comments_dict = dict()
     log.i('start download comments.')
     for cid in as_av_info.cid:
-        comments_dict.update({cid: __cid_comments_list(cid)})
+        comments_dict.update({cid: _cid_comments_list(cid)})
         as_av_info.comments = comments_dict
     if as_av_info.aid is None:
         log.e('target object aid is None.  initial state parse failed.')
@@ -179,7 +179,7 @@ def fetch_bilibili_av(av_number, p):
     return as_av_info
 
 
-def __cid_comments_list(cid: str):
+def _cid_comments_list(cid: str):
     require_link = COMMENT_REQUEST_URL + cid + ".xml"
     req = requests.get(require_link)
     req.encoding = 'utf-8'
@@ -194,7 +194,7 @@ def __cid_comments_list(cid: str):
     return comment_list
 
 
-def __download_b_video(url, p, cid, aid, no):
+def _download_b_video(url, p, cid, aid, no):
     header = HEADER.copy()
     header.update(
         {"Referer": "https://www.bilibili.com/video/av{0}/?p={1}".format(aid, p)})

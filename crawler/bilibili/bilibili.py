@@ -22,11 +22,11 @@ from bs4 import BeautifulSoup
 
 from analyzer.text import natural_lang_process
 from crawler.bilibili.bilibili_info import Bilibili_file_info,\
-    fetch_bilibili_av, __download_b_video
+    fetch_bilibili_av, _download_b_video
 from generator.video import video_contact
 
 
-def __url_parse(url):
+def _url_parse(url):
     url_parsed = parse.urlsplit(url)
     return_value = dict()
     if len(url_parsed.query) > 0:
@@ -54,7 +54,7 @@ def file_crawler(url, des=__root + os.path.join("file", "crawler", "bilibili\\")
 
     -> None
     """
-    url_info = __url_parse(url)
+    url_info = _url_parse(url)
     p = int(url_info["p"])
     target = fetch_bilibili_av(url_info["avnumber"], p)
     os.makedirs(
@@ -63,7 +63,7 @@ def file_crawler(url, des=__root + os.path.join("file", "crawler", "bilibili\\")
     log.i("正在下載 av{0}_{1} cid名稱:{2}".format(
         target.aid, target.cid[p-1], target.cid_name[p-1]))
     for no, url in zip(range(len(target.durl)), target.durl):
-        __download_b_video(url, p, target.cid[p-1], target.aid, no)
+        _download_b_video(url, p, target.cid[p-1], target.aid, no)
     concat_list = os.listdir(".")
     video_contact.contact_by_manifest(
         concat_list, des + "av{}/{}.flv".format(target.aid, target.cid[p-1]))
@@ -81,7 +81,7 @@ def real_time_comment_crawler(url):
         score: default none
     }
     """
-    url_info = __url_parse(url)
+    url_info = _url_parse(url)
     target = fetch_bilibili_av(url_info["avnumber"], url_info["p"])
     return target.comments[target.cid[int(url_info["p"])-1]]
 
@@ -94,7 +94,7 @@ def info_crawler(url, des=__root + os.path.join("file", "crawler", "bilibili"), 
     save: 是否儲存
     -> Bilibili_file_info
     """
-    url_info = __url_parse(url)
+    url_info = _url_parse(url)
     info = fetch_bilibili_av(url_info["avnumber"], url_info["p"])
     if save:
         des = os.path.join(des, "{id}").format(

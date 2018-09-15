@@ -50,14 +50,14 @@ def test_real_time_comment_crawler():
 
 def test__url_parse():
     log.i('start test__url_parse.')
-    a = bilibili.__url_parse(URL)
+    a = bilibili._url_parse(URL)
     assert a["avnumber"] == "av5275610"
     assert a["p"] == "1"
 
 
 def test__url_parse_with_p():
     log.i('start test__url_parse_with_p')
-    a = bilibili.__url_parse(URL_WITH_P)
+    a = bilibili._url_parse(URL_WITH_P)
     assert a["avnumber"] == "av5275610"
     assert a["p"] == "5"
 
@@ -65,5 +65,5 @@ def test__url_parse_with_p():
 def test__url_parse_with_error():
     log.i('start test__url_parse_with_error')
     with pytest.raises(Exception, match=r'av號格式錯誤'):
-        bilibili.__url_parse(URL_WITH_ERROR)
+        bilibili._url_parse(URL_WITH_ERROR)
         
