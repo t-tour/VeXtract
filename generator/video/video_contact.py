@@ -23,8 +23,9 @@ def contact_by_type(video_type, output_location="", output_name="", cmd_extra_co
     log.i("--------------- Start contact_by_type() --------------- ")
     contact_cmd = "(for %i in (*." + video_type + \
         ") do @echo file '%i') > mylist.txt"
-    log.i("About to run: " + cmd_extra_code + contact_cmd)
-    subprocess.Popen(cmd_extra_code + contact_cmd, shell=True,
+    contact_cmd = cmd_extra_code + contact_cmd
+    log.i("About to run: " + contact_cmd)
+    subprocess.Popen(contact_cmd, shell=True,
                      stdout=subprocess.PIPE).stdout.read()
     if output_name == "":
         output_name = "contact_ouput_" + \
@@ -33,8 +34,9 @@ def contact_by_type(video_type, output_location="", output_name="", cmd_extra_co
     if output_name.split(".")[-1] == output_name:
         output_name = output_name+"."+video_type
     contact_cmd = "ffmpeg -f concat -i mylist.txt -c copy " + "\""+output_name+"\""
-    log.i("About to run: " + cmd_extra_code + contact_cmd)
-    subprocess.Popen(cmd_extra_code + contact_cmd, shell=True,
+    contact_cmd = cmd_extra_code + contact_cmd
+    log.i("About to run: " + contact_cmd)
+    subprocess.Popen(contact_cmd, shell=True,
                      stdout=subprocess.PIPE).stdout.read()
     if output_location == "":
         output_location = os.path.join(__root, "file", "generator")
