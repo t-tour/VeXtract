@@ -44,7 +44,7 @@ def split_by_frame(filename, start_time, frame_number, output_location=""):
     if not os.path.exists(output_location):
         os.makedirs(output_location, exist_ok=True)
     shutil.rmtree(os.path.join(output_location, temp_name), ignore_errors=True)
-    split_cmd = "move " + temp_name + " \""+output_location+"\""
+    split_cmd = "move " + "\""+temp_name+"\"" + " \""+output_location+"\""
     log.i("About to run: " + split_cmd)
     subprocess.Popen(split_cmd, shell=True,
                      stdout=subprocess.PIPE).stdout.read()

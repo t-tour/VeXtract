@@ -68,7 +68,7 @@ def video_process(filename, split_list, temp_Keep=False, output_location="", out
         if not os.path.samefile(output_location, os.getcwd()):
             shutil.rmtree(os.path.join(output_location, temp_name),
                           ignore_errors=True)
-            process_cmd = "move " + temp_name + " \""+output_location+"\""
+            process_cmd = "move " + "\""+temp_name+"\"" + " \""+output_location+"\""
             log.i("About to run: " + process_cmd)
             subprocess.Popen(process_cmd, shell=True,
                              stdout=subprocess.PIPE).stdout.read()
