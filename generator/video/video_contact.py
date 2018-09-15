@@ -32,7 +32,7 @@ def contact_by_type(video_type, output_location="", output_name="output", cmd_ex
     subprocess.Popen(cmd_extra_code + contact_cmd, shell=True,
                      stdout=subprocess.PIPE).stdout.read()
     if output_location == "":
-        output_location = os.path.join(__root, "file")
+        output_location = os.path.join(__root, "file", "generator")
     if not os.path.exists(output_location):
         os.makedirs(output_location, exist_ok=True)
     contact_cmd = cmd_extra_code + "del mylist.txt &move " + \
@@ -51,7 +51,7 @@ def contact_by_manifest(video_tuple, output_location="", output_name="output"):
     if output_name == "output":
         output_name = output_name+"."+defalut_ext
     if output_location == "":
-        output_location = os.path.join(__root, "file")
+        output_location = os.path.join(__root, "file", "generator")
     if not os.path.exists(output_location):
         os.makedirs(output_location, exist_ok=True)
     if prefer_ext != defalut_ext:

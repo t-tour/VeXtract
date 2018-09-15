@@ -40,7 +40,7 @@ def split_by_frame(filename, start_time, frame_number, output_location=""):
     subprocess.Popen(split_cmd, shell=True,
                      stdout=subprocess.PIPE).stdout.read()
     if output_location == "":
-        output_location = os.path.join(__root, "file")
+        output_location = os.path.join(__root, "file", "generator")
     if not os.path.exists(output_location):
         os.makedirs(output_location, exist_ok=True)
     shutil.rmtree(os.path.join(output_location, temp_name), ignore_errors=True)
@@ -66,7 +66,7 @@ def split_by_manifest(filename, split_start, split_length, rename_to, output_loc
     subprocess.Popen(split_cmd, shell=True,
                      stdout=subprocess.PIPE).stdout.read()
     if output_location == "":
-        output_location = os.path.join(__root, "file")
+        output_location = os.path.join(__root, "file", "generator")
     if not os.path.exists(output_location):
         os.makedirs(output_location, exist_ok=True)
     if ifmove:

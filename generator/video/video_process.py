@@ -56,7 +56,7 @@ def video_process(filename, split_list, temp_Keep=False, output_location="", out
             video_split.split_by_manifest(os.path.join(os.getcwd(
             ), filename), split_start, split_length, rename_to, cmd_extra_code="cd "+temp_name+" &", ifmove=False, vcodec=vcodec)
     if output_location == "":
-        output_location = os.path.join(__root, "file")
+        output_location = os.path.join(__root, "file", "generator")
     if not os.path.exists(output_location):
         os.makedirs(output_location, exist_ok=True)
     video_contact.contact_by_type(
