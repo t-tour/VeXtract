@@ -42,7 +42,8 @@ def video_process(filename, split_list, temp_Keep=False, output_location="", out
         vcodec = "flv"
     else:
         vcodec = "copy"
-    os.makedirs("temp", exist_ok=True)
+    temp_name = video_name+"_temp"
+    os.makedirs(temp_name, exist_ok=True)
     for i in split_list:
         split_start = float(i[0])
         split_length = float(i[1]) - split_start
@@ -50,25 +51,26 @@ def video_process(filename, split_list, temp_Keep=False, output_location="", out
         count = count + 1
         if ifpath:
             video_split.split_by_manifest(
-                filepath, split_start, split_length, rename_to, cmd_extra_code="cd temp &", ifmove=False, vcodec=vcodec)
+                filepath, split_start, split_length, rename_to, cmd_extra_code="cd "+temp_name+" &", ifmove=False, vcodec=vcodec)
         else:
             video_split.split_by_manifest(os.path.join(os.getcwd(
-            ), filename), split_start, split_length, rename_to, cmd_extra_code="cd temp &", ifmove=False, vcodec=vcodec)
+            ), filename), split_start, split_length, rename_to, cmd_extra_code="cd "+temp_name+" &", ifmove=False, vcodec=vcodec)
     if output_location == "":
         output_location = os.path.join(__root, "file")
     if not os.path.exists(output_location):
         os.makedirs(output_location, exist_ok=True)
     video_contact.contact_by_type(
-        video_type, output_location=output_location, output_name=output_name, cmd_extra_code="cd temp &")
-    if temp_Keep == False:
-        shutil.rmtree("temp", ignore_errors=True)
+        video_type, output_location=output_location, output_name=output_name, cmd_extra_code="cd "+temp_name+" &")
+    if not temp_Keep:
+        shutil.rmtree(temp_name, ignore_errors=True)
     else:
-        if os.path.samefile(output_location, os.getcwd()) == False:
-            shutil.rmtree(os.path.join(output_location, "temp"),
+        if not os.path.samefile(output_location, os.getcwd()):
+            shutil.rmtree(os.path.join(output_location, temp_name),
                           ignore_errors=True)
-            log.i("About to run: " + "move temp" + " \""+output_location+"\"")
-            subprocess.Popen("move temp" +
-                             " \""+output_location + "\"", shell=True, stdout=subprocess.PIPE).stdout.read()
+            process_cmd = "move " + temp_name + " \""+output_location+"\""
+            log.i("About to run: " + process_cmd)
+            subprocess.Popen(process_cmd, shell=True,
+                             stdout=subprocess.PIPE).stdout.read()
     log.i("--------------- End video_process() --------------- ")
 
 
