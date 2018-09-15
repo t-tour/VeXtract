@@ -17,13 +17,15 @@ import subprocess
 from optparse import OptionParser
 
 
-def contact_by_type(video_type, output_location="", output_name="", cmd_extra_code=""):
+def contact_by_type(video_type, input_location="", output_location="", output_name=""):
     # FIXME: 以後可能會架在 linux 上面運行 所以需要跨平台的指令
     # FIXME: 沒有修過喔~
     log.i("--------------- Start contact_by_type() --------------- ")
+    if input_location == "":
+        input_location = os.getcwd()
     contact_cmd = "(for %i in (*." + video_type + \
         ") do @echo file '%i') > mylist.txt"
-    contact_cmd = cmd_extra_code + contact_cmd
+    contact_cmd = "cd " + "\""+input_location+"\""+" &" + contact_cmd
     log.i("About to run: " + contact_cmd)
     subprocess.Popen(contact_cmd, shell=True,
                      stdout=subprocess.PIPE).stdout.read()
@@ -34,7 +36,7 @@ def contact_by_type(video_type, output_location="", output_name="", cmd_extra_co
     if output_name.split(".")[-1] == output_name:
         output_name = output_name+"."+video_type
     contact_cmd = "ffmpeg -f concat -i mylist.txt -c copy " + "\""+output_name+"\""
-    contact_cmd = cmd_extra_code + contact_cmd
+    contact_cmd = "cd " + "\""+input_location+"\""+" &" + contact_cmd
     log.i("About to run: " + contact_cmd)
     subprocess.Popen(contact_cmd, shell=True,
                      stdout=subprocess.PIPE).stdout.read()
@@ -42,7 +44,7 @@ def contact_by_type(video_type, output_location="", output_name="", cmd_extra_co
         output_location = os.path.join(__root, "file", "generator")
     if not os.path.exists(output_location):
         os.makedirs(output_location, exist_ok=True)
-    contact_cmd = cmd_extra_code + "del mylist.txt &move " + \
+    contact_cmd = "cd " + "\""+input_location+"\""+" &" + "del mylist.txt &move " + \
         "\""+output_name+"\"" + " \""+output_location+"\""
     log.i("About to run: " + contact_cmd)
     subprocess.Popen(contact_cmd, shell=True,

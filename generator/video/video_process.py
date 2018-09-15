@@ -52,16 +52,16 @@ def video_process(filename, split_list, temp_Keep=False, output_location="", out
         count = count + 1
         if ifpath:
             video_split.split_by_manifest(
-                filepath, split_start, split_length, rename_to, cmd_extra_code="cd "+temp_name+" &", ifmove=False, vcodec=vcodec)
+                filepath, split_start, split_length, output_name=rename_to, output_location=temp_name, vcodec=vcodec)
         else:
             video_split.split_by_manifest(os.path.join(os.getcwd(
-            ), filename), split_start, split_length, rename_to, cmd_extra_code="cd "+temp_name+" &", ifmove=False, vcodec=vcodec)
+            ), filename), split_start, split_length, output_name=rename_to, output_location=temp_name, vcodec=vcodec)
     if output_location == "":
         output_location = os.path.join(__root, "file", "generator")
     if not os.path.exists(output_location):
         os.makedirs(output_location, exist_ok=True)
     video_contact.contact_by_type(
-        video_type, output_location=output_location, output_name=output_name, cmd_extra_code="cd "+temp_name+" &")
+        video_type, input_location=temp_name, output_location=output_location, output_name=output_name)
     if not temp_Keep:
         shutil.rmtree(temp_name, ignore_errors=True)
     else:
