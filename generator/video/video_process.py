@@ -87,7 +87,7 @@ def video_encoding(filename, output_location="", output_name="", bitrate="5000k"
         output_name = output_name+".mp4"
     prefer_ext = output_name.split(".")[-1]
     output = os.path.join(output_location, output_name)
-    process_cmd = "ffmpeg -i \"%s\" -f %s -b %s -cpu-used 2 -threads 4 -y \"%s\"" % (
+    process_cmd = "ffmpeg -i \"%s\" -f %s -b:v %s -threads 4 -y \"%s\"" % (
         filename, prefer_ext, bitrate, output)
     log.i("About to run: " + process_cmd)
     subprocess.Popen(process_cmd, shell=True,
