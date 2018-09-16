@@ -26,21 +26,23 @@ def contact_by_type(video_type, input_location="", output_location="", output_na
     output_name: [影片名稱].[副檔名]，預設為contact_output_[一段五位數Random亂數]]，副檔名則參照video_type
     """
     log.i("--------------- Start contact_by_type() --------------- ")
+    random_number = "".join(random.sample(
+        ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'], 5))
+    contact_list_name = "contact_list_"+random_number+".txt"
     if input_location == "":
         input_location = os.getcwd()
     contact_cmd = "(for %i in (*." + video_type + \
-        ") do @echo file '%i') > mylist.txt"
+        ") do @echo file '%i') > " + contact_list_name
     contact_cmd = "cd " + "\""+input_location+"\""+" &" + contact_cmd
     log.i("About to run: " + contact_cmd)
     subprocess.Popen(contact_cmd, shell=True,
                      stdout=subprocess.PIPE).stdout.read()
     if output_name == "":
-        output_name = "contact_ouput_" + \
-            "".join(random.sample(
-                ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'], 5))
+        output_name = "contact_ouput_" + random_number
     if output_name.split(".")[-1] == output_name:
         output_name = output_name+"."+video_type
-    contact_cmd = "ffmpeg -f concat -i mylist.txt -c copy -y " + "\""+output_name+"\""
+    contact_cmd = "ffmpeg -f concat -i %s -c copy -y \"%s\"" % (
+        contact_list_name, output_name)
     contact_cmd = "cd " + "\""+input_location+"\""+" &" + contact_cmd
     log.i("About to run: " + contact_cmd)
     subprocess.Popen(contact_cmd, shell=True,
@@ -49,7 +51,7 @@ def contact_by_type(video_type, input_location="", output_location="", output_na
         output_location = os.path.join(__root, "file", "generator")
     if not os.path.exists(output_location):
         os.makedirs(output_location, exist_ok=True)
-    contact_cmd = "cd " + "\""+input_location+"\""+" &" + "del mylist.txt &move " + \
+    contact_cmd = "cd " + "\""+input_location+"\""+" &" + "del " + contact_list_name + " &move " + \
         "\""+output_name+"\"" + " \""+output_location+"\""
     log.i("About to run: " + contact_cmd)
     subprocess.Popen(contact_cmd, shell=True,
@@ -65,11 +67,12 @@ def contact_by_manifest(video_tuple, output_location="", output_name=""):
     output_name: [影片名稱].[副檔名]，預設為contact_output_[一段五位數Random亂數]]，副檔名則參照video_tuple的第一個檔案
     """
     log.i("--------------- Start contact_by_manifest() --------------- ")
+    random_number = "".join(random.sample(
+        ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'], 5))
+    contact_list_name = "contact_list_"+random_number+".txt"
     video_type = video_tuple[0].split(".")[-1]
     if output_name == "":
-        output_name = "contact_ouput_" + \
-            "".join(random.sample(
-                ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'], 5))
+        output_name = "contact_ouput_"+random_number
     if output_name.split(".")[-1] == output_name:
         output_name = output_name+"."+video_type
     if output_location == "":
@@ -77,16 +80,16 @@ def contact_by_manifest(video_tuple, output_location="", output_name=""):
     if not os.path.exists(output_location):
         os.makedirs(output_location, exist_ok=True)
     for i in video_tuple:
-        contact_cmd = "echo file '%s'>>mylist.txt" % (i)
+        contact_cmd = "echo file '%s'>>%s" % (i, contact_list_name)
         log.i("About to run: " + contact_cmd)
         subprocess.Popen(contact_cmd, shell=True,
                          stdout=subprocess.PIPE).stdout.read()
-    contact_cmd = "ffmpeg -f concat -safe 0 -i mylist.txt -c copy -y \"%s\"" % (
-        os.path.join(output_location, output_name))
+    contact_cmd = "ffmpeg -f concat -safe 0 -i %s -c copy -y \"%s\"" % (
+        contact_list_name, os.path.join(output_location, output_name))
     log.i("About to run: " + contact_cmd)
     subprocess.Popen(contact_cmd, shell=True, stdout=subprocess.PIPE,
                      stderr=subprocess.PIPE, stdin=subprocess.PIPE).stdout.read()
-    contact_cmd = "del mylist.txt"
+    contact_cmd = "del " + contact_list_name
     log.i("About to run: " + contact_cmd)
     subprocess.Popen(contact_cmd, shell=True,
                      stdout=subprocess.PIPE).stdout.read()
