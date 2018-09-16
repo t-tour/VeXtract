@@ -93,7 +93,7 @@ def video_encoding(filename, output_location="", output_name="", bitrate="5000k"
     if output_name.split(".")[0] == output_name:
         output_name = output_name+".mp4"
     prefer_ext = output_name.split(".")[-1]
-    process_cmd = "ffmpeg -i \"%s\" -f %s -b %s -cpu-used 2 -threads 4 \"%s\"" % (
+    process_cmd = "ffmpeg -i \"%s\" -f %s -b %s -cpu-used 2 -threads 4 -y \"%s\"" % (
         filename, prefer_ext, bitrate, output_name)
     log.i("About to run: " + process_cmd)
     subprocess.Popen(process_cmd, shell=True,
@@ -102,8 +102,8 @@ def video_encoding(filename, output_location="", output_name="", bitrate="5000k"
     log.i("About to run: " + process_cmd)
     subprocess.Popen(process_cmd, shell=True,
                      stdout=subprocess.PIPE).stdout.read()
-    log.i('input format is {}  and your output format is {}'.format(
-        defalut_ext, prefer_ext))
+    log.i('input format is %s  and your output format is %s' %
+          (defalut_ext, prefer_ext))
     log.i("--------------- End video_encoding() --------------- ")
 
 

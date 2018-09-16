@@ -81,7 +81,7 @@ def split_by_manifest(filename, split_start, split_length, output_location="", o
     if output_name.split(".")[-1] == output_name:
         output_name = output_name+"."+defalut_ext
     output_name = os.path.join(output_location, output_name)
-    split_cmd = "ffmpeg -ss %s -i \"%s\" -t %s -avoid_negative_ts make_zero -b %s -cpu-used 2 -threads 4 \"%s\"" % (
+    split_cmd = "ffmpeg -ss %s -i \"%s\" -t %s -avoid_negative_ts make_zero -b %s -cpu-used 2 -threads 4 -y \"%s\"" % (
         str(split_start), filename, str(split_length), bitrate, output_name)
     log.i("About to run: " + split_cmd)
     subprocess.Popen(split_cmd, shell=True,
