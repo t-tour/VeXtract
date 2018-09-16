@@ -79,7 +79,7 @@ def video_process(filename, split_list, temp_Keep=False, output_location="", out
 
 def video_encoding(filename, output_location="", output_name="", bitrate="5000k"):
     """
-    影片的轉檔
+    影片的轉檔，根據ouput_name的副檔名做編碼
     filename: 影片路徑
     output_location: 輸出位置(不包含檔案)，預設為__root/file/generator
     output_name: [影片名稱].[副檔名]，預設為[filename的檔名]+_output，副檔名則預設為mp4
