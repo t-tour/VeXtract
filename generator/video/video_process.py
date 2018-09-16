@@ -39,10 +39,6 @@ def video_process(filename, split_list, temp_Keep=False, output_location="", out
     video_type = filename.split(".")[-1]
     if output_name == "":
         output_name = video_name+"_ouput"
-    if video_type == "flv":
-        vcodec = "flv"
-    else:
-        vcodec = "copy"
     temp_name = video_name+"_temp"
     os.makedirs(temp_name, exist_ok=True)
     split_list_digit = len(str(len(split_list)))
@@ -54,10 +50,10 @@ def video_process(filename, split_list, temp_Keep=False, output_location="", out
         count = count + 1
         if ifpath:
             video_split.split_by_manifest(
-                filepath, split_start, split_length, output_name=rename_to, output_location=temp_name, vcodec=vcodec)
+                filepath, split_start, split_length, output_location=temp_name, output_name=rename_to)
         else:
             video_split.split_by_manifest(os.path.join(os.getcwd(
-            ), filename), split_start, split_length, output_name=rename_to, output_location=temp_name, vcodec=vcodec)
+            ), filename), split_start, split_length, output_location=temp_name, output_name=rename_to)
     if output_location == "":
         output_location = os.path.join(__root, "file", "generator")
     if not os.path.exists(output_location):

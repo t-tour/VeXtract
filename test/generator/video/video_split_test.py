@@ -49,7 +49,7 @@ def test_split_by_manifest():
     split_start = 0
     split_length = 30
     video_split.split_by_manifest(
-        filename, split_start, split_length, output_name, output_location)
+        filename, split_start, split_length, output_location, output_name)
     assert os.path.exists(ouput) == True
     shutil.rmtree(ouput, ignore_errors=True)
     shutil.rmtree(output_location, ignore_errors=True)

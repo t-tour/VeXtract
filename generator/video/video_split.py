@@ -59,16 +59,15 @@ def split_by_frame(filename, start_time, frame_number, output_location=""):
     log.i("--------------- End split_by_frame() --------------- ")
 
 
-def split_by_manifest(filename, split_start, split_length, output_name="", output_location="", vcodec="copy", acodec="copy",
-                      extra="", **kwargs):
+def split_by_manifest(filename, split_start, split_length, output_location="", output_name="", bitrate="5000k"):
     """
     依照自訂義時間切割影片
     filename: 影片路徑
     split_start: 切割開始的時間點
     split_length: 要切割的時間長度
-    output_name: output_name: [影片名稱].[副檔名]，預設為[filename的檔名]+_output，副檔名則參照輸入檔案
     output_location: 輸出位置(不包含檔案)，預設為__root/file/generator
-    vcodec、acodec請先別理他，不影響程式運作
+    output_name: output_name: [影片名稱].[副檔名]，預設為[filename的檔名]+_output，副檔名則參照輸入檔案
+    bitrate: 影片位元速率，越大畫質越好，檔案容量也越大，預設為5000k
     """
     log.i("--------------- Start split_by_manifest() --------------- ")
     if output_location == "":
@@ -82,14 +81,8 @@ def split_by_manifest(filename, split_start, split_length, output_name="", outpu
     if output_name.split(".")[-1] == output_name:
         output_name = output_name+"."+defalut_ext
     output_name = os.path.join(output_location, output_name)
-    output_name = "\""+output_name+"\""
-    split_cmd = "ffmpeg -i \"%s\" -vcodec %s -acodec %s -y %s" % (filename,
-                                                                  vcodec,
-                                                                  acodec,
-                                                                  extra)
-    split_str = " -ss " + str(split_start) + " -t " + \
-        str(split_length) + " " + output_name
-    split_cmd = split_cmd + split_str
+    split_cmd = "ffmpeg -ss %s -i \"%s\" -t %s -avoid_negative_ts make_zero -b %s -cpu-used 2 -threads 4 \"%s\"" % (
+        str(split_start), filename, str(split_length), bitrate, output_name)
     log.i("About to run: " + split_cmd)
     subprocess.Popen(split_cmd, shell=True,
                      stdout=subprocess.PIPE).stdout.read()
