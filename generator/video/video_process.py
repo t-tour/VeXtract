@@ -29,6 +29,10 @@ def video_process(filename, split_list, temp_Keep=False, output_location="", out
     output_name: [影片名稱].[副檔名]，預設為[filename的檔名]+_output，副檔名則參照輸入檔案
     """
     log.i("--------------- Start video_process() --------------- ")
+    if output_location == "":
+        output_location = os.path.join(__root, "file", "generator")
+    if not os.path.exists(output_location):
+        os.makedirs(output_location, exist_ok=True)
     ifpath = False
     if filename.find(os.sep) != -1:
         ifpath = True
@@ -40,7 +44,8 @@ def video_process(filename, split_list, temp_Keep=False, output_location="", out
     if output_name == "":
         output_name = video_name+"_ouput"
     temp_name = video_name+"_temp"
-    os.makedirs(temp_name, exist_ok=True)
+    ouput_temp = os.path.join(output_location, temp_name)
+    os.makedirs(ouput_temp, exist_ok=True)
     split_list_digit = len(str(len(split_list)))
     for i in split_list:
         split_start = float(i[0])
@@ -50,26 +55,14 @@ def video_process(filename, split_list, temp_Keep=False, output_location="", out
         count = count + 1
         if ifpath:
             video_split.split_by_manifest(
-                filepath, split_start, split_length, output_location=temp_name, output_name=rename_to)
+                filepath, split_start, split_length, output_location=ouput_temp, output_name=rename_to)
         else:
             video_split.split_by_manifest(os.path.join(os.getcwd(
-            ), filename), split_start, split_length, output_location=temp_name, output_name=rename_to)
-    if output_location == "":
-        output_location = os.path.join(__root, "file", "generator")
-    if not os.path.exists(output_location):
-        os.makedirs(output_location, exist_ok=True)
+            ), filename), split_start, split_length, output_location=ouput_temp, output_name=rename_to)
     video_contact.contact_by_type(
-        video_type, input_location=temp_name, output_location=output_location, output_name=output_name)
+        video_type, input_location=ouput_temp, output_location=output_location, output_name=output_name)
     if not temp_Keep:
-        shutil.rmtree(temp_name, ignore_errors=True)
-    else:
-        if not os.path.samefile(output_location, os.getcwd()):
-            shutil.rmtree(os.path.join(output_location, temp_name),
-                          ignore_errors=True)
-            process_cmd = "move " + "\""+temp_name+"\"" + " \""+output_location+"\""
-            log.i("About to run: " + process_cmd)
-            subprocess.Popen(process_cmd, shell=True,
-                             stdout=subprocess.PIPE).stdout.read()
+        shutil.rmtree(ouput_temp, ignore_errors=True)
     log.i("--------------- End video_process() --------------- ")
 
 
@@ -93,12 +86,9 @@ def video_encoding(filename, output_location="", output_name="", bitrate="5000k"
     if output_name.split(".")[0] == output_name:
         output_name = output_name+".mp4"
     prefer_ext = output_name.split(".")[-1]
+    output = os.path.join(output_location, output_name)
     process_cmd = "ffmpeg -i \"%s\" -f %s -b %s -cpu-used 2 -threads 4 -y \"%s\"" % (
-        filename, prefer_ext, bitrate, output_name)
-    log.i("About to run: " + process_cmd)
-    subprocess.Popen(process_cmd, shell=True,
-                     stdout=subprocess.PIPE).stdout.read()
-    process_cmd = "move " + "\""+output_name+"\"" + " \""+output_location+"\""
+        filename, prefer_ext, bitrate, output)
     log.i("About to run: " + process_cmd)
     subprocess.Popen(process_cmd, shell=True,
                      stdout=subprocess.PIPE).stdout.read()

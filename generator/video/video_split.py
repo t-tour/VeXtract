@@ -32,6 +32,10 @@ def split_by_frame(filename, start_time, frame_number, output_location=""):
     切完之後，會產生一個[filename的檔案名稱]+_temp的資料節，並移到output_location
     """
     log.i("--------------- Start split_by_frame() --------------- ")
+    if output_location == "":
+        output_location = os.path.join(__root, "file", "generator")
+    if not os.path.exists(output_location):
+        os.makedirs(output_location, exist_ok=True)
     if filename.find(os.sep) != -1:
         video_name = os.path.basename(filename)
         video_name = video_name.split(".")[0]
@@ -39,20 +43,12 @@ def split_by_frame(filename, start_time, frame_number, output_location=""):
         video_name = filename.split(".")[0]
         filename = os.path.join(os.getcwd(), filename)
     temp_name = video_name+"_temp"
-    os.makedirs(temp_name, exist_ok=True)
+    ouput_temp = os.path.join(output_location, temp_name)
+    os.makedirs(ouput_temp, exist_ok=True)
     video_fps = video_algorithm.get_video_fps(filename)
+    ouput = os.path.join(ouput_temp, video_name)
     split_cmd = "ffmpeg -i \"%s\" -ss %s -r %s -vframes %s -y \"%s-%s.jpg\"" % (
-        filename, str(start_time), str(video_fps), str(frame_number), video_name, "%d")
-    split_cmd = "cd " + temp_name+" &" + split_cmd
-    log.i("About to run: " + split_cmd)
-    subprocess.Popen(split_cmd, shell=True,
-                     stdout=subprocess.PIPE).stdout.read()
-    if output_location == "":
-        output_location = os.path.join(__root, "file", "generator")
-    if not os.path.exists(output_location):
-        os.makedirs(output_location, exist_ok=True)
-    shutil.rmtree(os.path.join(output_location, temp_name), ignore_errors=True)
-    split_cmd = "move " + "\""+temp_name+"\"" + " \""+output_location+"\""
+        filename, str(start_time), str(video_fps), str(frame_number), ouput, "%d")
     log.i("About to run: " + split_cmd)
     subprocess.Popen(split_cmd, shell=True,
                      stdout=subprocess.PIPE).stdout.read()
@@ -80,9 +76,9 @@ def split_by_manifest(filename, split_start, split_length, output_location="", o
         output_name = video_name+"_ouput"
     if output_name.split(".")[-1] == output_name:
         output_name = output_name+"."+defalut_ext
-    output_name = os.path.join(output_location, output_name)
+    output = os.path.join(output_location, output_name)
     split_cmd = "ffmpeg -ss %s -i \"%s\" -t %s -avoid_negative_ts make_zero -b %s -cpu-used 2 -threads 4 -y \"%s\"" % (
-        str(split_start), filename, str(split_length), bitrate, output_name)
+        str(split_start), filename, str(split_length), bitrate, output)
     log.i("About to run: " + split_cmd)
     subprocess.Popen(split_cmd, shell=True,
                      stdout=subprocess.PIPE).stdout.read()
