@@ -23,6 +23,14 @@ from analyzer.algorithm import video_algorithm
 
 
 def split_by_frame(filename, start_time, frame_number, output_location=""):
+    """
+    從影片的特定時間點切出一張一張的frame
+    filename: 影片路徑
+    start_time: 切割開始的時間點
+    frame_number: 要切的frame張數
+    output_location: 輸出位置(不包含檔案)，預設為__root/file/generator
+    切完之後，會產生一個[filename的檔案名稱]+_temp的資料節，並移到output_location
+    """
     log.i("--------------- Start split_by_frame() --------------- ")
     if filename.find(os.sep) != -1:
         video_name = os.path.basename(filename)
@@ -53,6 +61,15 @@ def split_by_frame(filename, start_time, frame_number, output_location=""):
 
 def split_by_manifest(filename, split_start, split_length, output_name="", output_location="", vcodec="copy", acodec="copy",
                       extra="", **kwargs):
+    """
+    依照自訂義時間切割影片
+    filename: 影片路徑
+    split_start: 切割開始的時間點
+    split_length: 要切割的時間長度
+    output_name: output_name: [影片名稱].[副檔名]，預設為[filename的檔名]+_output，副檔名則參照輸入檔案
+    output_location: 輸出位置(不包含檔案)，預設為__root/file/generator
+    vcodec、acodec請先別理他，不影響程式運作
+    """
     log.i("--------------- Start split_by_manifest() --------------- ")
     if output_location == "":
         output_location = os.path.join(__root, "file", "generator")
