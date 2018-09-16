@@ -50,9 +50,10 @@ def test_video_process_with_temp():
     video_name = os.path.basename(filename).split(".")[0]
     video_type = os.path.basename(filename).split(".")[-1]
     temp_name = video_name+"_temp"
+    split_list_digit = len(str(len(split_list)))
     for i in range(len(split_list)):
         ouput_temp = os.path.join(
-            output_location, temp_name, video_name+"-"+str(i)+"."+video_type)
+            output_location, temp_name, video_name+"-"+str(i).zfill(split_list_digit)+"."+video_type)
         assert os.path.exists(ouput_temp) == True
         shutil.rmtree(ouput_temp, ignore_errors=True)
     shutil.rmtree(output_location, ignore_errors=True)

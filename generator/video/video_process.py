@@ -45,10 +45,12 @@ def video_process(filename, split_list, temp_Keep=False, output_location="", out
         vcodec = "copy"
     temp_name = video_name+"_temp"
     os.makedirs(temp_name, exist_ok=True)
+    split_list_digit = len(str(len(split_list)))
     for i in split_list:
         split_start = float(i[0])
         split_length = float(i[1]) - split_start
-        rename_to = video_name+"-"+str(count)+"."+video_type
+        rename_to = video_name+"-" + \
+            str(count).zfill(split_list_digit)+"."+video_type
         count = count + 1
         if ifpath:
             video_split.split_by_manifest(
