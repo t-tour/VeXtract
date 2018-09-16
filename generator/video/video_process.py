@@ -77,12 +77,13 @@ def video_process(filename, split_list, temp_Keep=False, output_location="", out
     log.i("--------------- End video_process() --------------- ")
 
 
-def video_encoding(filename, output_location="", output_name=""):
+def video_encoding(filename, output_location="", output_name="", bitrate="5000k"):
     """
     影片的轉檔
     filename: 影片路徑
     output_location: 輸出位置(不包含檔案)，預設為__root/file/generator
     output_name: [影片名稱].[副檔名]，預設為[filename的檔名]+_output，副檔名則預設為mp4
+    bitrate: 影片位元速率，越大畫質越好，檔案容量也越大，預設為5000k
     """
     log.i("--------------- Start video_encoding() --------------- ")
     if output_location == "":
@@ -96,8 +97,8 @@ def video_encoding(filename, output_location="", output_name=""):
     if output_name.split(".")[0] == output_name:
         output_name = output_name+".mp4"
     prefer_ext = output_name.split(".")[-1]
-    process_cmd = "ffmpeg -i \"%s\" -f %s \"%s\"" % (
-        filename, prefer_ext, output_name)
+    process_cmd = "ffmpeg -i \"%s\" -f %s -b %s -cpu-used 2 -threads 4 \"%s\"" % (
+        filename, prefer_ext, bitrate, output_name)
     log.i("About to run: " + process_cmd)
     subprocess.Popen(process_cmd, shell=True,
                      stdout=subprocess.PIPE).stdout.read()
