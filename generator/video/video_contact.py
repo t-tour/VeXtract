@@ -17,15 +17,17 @@ import subprocess
 from optparse import OptionParser
 
 
-def contact_by_type(video_type, input_location="", output_location="", output_name=""):
+def contact_by_type(video_type, input_location="", output_location="", output_name="", ifMain=True):
     """
     把路徑底下，所有同類型的影片合併
     video_type: 要合併的影片類型
     input_location: 要合併影片的路徑
     output_location: 輸出位置(不包含檔案)，預設為__root/file/generator
     output_name: [影片名稱].[副檔名]，預設為contact_output_[一段五位數Random亂數]]，副檔名則參照video_type
+    ifMain: 控制log要不要顯示Strat,End
     """
-    log.i("--------------- Start contact_by_type() --------------- ")
+    if ifMain:
+        log.i("--------------- Start contact_by_type() --------------- ")
     if input_location == "":
         input_location = os.getcwd()
     if output_location == "":
@@ -52,17 +54,20 @@ def contact_by_type(video_type, input_location="", output_location="", output_na
     log.i("About to run: " + contact_cmd)
     subprocess.Popen(contact_cmd, shell=True,
                      stdout=subprocess.PIPE).stdout.read()
-    log.i("--------------- End contact_by_type() --------------- ")
+    if ifMain:
+        log.i("--------------- End contact_by_type() --------------- ")
 
 
-def contact_by_manifest(video_tuple, output_location="", output_name=""):
+def contact_by_manifest(video_tuple, output_location="", output_name="", ifMain=True):
     """
     依照自訂義的video_tuple，照順序把影片合併
     video_tuple: 要合併的影片集合，tuple格式：(影片1,影片2,...)，影片請輸入絕對路徑，不然則預設為執行目錄底下開始
     output_location: 輸出位置(不包含檔案)，預設為__root/file/generator
     output_name: [影片名稱].[副檔名]，預設為contact_output_[一段五位數Random亂數]]，副檔名則參照video_tuple的第一個檔案
+    ifMain: 控制log要不要顯示Strat,End
     """
-    log.i("--------------- Start contact_by_manifest() --------------- ")
+    if ifMain:
+        log.i("--------------- Start contact_by_manifest() --------------- ")
     if output_location == "":
         output_location = os.path.join(__root, "file", "generator")
     if not os.path.exists(output_location):
@@ -86,7 +91,8 @@ def contact_by_manifest(video_tuple, output_location="", output_name=""):
     log.i("About to run: " + contact_cmd)
     subprocess.Popen(contact_cmd, shell=True, stdout=subprocess.PIPE,
                      stderr=subprocess.PIPE, stdin=subprocess.PIPE).stdout.read()
-    log.i("--------------- End contact_by_manifest() --------------- ")
+    if ifMain:
+        log.i("--------------- End contact_by_manifest() --------------- ")
 
 
 if __name__ == '__main__':

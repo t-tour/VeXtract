@@ -22,7 +22,7 @@ from optparse import OptionParser
 from analyzer.algorithm import video_algorithm
 
 
-def split_by_frame(filename, start_time, frame_number, output_location=""):
+def split_by_frame(filename, start_time, frame_number, output_location="", ifMain=True):
     """
     從影片的特定時間點切出一張一張的frame
     filename: 影片路徑
@@ -31,8 +31,10 @@ def split_by_frame(filename, start_time, frame_number, output_location=""):
     output_location: 輸出位置(不包含檔案)，預設為__root/file/generator 
     frames的輸出: 會在output_location產生一個[filename的檔案名稱]+_frames的資料夾，並存放切出的frames，
                   如果有存在相同資料夾，則會自動在後面加上_1,_2,...
+    ifMain: 控制log要不要顯示Strat,End
     """
-    log.i("--------------- Start split_by_frame() --------------- ")
+    if ifMain:
+        log.i("--------------- Start split_by_frame() --------------- ")
     if output_location == "":
         output_location = os.path.join(__root, "file", "generator")
     if not os.path.exists(output_location):
@@ -63,10 +65,11 @@ def split_by_frame(filename, start_time, frame_number, output_location=""):
     log.i("About to run: " + split_cmd)
     subprocess.Popen(split_cmd, shell=True,
                      stdout=subprocess.PIPE).stdout.read()
-    log.i("--------------- End split_by_frame() --------------- ")
+    if ifMain:
+        log.i("--------------- End split_by_frame() --------------- ")
 
 
-def split_by_manifest(filename, split_start, split_length, output_location="", output_name="", bitrate="5000k"):
+def split_by_manifest(filename, split_start, split_length, output_location="", output_name="", bitrate="5000k", ifMain=True):
     """
     依照自訂義時間切割影片
     filename: 影片路徑
@@ -75,8 +78,10 @@ def split_by_manifest(filename, split_start, split_length, output_location="", o
     output_location: 輸出位置(不包含檔案)，預設為__root/file/generator
     output_name: output_name: [影片名稱].[副檔名]，預設為[filename的檔名]+_output，副檔名則參照輸入檔案
     bitrate: 影片位元速率，越大畫質越好，檔案容量也越大，預設為5000k
+    ifMain: 控制log要不要顯示Strat,End
     """
-    log.i("--------------- Start split_by_manifest() --------------- ")
+    if ifMain:
+        log.i("--------------- Start split_by_manifest() --------------- ")
     if output_location == "":
         output_location = os.path.join(__root, "file", "generator")
     if not os.path.exists(output_location):
@@ -93,7 +98,8 @@ def split_by_manifest(filename, split_start, split_length, output_location="", o
     log.i("About to run: " + split_cmd)
     subprocess.Popen(split_cmd, shell=True,
                      stdout=subprocess.PIPE).stdout.read()
-    log.i("--------------- End split_by_manifest() --------------- ")
+    if ifMain:
+        log.i("--------------- End split_by_manifest() --------------- ")
 
 
 if __name__ == '__main__':
