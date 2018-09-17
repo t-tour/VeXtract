@@ -20,6 +20,7 @@ from crawler.bilibili import bilibili
 
 URL = "https://www.bilibili.com/video/av5275610"
 URL_WITH_P = "https://www.bilibili.com/video/av5275610?p=5"
+URL_WITH_ERROR = "https://gitlab.com/T-tour/VeXtract/network/master"
 
 
 def test_info_crawler():
@@ -40,22 +41,35 @@ def test_info_crawler_save_des():
 
 def test_real_time_comment_crawler():
     log.i('start test_real_time_comment_crawler.')
-    a = bilibili.real_time_comment_crawler(URL)
+    a = bilibili.real_time_comments_crawler(URL)
     comp_list = sorted(a, key=lambda d: d["user"])
     comp = {'user': '159ab093', 'sec': '579.79500',
             'text': '18年清明节留', 'score': None}
     assert comp == comp_list[0]
 
 
-def test__url_parse():
+def test_url_parse():
     log.i('start test__url_parse.')
-    a = bilibili.__url_parse(URL)
+    a = bilibili._url_parse(URL)
     assert a["avnumber"] == "av5275610"
     assert a["p"] == "1"
 
 
-def test__url_parse_with_p():
+def test_url_parse_with_p():
     log.i('start test__url_parse_with_p')
-    a = bilibili.__url_parse(URL_WITH_P)
+    a = bilibili._url_parse(URL_WITH_P)
     assert a["avnumber"] == "av5275610"
     assert a["p"] == "5"
+
+
+def test_url_parse_with_error():
+    log.i('start test__url_parse_with_error')
+    with pytest.raises(Exception, match=r'av號格式錯誤'):
+        bilibili._url_parse(URL_WITH_ERROR)
+
+def test_comment_crawler():
+    log.i('start test_comment_crawler.')
+    a = bilibili.comment_crawler(URL)
+    a = sorted(a, key=lambda c: c["pub_date"])
+    assert a[0]["user"] == "19478213"
+    assert a[0]["text"] == "看到进度条差点被吓出来，不过还是坚持下来了"
