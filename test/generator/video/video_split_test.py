@@ -29,7 +29,7 @@ def test_split_by_frame():
     log.i('start split_by_frame_test.')
     video_name = os.path.basename(filename)
     video_name = video_name.split(".")[0]
-    temp_name = video_name+"_temp"
+    temp_name = video_name+"_frames"
     shutil.rmtree(output_location, ignore_errors=True)
     start_time = 5
     frame_number = 30

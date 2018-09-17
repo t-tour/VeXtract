@@ -27,6 +27,8 @@ def video_process(filename, split_list, temp_Keep=False, output_location="", out
     split_list:[(start_time1, end_time1), (start_time2,end_time2))...]
     output_location: 輸出位置(不包含檔案)，預設為__root/file/generator
     output_name: [影片名稱].[副檔名]，預設為[filename的檔名]+_output，副檔名則參照輸入檔案
+    temp_Keep: 處理時會在output_location產生[filename的檔案名稱]+_process_temp的資料夾，
+               可選擇是否保留，如果有存在相同資料夾，則會自動在後面加上_1,_2,...
     """
     log.i("--------------- Start video_process() --------------- ")
     if output_location == "":
@@ -43,8 +45,18 @@ def video_process(filename, split_list, temp_Keep=False, output_location="", out
     video_type = filename.split(".")[-1]
     if output_name == "":
         output_name = video_name+"_ouput"
-    temp_name = video_name+"_temp"
+    temp_name = video_name+"_process_temp"
     ouput_temp = os.path.join(output_location, temp_name)
+    check = False
+    i = 0
+    while not check:
+        i = i+1
+        if os.path.exists(ouput_temp):
+            check = False
+            temp_name = video_name+"_process_temp_"+str(i)
+            ouput_temp = os.path.join(output_location, temp_name)
+        else:
+            check = True
     os.makedirs(ouput_temp, exist_ok=True)
     split_list_digit = len(str(len(split_list)))
     for i in split_list:

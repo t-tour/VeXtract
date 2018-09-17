@@ -28,8 +28,9 @@ def split_by_frame(filename, start_time, frame_number, output_location=""):
     filename: 影片路徑
     start_time: 切割開始的時間點
     frame_number: 要切的frame張數
-    output_location: 輸出位置(不包含檔案)，預設為__root/file/generator
-    切完之後，會產生一個[filename的檔案名稱]+_temp的資料節，並移到output_location
+    output_location: 輸出位置(不包含檔案)，預設為__root/file/generator 
+    frames的輸出: 會在output_location產生一個[filename的檔案名稱]+_frames的資料夾，並存放切出的frames，
+                  如果有存在相同資料夾，則會自動在後面加上_1,_2,...
     """
     log.i("--------------- Start split_by_frame() --------------- ")
     if output_location == "":
@@ -42,8 +43,18 @@ def split_by_frame(filename, start_time, frame_number, output_location=""):
     else:
         video_name = filename.split(".")[0]
         filename = os.path.join(os.getcwd(), filename)
-    temp_name = video_name+"_temp"
+    temp_name = video_name+"_frames"
     ouput_temp = os.path.join(output_location, temp_name)
+    check = False
+    i = 0
+    while not check:
+        i = i+1
+        if os.path.exists(ouput_temp):
+            check = False
+            temp_name = video_name+"_frames_"+str(i)
+            ouput_temp = os.path.join(output_location, temp_name)
+        else:
+            check = True
     os.makedirs(ouput_temp, exist_ok=True)
     video_fps = video_algorithm.get_video_fps(filename)
     ouput = os.path.join(ouput_temp, video_name)

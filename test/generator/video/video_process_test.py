@@ -49,7 +49,7 @@ def test_video_process_with_temp():
     shutil.rmtree(ouput, ignore_errors=True)
     video_name = os.path.basename(filename).split(".")[0]
     video_type = os.path.basename(filename).split(".")[-1]
-    temp_name = video_name+"_temp"
+    temp_name = video_name+"_process_temp"
     split_list_digit = len(str(len(split_list)))
     for i in range(len(split_list)):
         ouput_temp = os.path.join(
