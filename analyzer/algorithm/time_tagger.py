@@ -84,7 +84,7 @@ def wanted_length(length, video, real_time_comments=None, comments=None):
             segments_list.pop()
             break
     log.i('segments_list: {}'.format(segments_list))
-    segments_list = sorted(segments_list, key=lambda a: a["start_time"])
+    segments_list = sorted(segments_list, key=lambda foo: foo["start_time"])
     return segments_list
 
 
