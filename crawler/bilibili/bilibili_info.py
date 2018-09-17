@@ -20,8 +20,9 @@ import xml.etree.ElementTree as ET
 import requests
 from bs4 import BeautifulSoup
 
-COMMENT_REQUEST_URL = "https://comment.bilibili.com/"
+REALTIME_COMMENT_REQUEST_URL = "https://comment.bilibili.com/"
 MAIN_HOST_URL = "https://www.bilibili.com/video/"
+COMMENT_REQ_URL = "https://api.bilibili.com/x/v2/reply?jsonp=jsonp&pn={page}&type=1&oid={aid}"
 HEADER = {
     "user-agent": ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
                    "AppleWebKit/537.36 (KHTML, like Gecko) "
@@ -180,7 +181,7 @@ def fetch_bilibili_av(av_number, p):
 
 
 def _cid_comments_list(cid: str):
-    require_link = COMMENT_REQUEST_URL + cid + ".xml"
+    require_link = REALTIME_COMMENT_REQUEST_URL + cid + ".xml"
     req = requests.get(require_link)
     req.encoding = 'utf-8'
     root = ET.fromstring(req.text)
@@ -205,3 +206,23 @@ def _download_b_video(url, p, cid, aid, no):
             for chunk in r.iter_content(chunk_size=1024):
                 f.write(chunk)
             log.i('finish download.')
+
+def get_b_comments(aid, p):
+    req = requests.get(COMMENT_REQ_URL.format(page=p, aid=aid), headers=HEADER)
+    js = json.loads(req.text)
+    return_list = list()
+    for reply in js["data"]["replies"]:
+        comment = dict()
+        comment.update({"user":reply["member"]["mid"]})
+        comment.update({"text":reply["content"]["message"]})
+        comment.update({"like":reply["like"]})
+        comment.update({"inline_rcount":reply["rcount"]})
+        return_list.append(comment)
+    return return_list
+
+
+def get_comment_pages_count(aid):
+    req = requests.get(COMMENT_REQ_URL.format(page=1, aid=aid), headers=HEADER)
+    js = json.loads(req.text)
+    pages_c = (js["data"]["page"]["count"] - 1) // 20
+    return pages_c + 1  # 補餘數

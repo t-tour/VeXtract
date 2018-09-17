@@ -22,7 +22,7 @@ from bs4 import BeautifulSoup
 
 from analyzer.text import natural_lang_process
 from crawler.bilibili.bilibili_info import Bilibili_file_info,\
-    fetch_bilibili_av, _download_b_video
+    fetch_bilibili_av, _download_b_video, get_b_comments, get_comment_pages_count
 from generator.video import video_contact
 
 
@@ -69,7 +69,7 @@ def file_crawler(url, des=__root + os.path.join("file", "crawler", "bilibili\\")
         concat_list, des + "av{}/{}.flv".format(target.aid, target.cid[p-1]))
 
 
-def real_time_comment_crawler(url):
+def real_time_comments_crawler(url):
     """
     獲取影片資料
     url: b站影片網址
@@ -108,9 +108,21 @@ def comment_crawler(url):
     """
     獲取影片回復
     url: b站影片網址
+    - > {
+        user:
+        text:
+        like: 喜歡數量
+        inline_rcount: 回覆這篇回覆的數量
+    }
     """
-    # TODO: 回文爬蟲
-    raise Exception("還沒實作!")
+    url_info = _url_parse(url)
+    aid = url_info["avnumber"][2::]
+    pages = get_comment_pages_count(aid) + 1
+    return_comments_list = list()
+    for i in range(1,  pages):
+        a = get_b_comments(aid, i)
+        return_comments_list += a
+    return return_comments_list
 
 
 if __name__ == "__main__":
@@ -121,4 +133,7 @@ if __name__ == "__main__":
     # b = fetch_bilibili_av("av29311976")
     # b.fetch_comment_score(limitation=5000)
     # b.save()
-    file_crawler("https://www.bilibili.com/video/av8733186?from=search&seid=4119483458303784416")
+    a = comment_crawler(
+        "https://www.bilibili.com/video/av30906149/?spm_id_from=333.334.bili_douga.11")
+
+    print(a)

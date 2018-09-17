@@ -41,28 +41,28 @@ def test_info_crawler_save_des():
 
 def test_real_time_comment_crawler():
     log.i('start test_real_time_comment_crawler.')
-    a = bilibili.real_time_comment_crawler(URL)
+    a = bilibili.real_time_comments_crawler(URL)
     comp_list = sorted(a, key=lambda d: d["user"])
     comp = {'user': '159ab093', 'sec': '579.79500',
             'text': '18年清明节留', 'score': None}
     assert comp == comp_list[0]
 
 
-def test__url_parse():
+def test_url_parse():
     log.i('start test__url_parse.')
     a = bilibili._url_parse(URL)
     assert a["avnumber"] == "av5275610"
     assert a["p"] == "1"
 
 
-def test__url_parse_with_p():
+def test_url_parse_with_p():
     log.i('start test__url_parse_with_p')
     a = bilibili._url_parse(URL_WITH_P)
     assert a["avnumber"] == "av5275610"
     assert a["p"] == "5"
 
 
-def test__url_parse_with_error():
+def test_url_parse_with_error():
     log.i('start test__url_parse_with_error')
     with pytest.raises(Exception, match=r'av號格式錯誤'):
         bilibili._url_parse(URL_WITH_ERROR)
