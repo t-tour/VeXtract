@@ -217,6 +217,7 @@ def get_b_comments(aid, p):
         comment.update({"text":reply["content"]["message"]})
         comment.update({"like":reply["like"]})
         comment.update({"inline_rcount":reply["rcount"]})
+        comment.update({"pub_date":reply["ctime"]})
         return_list.append(comment)
     return return_list
 
@@ -226,3 +227,4 @@ def get_comment_pages_count(aid):
     js = json.loads(req.text)
     pages_c = (js["data"]["page"]["count"] - 1) // 20
     return pages_c + 1  # 補餘數
+    
