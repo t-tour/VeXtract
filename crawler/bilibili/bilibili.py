@@ -113,6 +113,7 @@ def comment_crawler(url):
         text:
         like: 喜歡數量
         inline_rcount: 回覆這篇回覆的數量
+        pub_date: 發文日期
     }
     """
     url_info = _url_parse(url)
