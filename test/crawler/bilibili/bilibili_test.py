@@ -66,4 +66,10 @@ def test_url_parse_with_error():
     log.i('start test__url_parse_with_error')
     with pytest.raises(Exception, match=r'av號格式錯誤'):
         bilibili._url_parse(URL_WITH_ERROR)
-        
+
+def test_comment_crawler():
+    log.i('start test_comment_crawler.')
+    a = bilibili.comment_crawler(URL)
+    a = sorted(a, key=lambda c: c["pub_date"])
+    assert a[0]["user"] == "19478213"
+    assert a[0]["text"] == "看到进度条差点被吓出来，不过还是坚持下来了"
