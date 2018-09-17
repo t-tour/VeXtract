@@ -4,11 +4,14 @@
 格式基於 [Keep a Changelog](http://keepachangelog.com/zh-TW/1.0.0/)
 這個項目堅持 [Semantic Versioning](http://semver.org/spec/v2.0.0.html)
 
-## [Temp]
+## [0.0.13] - 2018-09-15
 ### Added
 - 新增 `analyzer/algorithm/time_tagger.py`
 - 新增 `analyzer/algorithm/gen_plot.py`
 - 新增 `time_tagger` 兩種 call function
+- 新增 `test/generator/video` 組合測試
+- 新增 `generator/video` 底下 `video_concat` `video_process` `video_split`
+- 新增 `analyzer/algorithm/video_algorithm`
 
 ## [0.0.12] - 2018-09-06
 ### Fixed
