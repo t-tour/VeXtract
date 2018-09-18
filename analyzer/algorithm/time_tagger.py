@@ -18,7 +18,7 @@ from crawler.bilibili import bilibili, bilibili_info
 from analyzer.algorithm import video_algorithm
 
 
-def __generate_segments(video):
+def _generate_segments(video):
     """
     隨意產生OAO
     """
@@ -39,7 +39,7 @@ def __generate_segments(video):
     return segments_list
 
 
-def __grade_segments(segments, real_time_comments=None, comments=None, audio=None, video=None):
+def _grade_segments(segments, real_time_comments=None, comments=None, audio=None, video=None):
     """
     segments: 切分的影片片段p
     real_time_comments, comments, audio, video: 評分用的資料
@@ -53,10 +53,21 @@ def __grade_segments(segments, real_time_comments=None, comments=None, audio=Non
     graded_list = list()
     for segment in segments:
         total_score = 0
+        # 對 real_time_comments 做評分
         if real_time_comments:
             for comment in real_time_comments:
                 if float(comment["sec"]) >= segment[0] and float(comment["sec"]) < segment[1]:
-                    total_score += 1
+                    if comment["score"]:
+                        total_score += float(comment["score"]) * 10 + 1
+                    else:
+                        total_score += 3
+        # 對 comments 做評分
+        if comments:
+            pass
+        if audio:
+            pass
+        if video:
+            pass
         graded_list.append({
             "sec": segment,
             "total_score": total_score
@@ -65,14 +76,14 @@ def __grade_segments(segments, real_time_comments=None, comments=None, audio=Non
     return graded_list
 
 
-def wanted_length(length, video, real_time_comments=None, comments=None):
+def count_wanted_length(length, video, real_time_comments=None, comments=None):
     """
     回傳應該要剪的片段
     length: 總時長不超過 length
     video: 影片位置
     """
-    segments = __generate_segments(video)
-    segments_graded = __grade_segments(segments, real_time_comments)
+    segments = _generate_segments(video)
+    segments_graded = _grade_segments(segments, real_time_comments)
     segments_graded = sorted(
         segments_graded, key=lambda segment: segment["total_score"], reverse=True)
     segments_list = list()
@@ -88,7 +99,7 @@ def wanted_length(length, video, real_time_comments=None, comments=None):
     return segments_list
 
 
-def wanted_grade_above(grade, video, comments):
+def count_wanted_grade_above(grade, video, comments):
     """
     回傳應該要剪的片段
     grade: 分數高於 grade 就收錄
@@ -108,11 +119,11 @@ if __name__ == "__main__":
     VIDEO_PATH = os.path.join(
         __root, "file\\crawler\\bilibili\\av{}\\{}.flv".format(b_info.aid, b_info.cid[0]))
     b_info.save(os.path.join(__root, "file\\algorithm\\"))
-    wanted_tuple_list = wanted_length(
+    wanted_tuple_list = count_wanted_length(
         600, VIDEO_PATH, b_info.comments[b_info.cid[0]])
     wanted_tuple_list = sorted(wanted_tuple_list, key=lambda i: i[0])
-    segs = __generate_segments(VIDEO_PATH)
-    graded_segs = __grade_segments(segs, b_info.comments[b_info.cid[0]])
+    segs = _generate_segments(VIDEO_PATH)
+    graded_segs = _grade_segments(segs, b_info.comments[b_info.cid[0]])
     vp.video_process(VIDEO_PATH, wanted_tuple_list, True, "ten_min.mp4")
 
 """
