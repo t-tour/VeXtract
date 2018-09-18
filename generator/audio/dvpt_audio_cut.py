@@ -32,3 +32,4 @@ def audio_cut_and_recognize(file_name, chunk_length_ms, file_format='wav', start
 
 if __name__ == "__main__":
     audio_cut_and_recognize('./audio/a-0101.wav', 10000)
+    #tests
