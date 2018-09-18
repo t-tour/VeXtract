@@ -20,8 +20,17 @@ import xml.etree.ElementTree as ET
 import requests
 from bs4 import BeautifulSoup
 
-COMMENT_REQUEST_URL = "https://comment.bilibili.com/"
+REALTIME_COMMENT_REQUEST_URL = "https://comment.bilibili.com/"
 MAIN_HOST_URL = "https://www.bilibili.com/video/"
+COMMENT_REQ_URL = "https://api.bilibili.com/x/v2/reply?jsonp=jsonp&pn={page}&type=1&oid={aid}"
+HEADER = {
+    "user-agent": ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                   "AppleWebKit/537.36 (KHTML, like Gecko) "
+                   "Chrome/67.0.3396.99 Safari/537.36"),
+    "Referer": "https://www.bilibili.com",
+    "origin": "https://www.bilibili.com"
+}
+
 
 class Bilibili_file_info():
     """
@@ -107,13 +116,14 @@ class Bilibili_file_info():
             self.video_tags,
             self.durl[0])
 
+
 def fetch_bilibili_av(av_number, p):
     """
     用bilibili的av號，fetch B站AV號資料
     """
     log.i('start fetch {}.'.format(av_number))
     req = requests.get(parse.urljoin(
-        MAIN_HOST_URL, av_number) + str.format("?p={0}", p))
+        MAIN_HOST_URL, av_number) + str.format("?p={0}", p), headers=HEADER)
     log.i('request {} finish.'.format(req.url))
     bf = BeautifulSoup(req.text, 'html.parser')
     scripts_tag = bf.find_all("script")
@@ -157,7 +167,7 @@ def fetch_bilibili_av(av_number, p):
     comments_dict = dict()
     log.i('start download comments.')
     for cid in as_av_info.cid:
-        comments_dict.update({cid: __cid_comments_list(cid)})
+        comments_dict.update({cid: _cid_comments_list(cid)})
         as_av_info.comments = comments_dict
     if as_av_info.aid is None:
         log.e('target object aid is None.  initial state parse failed.')
@@ -170,8 +180,8 @@ def fetch_bilibili_av(av_number, p):
     return as_av_info
 
 
-def __cid_comments_list(cid: str):
-    require_link = COMMENT_REQUEST_URL + cid + ".xml"
+def _cid_comments_list(cid: str):
+    require_link = REALTIME_COMMENT_REQUEST_URL + cid + ".xml"
     req = requests.get(require_link)
     req.encoding = 'utf-8'
     root = ET.fromstring(req.text)
@@ -185,12 +195,10 @@ def __cid_comments_list(cid: str):
     return comment_list
 
 
-def __download_b_video(url, p, cid, aid, no):
-    header = {"user-agent": ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-                             "AppleWebKit/537.36 (KHTML, like Gecko) "
-                             "Chrome/67.0.3396.99 Safari/537.36"),
-              "Referer": "https://www.bilibili.com/video/av{0}/?p={1}".format(aid, p),
-              "origin": "https://www.bilibili.com"}
+def _download_b_video(url, p, cid, aid, no):
+    header = HEADER.copy()
+    header.update(
+        {"Referer": "https://www.bilibili.com/video/av{0}/?p={1}".format(aid, p)})
     with requests.get(url, headers=header, stream=True) as r:
         filename = "{0}-part{1}.flv".format(cid, no)
         log.i("{filename} downloading".format(filename=filename))
@@ -198,3 +206,25 @@ def __download_b_video(url, p, cid, aid, no):
             for chunk in r.iter_content(chunk_size=1024):
                 f.write(chunk)
             log.i('finish download.')
+
+def get_b_comments(aid, p):
+    req = requests.get(COMMENT_REQ_URL.format(page=p, aid=aid), headers=HEADER)
+    js = json.loads(req.text)
+    return_list = list()
+    for reply in js["data"]["replies"]:
+        comment = dict()
+        comment.update({"user":reply["member"]["mid"]})
+        comment.update({"text":reply["content"]["message"]})
+        comment.update({"like":reply["like"]})
+        comment.update({"inline_rcount":reply["rcount"]})
+        comment.update({"pub_date":reply["ctime"]})
+        return_list.append(comment)
+    return return_list
+
+
+def get_comment_pages_count(aid):
+    req = requests.get(COMMENT_REQ_URL.format(page=1, aid=aid), headers=HEADER)
+    js = json.loads(req.text)
+    pages_c = (js["data"]["page"]["count"] - 1) // 20
+    return pages_c + 1  # 補餘數
+    

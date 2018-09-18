@@ -22,10 +22,11 @@ from bs4 import BeautifulSoup
 
 from analyzer.text import natural_lang_process
 from crawler.bilibili.bilibili_info import Bilibili_file_info,\
-    fetch_bilibili_av, __download_b_video
+    fetch_bilibili_av, _download_b_video, get_b_comments, get_comment_pages_count
+from generator.video import video_contact
 
 
-def __url_parse(url):
+def _url_parse(url):
     url_parsed = parse.urlsplit(url)
     return_value = dict()
     if len(url_parsed.query) > 0:
@@ -53,7 +54,7 @@ def file_crawler(url, des=__root + os.path.join("file", "crawler", "bilibili\\")
 
     -> None
     """
-    url_info = __url_parse(url)
+    url_info = _url_parse(url)
     p = int(url_info["p"])
     target = fetch_bilibili_av(url_info["avnumber"], p)
     os.makedirs(
@@ -62,14 +63,13 @@ def file_crawler(url, des=__root + os.path.join("file", "crawler", "bilibili\\")
     log.i("正在下載 av{0}_{1} cid名稱:{2}".format(
         target.aid, target.cid[p-1], target.cid_name[p-1]))
     for no, url in zip(range(len(target.durl)), target.durl):
-        # 測試代碼這裡
-        # print("{0}-{1}.flv downloading.....finish".format(cid, no))
-        # with open("{0}test_{1}".format(cid, no), "w") as f:
-        #     f.write("dd")
-        __download_b_video(url, p, target.cid[p-1], target.aid, no)
+        _download_b_video(url, p, target.cid[p-1], target.aid, no)
+    concat_list = os.listdir(".")
+    video_contact.contact_by_manifest(
+        concat_list, des + "av{}/{}.flv".format(target.aid, target.cid[p-1]))
 
 
-def real_time_comment_crawler(url):
+def real_time_comments_crawler(url):
     """
     獲取影片資料
     url: b站影片網址
@@ -81,7 +81,7 @@ def real_time_comment_crawler(url):
         score: default none
     }
     """
-    url_info = __url_parse(url)
+    url_info = _url_parse(url)
     target = fetch_bilibili_av(url_info["avnumber"], url_info["p"])
     return target.comments[target.cid[int(url_info["p"])-1]]
 
@@ -91,9 +91,10 @@ def info_crawler(url, des=__root + os.path.join("file", "crawler", "bilibili"), 
     獲取影片資料
     url: b站影片網址
     des: 儲存位置
+    save: 是否儲存
     -> Bilibili_file_info
     """
-    url_info = __url_parse(url)
+    url_info = _url_parse(url)
     info = fetch_bilibili_av(url_info["avnumber"], url_info["p"])
     if save:
         des = os.path.join(des, "{id}").format(
@@ -107,9 +108,22 @@ def comment_crawler(url):
     """
     獲取影片回復
     url: b站影片網址
+    - > {
+        user:
+        text:
+        like: 喜歡數量
+        inline_rcount: 回覆這篇回覆的數量
+        pub_date: 發文日期
+    }
     """
-    # TODO: 回文爬蟲
-    raise Exception("還沒實作!")
+    url_info = _url_parse(url)
+    aid = url_info["avnumber"][2::]
+    pages = get_comment_pages_count(aid) + 1
+    return_comments_list = list()
+    for i in range(1,  pages):
+        a = get_b_comments(aid, i)
+        return_comments_list += a
+    return return_comments_list
 
 
 if __name__ == "__main__":
@@ -120,6 +134,7 @@ if __name__ == "__main__":
     # b = fetch_bilibili_av("av29311976")
     # b.fetch_comment_score(limitation=5000)
     # b.save()
-    a = info_crawler(
-        "https://www.bilibili.com/video/av30758200", save=True)
-    file_crawler("https://www.bilibili.com/video/av30758200")
+    a = comment_crawler(
+        "https://www.bilibili.com/video/av30906149/?spm_id_from=333.334.bili_douga.11")
+
+    print(a)
