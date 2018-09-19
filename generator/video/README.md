@@ -42,7 +42,7 @@ ___
 > > split_start: 切割開始的時間點  
 > > split_length: 要切割的時間長度  
 > > output_location: 輸出位置(不包含檔案)，預設為__root/file/generator  
-> > output_name: output_name: [影片名稱].[副檔名]，預設為[filename的檔名]+_output，副檔名則參照輸入檔案  
+> > output_name: output_name: [影片名稱].[副檔名]，預設為[filename的檔名]+_output_+時戳，副檔名則參照輸入檔案  
 > > bitrate: 影片位元速率，越大畫質越好，檔案容量也越大，預設為5000k  
   
 ___      
@@ -52,13 +52,13 @@ ___
 > > video_type: 要合併的影片類型  
 > > input_location: 要合併影片的路徑  
 > > output_location: 輸出位置(不包含檔案)，預設為__root/file/generator  
-> > output_name: [影片名稱].[副檔名]，預設為contact_output_[一段五位數Random亂數]]，副檔名則參照video_type  
+> > output_name: [影片名稱].[副檔名]，預設為contact_output_+時戳，副檔名則參照video_type  
 > ### contact_by_manifest(video_tuple, output_location="", output_name="output")  
 > > 說明：把路徑底下，所有同類型的影片合併  
 > > video_type: 要合併的影片類型  
 > > input_location: 要合併影片的路徑  
 > > output_location: 輸出位置(不包含檔案)，預設為__root/file/generator  
-> > output_name: [影片名稱].[副檔名]，預設為contact_output_[一段五位數Random亂數]]，副檔名則參照video_type  
+> > output_name: [影片名稱].[副檔名]，預設為contact_output_+時戳，副檔名則參照video_type  
   
 ___    
 ## video_process（位於generator）  
@@ -67,11 +67,11 @@ ___
 > > filename: 影片路徑  
 > > split_list:[(start_time1, end_time1), (start_time2,end_time2))...]  
 > > output_location: 輸出位置(不包含檔案)，預設為__root/file/generator  
-> > output_name: [影片名稱].[副檔名]，預設為[filename的檔名]+_output，副檔名則參照輸入檔案  
+> > output_name: [影片名稱].[副檔名]，預設為[filename的檔名]+_output_+時戳，副檔名則參照輸入檔案  
 > > temp_Keep: 處理時會在output_location產生[filename的檔案名稱]+_process_temp的資料夾，可選擇是否保留，如果有存在相同資料夾，則會自動在後面加上_1,_2,...  
 > ### video_encoding(filename, output_location="", output_name="", bitrate="5000k")  
 > > 說明：影片的轉檔，根據ouput_name的副檔名做重新編碼  
 > > filename: 影片路徑  
 > > output_location: 輸出位置(不包含檔案)，預設為__root/file/generator  
-> > output_name: [影片名稱].[副檔名]，預設為[filename的檔名]+_output，副檔名則預設為mp4  
+> > output_name: [影片名稱].[副檔名]，預設為[filename的檔名]+_output_+時戳，副檔名則預設為mp4  
 > > bitrate: 影片位元速率，越大畫質越好，檔案容量也越大，預設為5000k  

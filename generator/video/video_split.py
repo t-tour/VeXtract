@@ -12,6 +12,7 @@ from helper import logger
 log = logger.Logger(__name__)
 
 import csv
+import datetime
 import shutil
 import subprocess
 import re
@@ -76,7 +77,7 @@ def split_by_manifest(filename, split_start, split_length, output_location="", o
     split_start: 切割開始的時間點
     split_length: 要切割的時間長度
     output_location: 輸出位置(不包含檔案)，預設為__root/file/generator
-    output_name: output_name: [影片名稱].[副檔名]，預設為[filename的檔名]+_output，副檔名則參照輸入檔案
+    output_name: output_name: [影片名稱].[副檔名]，預設為[filename的檔名]+_output_+時戳，副檔名則參照輸入檔案
     bitrate: 影片位元速率，越大畫質越好，檔案容量也越大，預設為5000k
     ifMain: 控制log要不要顯示Strat,End
     """
@@ -89,7 +90,8 @@ def split_by_manifest(filename, split_start, split_length, output_location="", o
     defalut_ext = os.path.basename(filename).split(".")[-1]
     video_name = os.path.basename(filename).split(".")[0]
     if output_name == "":
-        output_name = video_name+"_ouput"
+        output_name = video_name+"_ouput_" + \
+            datetime.datetime.now().strftime("%Y-%m-%d %H-%M-%S")
     if output_name.split(".")[-1] == output_name:
         output_name = output_name+"."+defalut_ext
     output = os.path.join(output_location, output_name)
