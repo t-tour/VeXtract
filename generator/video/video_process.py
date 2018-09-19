@@ -47,7 +47,7 @@ def video_process(filename, split_list, temp_Keep=False, output_location="", out
     video_name = filename.split(".")[0]
     video_type = filename.split(".")[-1]
     if output_name == "":
-        output_name = video_name+"_ouput_" + \
+        output_name = video_name+"_output_" + \
             datetime.datetime.now().strftime("%Y-%m-%d %H-%M-%S")
     temp_name = video_name+"_process_temp"
     ouput_temp = os.path.join(output_location, temp_name)
@@ -103,7 +103,7 @@ def video_encoding(filename, output_location="", output_name="", bitrate="5000k"
     defalut_ext = os.path.basename(filename).split(".")[-1]
     video_name = os.path.basename(filename).split(".")[0]
     if output_name == "":
-        output_name = video_name+"_ouput_" + \
+        output_name = video_name+"_output_" + \
             datetime.datetime.now().strftime("%Y-%m-%d %H-%M-%S")
     if output_name.split(".")[0] == output_name:
         output_name = output_name+".mp4"

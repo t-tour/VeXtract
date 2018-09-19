@@ -90,7 +90,7 @@ def split_by_manifest(filename, split_start, split_length, output_location="", o
     defalut_ext = os.path.basename(filename).split(".")[-1]
     video_name = os.path.basename(filename).split(".")[0]
     if output_name == "":
-        output_name = video_name+"_ouput_" + \
+        output_name = video_name+"_output_" + \
             datetime.datetime.now().strftime("%Y-%m-%d %H-%M-%S")
     if output_name.split(".")[-1] == output_name:
         output_name = output_name+"."+defalut_ext

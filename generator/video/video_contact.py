@@ -45,7 +45,7 @@ def contact_by_type(video_type, input_location="", output_location="", output_na
     subprocess.Popen(contact_cmd, shell=True,
                      stdout=subprocess.PIPE).stdout.read()
     if output_name == "":
-        output_name = "contact_ouput_" + \
+        output_name = "contact_output_" + \
             datetime.datetime.now().strftime("%Y-%m-%d %H-%M-%S")
     if output_name.split(".")[-1] == output_name:
         output_name = output_name+"."+video_type
@@ -79,7 +79,7 @@ def contact_by_manifest(video_tuple, output_location="", output_name="", ifMain=
     contact_list_name = "contact_list_"+random_number+".txt"
     video_type = video_tuple[0].split(".")[-1]
     if output_name == "":
-        output_name = "contact_ouput_" + \
+        output_name = "contact_output_" + \
             datetime.datetime.now().strftime("%Y-%m-%d %H-%M-%S")
     if output_name.split(".")[-1] == output_name:
         output_name = output_name+"."+video_type
