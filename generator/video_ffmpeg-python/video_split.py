@@ -105,8 +105,8 @@ def split_by_manifest(filename, split_start, split_length, output_location="", o
         split_start = 0.1
     if int(split_length) < 1:
         split_length = 1
-    split_cmd = "ffmpeg -ss %s -i \"%s\" -t %s -avoid_negative_ts make_zero -b:v %s -threads 4 -y \"%s\"" % (
-        str(split_start), filename, str(split_length), bitrate, output)
+    split_cmd = "ffmpeg -i \"%s\" -ss %s -t %s -avoid_negative_ts make_zero -b:v %s -threads 4 -y \"%s\"" % (
+        filename, str(split_start), str(split_length), bitrate, output)
     log.i("About to run: " + split_cmd)
     (
         ffmpeg
