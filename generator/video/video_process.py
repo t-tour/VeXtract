@@ -13,11 +13,10 @@ log = logger.Logger(__name__)
 
 import datetime
 import shutil
-import subprocess
-from optparse import OptionParser
 
-from generator.video import video_contact
-from generator.video import video_split
+import ffmpeg
+
+from generator.video import video_split, video_contact
 from analyzer.algorithm import video_algorithm
 
 
@@ -97,7 +96,7 @@ def video_encoding(filename, output_location="", output_name="", bitrate="5000k"
     if ifMain:
         log.i("--------------- Start video_encoding() --------------- ")
     if output_location == "":
-        output_location = os.path.join(__root, "file")
+        output_location = os.path.join(__root, "file", "generator")
     if not os.path.exists(output_location):
         os.makedirs(output_location, exist_ok=True)
     defalut_ext = os.path.basename(filename).split(".")[-1]
@@ -112,8 +111,12 @@ def video_encoding(filename, output_location="", output_name="", bitrate="5000k"
     process_cmd = "ffmpeg -i \"%s\" -f %s -b:v %s -threads 4 -y \"%s\"" % (
         filename, prefer_ext, bitrate, output)
     log.i("About to run: " + process_cmd)
-    subprocess.Popen(process_cmd, shell=True,
-                     stdout=subprocess.PIPE).stdout.read()
+    (
+        ffmpeg
+        .input(filename)
+        .output(output, f=prefer_ext, threads=4, y="-y", **{"b:v": bitrate})
+        .run()
+    )
     log.i('input format is %s  and your output format is %s' %
           (defalut_ext, prefer_ext))
     if ifMain:
@@ -121,9 +124,8 @@ def video_encoding(filename, output_location="", output_name="", bitrate="5000k"
 
 
 if __name__ == "__main__":
-    # 傳入的list of tuple
-    split_list = [(5, 20), (30, 45), (60, 75)]
-    #split_list = [(5, 6), (7, 8), (9, 10)]
-    filename = os.path.join(__root, "file", "03.mp4")
-    video_process(filename, split_list, output_location=os.path.join(__root, "file", "generator"),
-                  temp_Keep=True, output_name="03-666.flv")  # (檔案名稱/檔案路徑,list of tuple)
+    filename = os.path.join(__root, "test\\test_file", "test_video.mp4")
+    output_name = "test_video_666.flv"
+    split_list = [(0.0, 4.0), (6.0, 10.0), (13.0, 17.0), (24.0, 28.0)]
+    video_process(filename, split_list, temp_Keep=True)
+    #video_encoding(filename, output_name=output_name)
