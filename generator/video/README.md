@@ -35,6 +35,7 @@ ___
 > > start_time: 切割開始的時間點  
 > > frame_number: 要切的frame張數  
 > > output_location: 輸出位置(不包含檔案)，預設為__root/file/generator   
+> > bitrate: 影片位元速率，越大圖片畫質越好，檔案容量也越大，預設為5000k  
 > > frames的輸出: 會在output_location產生一個[filename的檔案名稱]+_frames的資料夾，並存放切出的frames，如果有存在相同資料夾，則會自動在後面加上_1,_2,...，frames會以影片名稱-編號.jpg命名。  
 > ### split_by_manifest(filename, split_start, split_length, output_location="", output_name="", bitrate="5000k")  
 > > 說明： 依照自訂義時間切割影片  

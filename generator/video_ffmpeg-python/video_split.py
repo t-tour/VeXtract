@@ -25,13 +25,14 @@ import ffmpeg
 from analyzer.algorithm import video_algorithm
 
 
-def split_by_frame(filename, start_time, frame_number, output_location="", ifMain=True):
+def split_by_frame(filename, start_time, frame_number, output_location="", bitrate="5000k", ifMain=True):
     """
     從影片的特定時間點切出一張一張的frame
     filename: 影片路徑
     start_time: 切割開始的時間點
     frame_number: 要切的frame張數
     output_location: 輸出位置(不包含檔案)，預設為__root/file/generator 
+    bitrate: 影片位元速率，越大圖片畫質越好，檔案容量也越大，預設為5000k
     frames的輸出: 會在output_location產生一個[filename的檔案名稱]+_frames的資料夾，並存放切出的frames，
                   如果有存在相同資料夾，則會自動在後面加上_1,_2,...
     ifMain: 控制log要不要顯示Strat,End
@@ -69,7 +70,7 @@ def split_by_frame(filename, start_time, frame_number, output_location="", ifMai
     (
         ffmpeg
         .input(filename)
-        .output(output+"-%d.jpg", ss=start_time, r=video_fps, vframes=frame_number, y="-y")
+        .output(output+"-%d.jpg", ss=start_time, r=video_fps, vframes=frame_number, y="-y", **{"b:v": bitrate})
         .run()
     )
     if ifMain:
