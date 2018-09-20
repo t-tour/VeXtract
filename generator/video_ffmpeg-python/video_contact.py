@@ -64,7 +64,7 @@ def contact_by_type(video_type, input_location="", output_location="", output_na
     (
         ffmpeg
         .input(contact_input, f="concat", safe=0)
-        .output(output, c="copy")
+        .output(output, c="copy", y="-y")
         .run()
     )
     os.remove(contact_input)
@@ -109,7 +109,7 @@ def contact_by_manifest(video_tuple, output_location="", output_name="", ifMain=
     (
         ffmpeg
         .input(contact_input, f="concat", safe=0)
-        .output(output, c="copy")
+        .output(output, c="copy", y="-y")
         .run()
     )
     os.remove(contact_input)

@@ -69,7 +69,7 @@ def split_by_frame(filename, start_time, frame_number, output_location="", ifMai
     (
         ffmpeg
         .input(filename)
-        .output(output+"-%d.jpg", ss=start_time, r=video_fps, vframes=frame_number)
+        .output(output+"-%d.jpg", ss=start_time, r=video_fps, vframes=frame_number, y="-y")
         .run()
     )
     if ifMain:
@@ -112,7 +112,7 @@ def split_by_manifest(filename, split_start, split_length, output_location="", o
         ffmpeg
         .input(filename)
         .output(output, ss=split_start, t=split_length,
-                avoid_negative_ts="make_zero", threads=4, **{"b:v": bitrate})
+                avoid_negative_ts="make_zero", threads=4, y="-y", **{"b:v": bitrate})
         .run()
     )
     if ifMain:
