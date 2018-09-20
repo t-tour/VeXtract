@@ -18,7 +18,7 @@ import ffmpeg
 from analyzer.algorithm import video_algorithm
 
 
-def split_by_frame(filename, start_time, frame_number, output_location="", bitrate="5000k", ifMain=True):
+def split_by_frame(filename, start_time, frame_number, output_location="", bitrate="5000k", ifMain=True, ifLog=False):
     """
     從影片的特定時間點切出一張一張的frame
     filename: 影片路徑
@@ -28,9 +28,10 @@ def split_by_frame(filename, start_time, frame_number, output_location="", bitra
     bitrate: 影片位元速率，越大圖片畫質越好，檔案容量也越大，預設為5000k
     frames的輸出: 會在output_location產生一個[filename的檔案名稱]+_frames的資料夾，並存放切出的frames，
                   如果有存在相同資料夾，則會自動在後面加上_1,_2,...
-    ifMain: 控制log要不要顯示Strat,End
+    ifMain: 控制log要不要顯示Strat,End，預設為True
+    ifLog: 控制要不要把python-ffmpeg執行過程轉換成ffmpeg的cmd指令顯示在log，複寫ifMain，預設為False
     """
-    if ifMain:
+    if ifMain and ifLog:
         log.i("--------------- Start split_by_frame() --------------- ")
     if output_location == "":
         output_location = os.path.join(__root, "file", "generator")
@@ -59,18 +60,19 @@ def split_by_frame(filename, start_time, frame_number, output_location="", bitra
     output = os.path.join(ouput_temp, video_name)
     split_cmd = "ffmpeg -i \"%s\" -ss %s -r %s -vframes %s -y \"%s-%s.jpg\"" % (
         filename, str(start_time), str(video_fps), str(frame_number), output, "%d")
-    log.i("About to run: " + split_cmd)
+    if ifLog:
+        log.i("About to run: " + split_cmd)
     (
         ffmpeg
         .input(filename)
         .output(output+"-%d.jpg", ss=start_time, r=video_fps, vframes=frame_number, y="-y", **{"b:v": bitrate})
         .run()
     )
-    if ifMain:
+    if ifMain and ifLog:
         log.i("--------------- End split_by_frame() --------------- ")
 
 
-def split_by_manifest(filename, split_start, split_length, output_location="", output_name="", bitrate="5000k", ifMain=True):
+def split_by_manifest(filename, split_start, split_length, output_location="", output_name="", bitrate="5000k", ifMain=True, ifLog=False):
     """
     依照自訂義時間切割影片
     filename: 影片路徑
@@ -79,9 +81,10 @@ def split_by_manifest(filename, split_start, split_length, output_location="", o
     output_location: 輸出位置(不包含檔案)，預設為__root/file/generator
     output_name: output_name: [影片名稱].[副檔名]，預設為[filename的檔名]+_output_+時戳，副檔名則參照輸入檔案
     bitrate: 影片位元速率，越大畫質越好，檔案容量也越大，預設為5000k
-    ifMain: 控制log要不要顯示Strat,End
+    ifMain: 控制log要不要顯示Strat,End，預設為True
+    ifLog: 控制要不要把python-ffmpeg執行過程轉換成ffmpeg的cmd指令顯示在log，複寫ifMain，預設為False
     """
-    if ifMain:
+    if ifMain and ifLog:
         log.i("--------------- Start split_by_manifest() --------------- ")
     if output_location == "":
         output_location = os.path.join(__root, "file", "generator")
@@ -101,7 +104,8 @@ def split_by_manifest(filename, split_start, split_length, output_location="", o
         split_length = 1
     split_cmd = "ffmpeg -i \"%s\" -ss %s -t %s -avoid_negative_ts make_zero -b:v %s -threads 4 -y \"%s\"" % (
         filename, str(split_start), str(split_length), bitrate, output)
-    log.i("About to run: " + split_cmd)
+    if ifLog:
+        log.i("About to run: " + split_cmd)
     (
         ffmpeg
         .input(filename, ss=split_start)
@@ -109,7 +113,7 @@ def split_by_manifest(filename, split_start, split_length, output_location="", o
                 avoid_negative_ts="make_zero", threads=4, y="-y", **{"b:v": bitrate})
         .run()
     )
-    if ifMain:
+    if ifMain and ifLog:
         log.i("--------------- End split_by_manifest() --------------- ")
 
 

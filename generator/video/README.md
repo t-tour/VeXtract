@@ -17,6 +17,10 @@
 > 控制log要不要顯示---Strat func()---,---End func()---  
 > 預設為True  
    
+## 可選參數ifLog
+> 控制要不要把python-ffmpeg執行過程轉換成ffmpeg的cmd指令顯示在log，複寫ifMain  
+> 預設為False   
+
 ## 輸出檔案
 > 輸出檔案都會被自動放到file資料夾裡。  
   
