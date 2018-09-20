@@ -45,27 +45,29 @@ def contact_by_type(video_type, input_location="", output_location="", output_na
     contact_list = []
     for i in dirs:
         if i.split(".")[-1] == video_type:
-            contact_list.append("file "+os.path.join(input_location, i)+"\n")
-    contact_list_name = "contact_list_"+random_number+".txt"
-    contact_input = open(contact_list_name, "a")
-    contact_input.writelines(contact_list)
-    contact_input.close()
+            contact_list.append(
+                "file " + "'"+os.path.join(input_location, i)+"'" + "\n")
+    contact_input = os.path.join(
+        output_location, "contact_list_"+random_number+".txt")
+    fileopen = open(contact_input, "a")
+    fileopen.writelines(contact_list)
+    fileopen.close()
     if output_name == "":
         output_name = "contact_output_" + \
             datetime.datetime.now().strftime("%Y-%m-%d %H-%M-%S")
     if output_name.split(".")[-1] == output_name:
         output_name = output_name+"."+video_type
     output = os.path.join(output_location, output_name)
-    contact_cmd = "ffmpeg -f concat -i %s -c copy -y \"%s\"" % (
-        contact_list_name, output)
+    contact_cmd = "ffmpeg -f concat -safe 0 -i \"%s\" -c copy -y \"%s\"" % (
+        contact_input, output)
     log.i("About to run: " + contact_cmd)
     (
         ffmpeg
-        .input(contact_list_name)
-        .output(output, f="concat", c="copy")
+        .input(contact_input, f="concat", safe=0)
+        .output(output, c="copy")
         .run()
     )
-    shutil.rmtree(contact_list_name, ignore_errors=True)
+    os.remove(contact_input)
     if ifMain:
         log.i("--------------- End contact_by_type() --------------- ")
 
@@ -89,26 +91,28 @@ def contact_by_manifest(video_tuple, output_location="", output_name="", ifMain=
     video_type = video_tuple[0].split(".")[-1]
     contact_list = []
     for i in video_tuple:
-        contact_list.append("file " + i + "\n")
-    contact_list_name = "contact_list_"+random_number+".txt"
-    contact_input = open(contact_list_name, "a")
-    contact_input.writelines(contact_list)
-    contact_input.close()
+        contact_list.append("file " + "'"+i+"'" + "\n")
+    contact_input = os.path.join(
+        output_location, "contact_list_"+random_number+".txt")
+    fileopen = open(contact_input, "a")
+    fileopen.writelines(contact_list)
+    fileopen.close()
     if output_name == "":
         output_name = "contact_output_" + \
             datetime.datetime.now().strftime("%Y-%m-%d %H-%M-%S")
     if output_name.split(".")[-1] == output_name:
         output_name = output_name+"."+video_type
     output = os.path.join(output_location, output_name)
-    contact_cmd = "ffmpeg -f concat -safe 0 -i %s -c copy -y \"%s\"" % (
-        contact_list_name, output)
+    contact_cmd = "ffmpeg -f concat -safe 0 -i \"%s\" -c copy -y \"%s\"" % (
+        contact_input, output)
     log.i("About to run: " + contact_cmd)
     (
         ffmpeg
-        .input(contact_list_name, f="concat", safe=0)
+        .input(contact_input, f="concat", safe=0)
         .output(output, c="copy")
         .run()
     )
+    os.remove(contact_input)
     if ifMain:
         log.i("--------------- End contact_by_manifest() --------------- ")
 
@@ -123,5 +127,6 @@ if __name__ == '__main__':
         __root, "test\\test_file\\video_test_file", "test_video-2.mp4"),
         os.path.join(
         __root, "test\\test_file\\video_test_file", "test_video-3.mp4"))
-
+    input_location = os.path.join(__root, "test\\test_file\\video_test_file")
     contact_by_manifest(video_tuple)
+    #contact_by_type("mp4", input_location)
