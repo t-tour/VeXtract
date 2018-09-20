@@ -11,6 +11,7 @@ sys.path.append(__root)
 from helper import logger
 log = logger.Logger(__name__)
 
+import datetime
 import shutil
 import subprocess
 from optparse import OptionParser
@@ -26,7 +27,7 @@ def video_process(filename, split_list, temp_Keep=False, output_location="", out
     filename: 影片路徑
     split_list:[(start_time1, end_time1), (start_time2,end_time2))...]
     output_location: 輸出位置(不包含檔案)，預設為__root/file/generator
-    output_name: [影片名稱].[副檔名]，預設為[filename的檔名]+_output，副檔名則參照輸入檔案
+    output_name: [影片名稱].[副檔名]，預設為[filename的檔名]+_output_+時戳，副檔名則參照輸入檔案
     temp_Keep: 處理時會在output_location產生[filename的檔案名稱]+_process_temp的資料夾，
                可選擇是否保留，如果有存在相同資料夾，則會自動在後面加上_1,_2,...
     ifMain: 控制log要不要顯示Strat,End
@@ -46,7 +47,8 @@ def video_process(filename, split_list, temp_Keep=False, output_location="", out
     video_name = filename.split(".")[0]
     video_type = filename.split(".")[-1]
     if output_name == "":
-        output_name = video_name+"_ouput"
+        output_name = video_name+"_output_" + \
+            datetime.datetime.now().strftime("%Y-%m-%d %H-%M-%S")
     temp_name = video_name+"_process_temp"
     ouput_temp = os.path.join(output_location, temp_name)
     check = False
@@ -88,7 +90,7 @@ def video_encoding(filename, output_location="", output_name="", bitrate="5000k"
     影片的轉檔，根據ouput_name的副檔名做重新編碼
     filename: 影片路徑
     output_location: 輸出位置(不包含檔案)，預設為__root/file/generator
-    output_name: [影片名稱].[副檔名]，預設為[filename的檔名]+_output，副檔名則預設為mp4
+    output_name: [影片名稱].[副檔名]，預設為[filename的檔名]+_output_+時戳，副檔名則預設為mp4
     bitrate: 影片位元速率，越大畫質越好，檔案容量也越大，預設為5000k
     ifMain: 控制log要不要顯示Strat,End
     """
@@ -101,7 +103,8 @@ def video_encoding(filename, output_location="", output_name="", bitrate="5000k"
     defalut_ext = os.path.basename(filename).split(".")[-1]
     video_name = os.path.basename(filename).split(".")[0]
     if output_name == "":
-        output_name = video_name+"_ouput"
+        output_name = video_name+"_output_" + \
+            datetime.datetime.now().strftime("%Y-%m-%d %H-%M-%S")
     if output_name.split(".")[0] == output_name:
         output_name = output_name+".mp4"
     prefer_ext = output_name.split(".")[-1]
