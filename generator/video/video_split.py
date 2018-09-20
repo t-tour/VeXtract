@@ -95,8 +95,8 @@ def split_by_manifest(filename, split_start, split_length, output_location="", o
     if output_name.split(".")[-1] == output_name:
         output_name = output_name+"."+defalut_ext
     output = os.path.join(output_location, output_name)
-    if int(split_start) < 0.1:
-        split_start = 0.1
+    if int(split_start) < 0.13:
+        split_start = 0.13
     if int(split_length) < 1:
         split_length = 1
     split_cmd = "ffmpeg -i \"%s\" -ss %s -t %s -avoid_negative_ts make_zero -b:v %s -threads 4 -y \"%s\"" % (
