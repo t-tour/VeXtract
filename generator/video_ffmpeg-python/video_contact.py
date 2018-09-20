@@ -14,12 +14,8 @@ log = logger.Logger(__name__)
 
 import datetime
 import random
-import subprocess
-import shutil
 
 import ffmpeg
-
-from optparse import OptionParser
 
 
 def contact_by_type(video_type, input_location="", output_location="", output_name="", ifMain=True):

@@ -11,14 +11,7 @@ sys.path.append(__root)
 from helper import logger
 log = logger.Logger(__name__)
 
-import csv
 import datetime
-import shutil
-import subprocess
-import re
-import math
-import json
-from optparse import OptionParser
 
 import ffmpeg
 
