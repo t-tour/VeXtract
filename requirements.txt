@@ -12,3 +12,4 @@ pytest
 pytube
 requests
 youtube-dl
+ffmpeg-python
