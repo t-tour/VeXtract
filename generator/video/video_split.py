@@ -119,7 +119,7 @@ def split_by_manifest(filename, split_start, split_length, output_location="", o
 
 if __name__ == '__main__':
     # 測試用
-    filename = os.path.join(__root, "file", "14391479.flv")
+    filename = os.path.join(__root, "test\\test_file", "test_video.mp4")
     #split_by_frame(filename, 38, 48)
     split_start = 0
     split_length = 5
