@@ -20,7 +20,7 @@ from generator.video import video_split, video_contact
 from analyzer.algorithm import video_algorithm
 
 
-def video_process(filename, split_list, temp_Keep=False, output_location="", output_name="", ifMain=True, ifLog=False):
+def video_process(filename, split_list, temp_Keep=False, output_location="", output_name="", ifMain=True, ifLog=False, ifStdout=False):
     """
     影片的裁切與合併
     filename: 影片路徑
@@ -31,6 +31,7 @@ def video_process(filename, split_list, temp_Keep=False, output_location="", out
                可選擇是否保留，如果有存在相同資料夾，則會自動在後面加上_1,_2,...
     ifMain: 控制log要不要顯示Strat,End，預設為True
     ifLog: 控制要不要把python-ffmpeg執行過程轉換成ffmpeg的cmd指令顯示在log，複寫ifMain，預設為False
+    ifStdout: 控制要不要顯示ffmpeg的stdout訊息，否則只顯示error訊息，預設為False
     """
     if ifMain and ifLog:
         log.i("--------------- Start video_process() --------------- ")
@@ -73,10 +74,10 @@ def video_process(filename, split_list, temp_Keep=False, output_location="", out
         count = count + 1
         if ifpath:
             video_split.split_by_manifest(
-                filepath, split_start, split_length, output_location=ouput_temp, output_name=rename_to, ifMain=False, ifLog=ifLog)
+                filepath, split_start, split_length, output_location=ouput_temp, output_name=rename_to, ifMain=False, ifLog=ifLog, ifStdout=ifStdout)
         else:
             video_split.split_by_manifest(os.path.join(os.getcwd(
-            ), filename), split_start, split_length, output_location=ouput_temp, output_name=rename_to, ifMain=False, ifLog=ifLog)
+            ), filename), split_start, split_length, output_location=ouput_temp, output_name=rename_to, ifMain=False, ifLog=ifLog, ifStdout=ifStdout)
     if ifLog:
         log.i("--------------- End split_by_manifest() --------------- ")
     video_contact.contact_by_type(
@@ -87,7 +88,7 @@ def video_process(filename, split_list, temp_Keep=False, output_location="", out
         log.i("--------------- End video_process() --------------- ")
 
 
-def video_encoding(filename, output_location="", output_name="", bitrate="5000k", ifMain=True, ifLog=False):
+def video_encoding(filename, output_location="", output_name="", bitrate="5000k", ifMain=True, ifLog=False, ifStdout=False):
     """
     影片的轉檔，根據ouput_name的副檔名做重新編碼
     filename: 影片路徑
@@ -96,6 +97,7 @@ def video_encoding(filename, output_location="", output_name="", bitrate="5000k"
     bitrate: 影片位元速率，越大畫質越好，檔案容量也越大，預設為5000k
     ifMain: 控制log要不要顯示Strat,End，預設為True
     ifLog: 控制要不要把python-ffmpeg執行過程轉換成ffmpeg的cmd指令顯示在log，複寫ifMain，預設為False
+    ifStdout: 控制要不要顯示ffmpeg的stdout訊息，否則只顯示error訊息，預設為False
     """
     if ifMain and ifLog:
         log.i("--------------- Start video_encoding() --------------- ")
@@ -112,14 +114,18 @@ def video_encoding(filename, output_location="", output_name="", bitrate="5000k"
         output_name = output_name+".mp4"
     prefer_ext = output_name.split(".")[-1]
     output = os.path.join(output_location, output_name)
-    process_cmd = "ffmpeg -i \"%s\" -f %s -b:v %s -threads 4 -y \"%s\"" % (
-        filename, prefer_ext, bitrate, output)
+    if ifStdout:
+        loglevel = "verbose"
+    else:
+        loglevel = "warning"
+    process_cmd = "ffmpeg -i \"%s\" -f %s -b:v %s -threads 4 -loglevel %s -y \"%s\"" % (
+        filename, prefer_ext, bitrate, loglevel, output)
     if ifLog:
         log.i("About to run: " + process_cmd)
     (
         ffmpeg
         .input(filename)
-        .output(output, f=prefer_ext, threads=4, y="-y", **{"b:v": bitrate})
+        .output(output, f=prefer_ext, threads=4, y="-y", loglevel=loglevel, **{"b:v": bitrate})
         .run()
     )
     log.i('input format is %s  and your output format is %s' %

@@ -18,7 +18,7 @@ import random
 import ffmpeg
 
 
-def contact_by_type(video_type, input_location="", output_location="", output_name="", ifMain=True, ifLog=False):
+def contact_by_type(video_type, input_location="", output_location="", output_name="", ifMain=True, ifLog=False, ifStdout=False):
     """
     把路徑底下，所有同類型的影片合併
     video_type: 要合併的影片類型
@@ -27,6 +27,7 @@ def contact_by_type(video_type, input_location="", output_location="", output_na
     output_name: [影片名稱].[副檔名]，預設為contact_output_+時戳，副檔名則參照video_type
     ifMain: 控制log要不要顯示Strat,End，預設為True
     ifLog: 控制要不要把python-ffmpeg執行過程轉換成ffmpeg的cmd指令顯示在log，複寫ifMain，預設為False
+    ifStdout: 控制要不要顯示ffmpeg的stdout訊息，否則只顯示error訊息，預設為False
     """
     if ifMain and ifLog:
         log.i("--------------- Start contact_by_type() --------------- ")
@@ -55,14 +56,18 @@ def contact_by_type(video_type, input_location="", output_location="", output_na
     if output_name.split(".")[-1] == output_name:
         output_name = output_name+"."+video_type
     output = os.path.join(output_location, output_name)
-    contact_cmd = "ffmpeg -f concat -safe 0 -i \"%s\" -c copy -y \"%s\"" % (
-        contact_input, output)
+    if ifStdout:
+        loglevel = "verbose"
+    else:
+        loglevel = "warning"
+    contact_cmd = "ffmpeg -f concat -safe 0 -i \"%s\" -c copy -loglevel %s -y \"%s\"" % (
+        contact_input, loglevel, output)
     if ifLog:
         log.i("About to run: " + contact_cmd)
     (
         ffmpeg
         .input(contact_input, f="concat", safe=0)
-        .output(output, c="copy", y="-y")
+        .output(output, c="copy", y="-y", loglevel=loglevel)
         .run()
     )
     os.remove(contact_input)
@@ -70,7 +75,7 @@ def contact_by_type(video_type, input_location="", output_location="", output_na
         log.i("--------------- End contact_by_type() --------------- ")
 
 
-def contact_by_manifest(video_tuple, output_location="", output_name="", ifMain=True, ifLog=False):
+def contact_by_manifest(video_tuple, output_location="", output_name="", ifMain=True, ifLog=False, ifStdout=False):
     """
     依照自訂義的video_tuple，照順序把影片合併
     video_tuple: 要合併的影片集合，tuple格式：(影片1,影片2,...)，影片請輸入絕對路徑，不然則預設為執行目錄底下開始
@@ -78,6 +83,7 @@ def contact_by_manifest(video_tuple, output_location="", output_name="", ifMain=
     output_name: [影片名稱].[副檔名]，預設為contact_output_+時戳，副檔名則參照video_tuple的第一個檔案
     ifMain: 控制log要不要顯示Strat,End，預設為True
     ifLog: 控制要不要把python-ffmpeg執行過程轉換成ffmpeg的cmd指令顯示在log，複寫ifMain，預設為False
+    ifStdout: 控制要不要顯示ffmpeg的stdout訊息，否則只顯示error訊息，預設為False
     """
     if ifMain and ifLog:
         log.i("--------------- Start contact_by_manifest() --------------- ")
@@ -102,14 +108,18 @@ def contact_by_manifest(video_tuple, output_location="", output_name="", ifMain=
     if output_name.split(".")[-1] == output_name:
         output_name = output_name+"."+video_type
     output = os.path.join(output_location, output_name)
-    contact_cmd = "ffmpeg -f concat -safe 0 -i \"%s\" -c copy -y \"%s\"" % (
-        contact_input, output)
+    if ifStdout:
+        loglevel = "verbose"
+    else:
+        loglevel = "warning"
+    contact_cmd = "ffmpeg -f concat -safe 0 -i \"%s\" -c copy -loglevel %s -y \"%s\"" % (
+        contact_input, loglevel, output)
     if ifLog:
         log.i("About to run: " + contact_cmd)
     (
         ffmpeg
         .input(contact_input, f="concat", safe=0)
-        .output(output, c="copy", y="-y")
+        .output(output, c="copy", y="-y", loglevel=loglevel)
         .run()
     )
     os.remove(contact_input)

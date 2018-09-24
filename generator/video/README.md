@@ -11,7 +11,7 @@
   
 ## 可選參數output_location
 > 請輸入輸出的資料夾路徑，不用+檔名，  
-> 如果不輸入則預設為__root/file底下。  
+> 如果不輸入則預設為__root/file/generator底下。  
   
 ## 可選參數ifMain
 > 控制log要不要顯示---Strat func()---,---End func()---  
@@ -20,9 +20,10 @@
 ## 可選參數ifLog
 > 控制要不要把python-ffmpeg執行過程轉換成ffmpeg的cmd指令顯示在log，複寫ifMain  
 > 預設為False   
-
-## 輸出檔案
-> 輸出檔案都會被自動放到file資料夾裡。  
+  
+## 可選參數ifStdout  
+> 控制要不要顯示ffmpeg的stdout訊息，否則只顯示error訊息，預設為False  
+> 預設為False  
   
 ## video_algorithm（位於alalyzer/algorithm）
 > 
