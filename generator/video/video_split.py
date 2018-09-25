@@ -119,8 +119,7 @@ def split_by_manifest(filename, split_start, split_length, output_location="", o
     (
         ffmpeg
         .input(filename, ss=split_start)
-        .output(output, t=split_length,
-                avoid_negative_ts="make_zero", threads=4, y="-y", loglevel=loglevel, **{"b:v": bitrate})
+        .output(output, t=split_length, avoid_negative_ts="make_zero", threads=4, y="-y", loglevel=loglevel, **{"b:v": bitrate})
         .run()
     )
     if ifMain and ifLog:
@@ -130,7 +129,7 @@ def split_by_manifest(filename, split_start, split_length, output_location="", o
 if __name__ == '__main__':
     # 測試用
     filename = os.path.join(__root, "test\\test_file", "test_video.mp4")
-    #split_by_frame(filename, 38, 48)
+    #split_by_frame(filename, 10, 48)
     split_start = 0
     split_length = 5
     split_by_manifest(filename, split_start, split_length)
