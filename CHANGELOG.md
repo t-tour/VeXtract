@@ -4,6 +4,10 @@
 格式基於 [Keep a Changelog](http://keepachangelog.com/zh-TW/1.0.0/)
 這個項目堅持 [Semantic Versioning](http://semver.org/spec/v2.0.0.html)
 
+## [0.0.14] - 2018-09-25
+### Fixed
+- 修正 `time_tagger.py` 的排序
+
 ## [0.0.13] - 2018-09-15
 ### Added
 - 新增 `analyzer/algorithm/time_tagger.py`
