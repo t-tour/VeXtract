@@ -14,30 +14,20 @@ log = logger.Logger(__name__)
 
 import subprocess
 
-from crawler import bilibili
+from crawler.bilibili import bilibili, bilibili_info
+from analyzer.algorithm import video_algorithm
 
 
-def __generate_segments(video):
+def _generate_segments(video):
     """
     隨意產生OAO
     """
-    # FIXME: 需求獲取 video 資訊的 feature
     log.i('Start generate_segments with {}'.format(video))
-    ouput = subprocess.Popen("ffmpeg -i {}".format(video), stdout=subprocess.PIPE,
-                             stderr=subprocess.PIPE, stdin=subprocess.PIPE)
-    stdout, stderr = ouput.communicate()
-    stderr = str(stderr)
-    start = stderr.index("Duration")
-    log.i('Start is: {}'.format(start))
-    time = stderr[start+10:start+21].split(":")
-    log.i('Time is: {}'.format(time))
-    video_length = int(time[0])*3600000 + int(time[1]) * \
-        60000 + int(float(time[2])*1000)
-    log.i('err is: {}'.format(stderr))
-    log.i('length is: {}'.format(video_length))
-
-
+    video_length = video_algorithm.get_video_length(video)
+    video_length = int(video_length*1000)
     sep = 5000
+    
+
     segments_list = list()
     for i in range(0, video_length, sep):
         if i+sep > video_length:
@@ -49,9 +39,9 @@ def __generate_segments(video):
     return segments_list
 
 
-def __grade_segments(segments, real_time_comments=None, comments=None, audio=None, video=None):
+def _grade_segments(segments, real_time_comments=None, comments=None, audio=None, video=None):
     """
-    segments: 切分的影片片段
+    segments: 切分的影片片段p
     real_time_comments, comments, audio, video: 評分用的資料
     list
     {
@@ -63,41 +53,53 @@ def __grade_segments(segments, real_time_comments=None, comments=None, audio=Non
     graded_list = list()
     for segment in segments:
         total_score = 0
+        # 對 real_time_comments 做評分
         if real_time_comments:
             for comment in real_time_comments:
-                if comment["time"] >= segment[0] and comment["time"] < segment[1]:
-                    total_score += 1
+                if float(comment["sec"]) >= segment[0] and float(comment["sec"]) < segment[1]:
+                    if comment["score"]:
+                        total_score += float(comment["score"]) * 10 + 1
+                    else:
+                        total_score += 3
+        # 對 comments 做評分
+        if comments:
+            pass
+        if audio:
+            pass
+        if video:
+            pass
         graded_list.append({
-            "time": segment,
+            "sec": segment,
             "total_score": total_score
         })
     log.i('grade_list is: {}'.format(graded_list))
     return graded_list
 
 
-def wanted_length(length, video, real_time_comments=None, comments=None):
+def count_wanted_length(length, video, real_time_comments=None, comments=None):
     """
     回傳應該要剪的片段
     length: 總時長不超過 length
     video: 影片位置
     """
-    segments = __generate_segments(video)
-    segments_graded = __grade_segments(segments, real_time_comments)
+    segments = _generate_segments(video)
+    segments_graded = _grade_segments(segments, real_time_comments)
     segments_graded = sorted(
         segments_graded, key=lambda segment: segment["total_score"], reverse=True)
     segments_list = list()
     total_length = 0
     for segment in segments_graded:
-        segments_list.append(segment["time"])
-        total_length += segment["time"][1] - segment["time"][0]
+        segments_list.append(segment["sec"])
+        total_length += segment["sec"][1] - segment["sec"][0]
         if total_length > length:
             segments_list.pop()
             break
     log.i('segments_list: {}'.format(segments_list))
+    segments_list = sorted(segments_list, key=lambda foo: foo[0])
     return segments_list
 
 
-def wanted_grade_above(grade, video, comments):
+def count_wanted_grade_above(grade, video, comments):
     """
     回傳應該要剪的片段
     grade: 分數高於 grade 就收錄
@@ -108,14 +110,47 @@ def wanted_grade_above(grade, video, comments):
 
 
 if __name__ == "__main__":
+    from generator.video import video_process as vp
+    from analyzer.text import natural_lang_process
     log.i('time_tagger Start!')
-    print(__root + "file\\crawler\\av30199696\\1_52660766\\52660766-part0.flv")
-    b_info = bilibili.fetch_bilibili_av("av30199696")
-    real_time_comments = list()
-    for comment in b_info.comments["52660766"]:
-        real_time_comments.append(
-            {"time": float(comment.sec), "text": comment.text})
-    # print(real_time_comments)
-    os.chdir(__root + "file\\crawler\\av30199696\\1_52660766\\")
-    wanted_length(
-        100, "\"" + __root + "file\\crawler\\av30199696\\1_52660766\\52660766-part0.flv\"", real_time_comments)
+    URL = "https://www.bilibili.com/video/av8733186?from=search&seid=4119483458303784416"
+    b_info = bilibili.Bilibili_file_info.load(
+        os.path.join(__root, "av8733186.json"))
+    VIDEO_PATH = os.path.join(
+        __root, "file\\crawler\\bilibili\\av{}\\{}.flv".format(b_info.aid, b_info.cid[0]))
+    b_info.save(os.path.join(__root, "file\\algorithm\\"))
+    wanted_tuple_list = count_wanted_length(
+        600, VIDEO_PATH, b_info.comments[b_info.cid[0]])
+    wanted_tuple_list = sorted(wanted_tuple_list, key=lambda i: i[0])
+    segs = _generate_segments(VIDEO_PATH)
+    graded_segs = _grade_segments(segs, b_info.comments[b_info.cid[0]])
+    vp.video_process(VIDEO_PATH, wanted_tuple_list, True, "ten_min.mp4")
+
+"""
+    from matplotlib import pyplot as pt
+    pt.figure(1)
+    pt.subplot(211).set_title("abs value")
+    pt.plot(range(5, int(b_info.timelength/1000), 5),
+            [i["total_score"] for i in graded_segs])
+    pt.xlabel("time")
+    pt.ylabel("score")
+    pt.subplot(212).set_title("avs value(K)")
+    y = 0
+    y_ax = list()
+    for i, graded_seg in zip(range(len(graded_segs)), graded_segs):
+        y += graded_seg["total_score"]
+        if i < 5:
+            opt = y/(i+1)
+        else:
+            y -= graded_segs[i-5]["total_score"]
+            opt = y/5
+        y_ax.append(opt)
+    pt.plot(range(5, int(b_info.timelength/1000), 5), y_ax)
+    pt.ylim([0,25])
+    pt.xlabel("time")
+    pt.ylabel("25s avs score")
+    pt.show()
+"""
+
+    # 做裁剪
+    # vp.video_process(VIDEO_PATH, wanted_tuple_list, temp_Keep=True, output_name="ss")

@@ -122,8 +122,8 @@ def video_encoding(filename, output_location="", output_name="", bitrate="5000k"
 
 if __name__ == "__main__":
     # 傳入的list of tuple
-    split_list = [(5, 20), (30, 45), (60, 75)]
+    split_list = [(5, 33.5)]
     #split_list = [(5, 6), (7, 8), (9, 10)]
-    filename = os.path.join(__root, "file", "03.mp4")
-    video_process(filename, split_list, output_location=os.path.join(__root, "file", "generator"),
-                  temp_Keep=True, output_name="03-666.flv")  # (檔案名稱/檔案路徑,list of tuple)
+    filename = os.path.join(__root, "file/output.mp4")
+    video_process(filename, split_list,
+                  temp_Keep=False)  # (檔案名稱/檔案路徑,list of tuple)

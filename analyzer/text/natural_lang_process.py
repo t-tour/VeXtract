@@ -1,3 +1,6 @@
+from helper import logger
+log = logger.Logger(__name__)
+
 import argparse
 import json
 import sys
@@ -33,6 +36,7 @@ def analyze_sentiment(text, encoding='UTF32'):
 def text_analyze(text):
     result = analyze_sentiment(text)
     sentiment = result['documentSentiment']
+    log.i('text: {} score: {} analyzed...'.format(text, sentiment['score']))
     return sentiment['score']
 
 
