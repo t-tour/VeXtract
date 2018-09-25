@@ -13,6 +13,10 @@
 > 請輸入輸出的資料夾路徑，不用+檔名，  
 > 如果不輸入則預設為__root/file底下。  
   
+## 可選參數ifMain
+> 控制log要不要顯示---Strat func()---,---End func()---  
+> 預設為True  
+   
 ## 輸出檔案
 > 輸出檔案都會被自動放到file資料夾裡。  
   
@@ -26,18 +30,48 @@
 ___    
 ## video_split（位於generator）
 > ### split_by_frame(filename, start_time, frame_number, output_location="")   
-> > 說明：對影片切出一張一張的frame，start_time為切割開始的時間（以秒數輸入），frame_number為要切割的張數，輸出會產生一個temp資料夾，圖片會以影片名稱-編號.jpg命名。   
-> ### split_by_manifest(filename, split_start, split_length, rename_to, output_location="", cmd_extra_code="", ifmove=True)   
-> > 說明：對影片進行自定義切割，split_start為切割開始的時間（以秒數輸入），split_length為切割的長度，rename_to為輸出檔案的命名（須加附檔名），cmd_extra_code為在切割前進行的額外cmd指令，不用理會，ifmove代表要不要移動切割後的影片到file資料夾裡。  
+> > 說明：從影片的特定時間點切出一張一張的frame  
+> > filename: 影片路徑  
+> > start_time: 切割開始的時間點  
+> > frame_number: 要切的frame張數  
+> > output_location: 輸出位置(不包含檔案)，預設為__root/file/generator   
+> > frames的輸出: 會在output_location產生一個[filename的檔案名稱]+_frames的資料夾，並存放切出的frames，如果有存在相同資料夾，則會自動在後面加上_1,_2,...，frames會以影片名稱-編號.jpg命名。  
+> ### split_by_manifest(filename, split_start, split_length, output_location="", output_name="", bitrate="5000k")  
+> > 說明： 依照自訂義時間切割影片  
+> > filename: 影片路徑  
+> > split_start: 切割開始的時間點  
+> > split_length: 要切割的時間長度  
+> > output_location: 輸出位置(不包含檔案)，預設為__root/file/generator  
+> > output_name: output_name: [影片名稱].[副檔名]，預設為[filename的檔名]+_output_+時戳，副檔名則參照輸入檔案  
+> > bitrate: 影片位元速率，越大畫質越好，檔案容量也越大，預設為5000k  
   
 ___      
-## video_contact（位於generator）
+## video_contact（位於generator）  
+> ### contact_by_type(video_type, input_location="", output_location="", output_name="")  
+> > 說明: 把路徑底下，所有同類型的影片合併  
+> > video_type: 要合併的影片類型  
+> > input_location: 要合併影片的路徑  
+> > output_location: 輸出位置(不包含檔案)，預設為__root/file/generator  
+> > output_name: [影片名稱].[副檔名]，預設為contact_output_+時戳，副檔名則參照video_type  
 > ### contact_by_manifest(video_tuple, output_location="", output_name="output")  
-> > 說明：傳入一個video_tuple（複數的個filename），並合併成一個影片，output_name則是輸出的影片名稱，輸入影片名稱.副檔名，若不輸入則預設為"output"。  
+> > 說明：把路徑底下，所有同類型的影片合併  
+> > video_type: 要合併的影片類型  
+> > input_location: 要合併影片的路徑  
+> > output_location: 輸出位置(不包含檔案)，預設為__root/file/generator  
+> > output_name: [影片名稱].[副檔名]，預設為contact_output_+時戳，副檔名則參照video_type  
   
 ___    
-## video_process（位於generator）
-> ### video_process(filename, split_list, output_location="", temp_Keep=False, output_name="output")  
-> > 說明：傳入影片，並且傳入複數切割的時間點split_list（格式為 [(開始的秒數,要切割的長度),(開始的秒數,要切割的長度),....]），最後合併成一個影片，temp_keep為切割過程產生的分割檔是否要保留（預設為false），output_name則是輸出的影片名稱，若不輸入則預設為"output"。  
-> ### video_encoding(filename, output_location="", output_name="output.mp4")  
-> > 說明：傳入影片，並且輸入output_name ，副檔名預設mp4，若都不輸入則預設為output.mp4。   
+## video_process（位於generator）  
+> ### video_process(filename, split_list, temp_Keep=False, output_location="", output_name="")  
+> > 說明：影片的裁切與合併  
+> > filename: 影片路徑  
+> > split_list:[(start_time1, end_time1), (start_time2,end_time2))...]  
+> > output_location: 輸出位置(不包含檔案)，預設為__root/file/generator  
+> > output_name: [影片名稱].[副檔名]，預設為[filename的檔名]+_output_+時戳，副檔名則參照輸入檔案  
+> > temp_Keep: 處理時會在output_location產生[filename的檔案名稱]+_process_temp的資料夾，可選擇是否保留，如果有存在相同資料夾，則會自動在後面加上_1,_2,...  
+> ### video_encoding(filename, output_location="", output_name="", bitrate="5000k")  
+> > 說明：影片的轉檔，根據ouput_name的副檔名做重新編碼  
+> > filename: 影片路徑  
+> > output_location: 輸出位置(不包含檔案)，預設為__root/file/generator  
+> > output_name: [影片名稱].[副檔名]，預設為[filename的檔名]+_output_+時戳，副檔名則預設為mp4  
+> > bitrate: 影片位元速率，越大畫質越好，檔案容量也越大，預設為5000k  
