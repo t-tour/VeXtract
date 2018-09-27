@@ -46,7 +46,7 @@ def _url_parse(url):
     return return_value
 
 
-def file_crawler(url, des=__root + os.path.join("file", "crawler", "bilibili\\")):
+def file_crawler(url, des=os.path.join(__root, "file", "crawler", "bilibili")):
     """
     下載影片檔案
     url: b站影片網址
@@ -56,12 +56,13 @@ def file_crawler(url, des=__root + os.path.join("file", "crawler", "bilibili\\")
     url_info = _url_parse(url)
     p = int(url_info["p"])
     target = fetch_bilibili_av(url_info["avnumber"], p)
-    des += "av{}".format(target.aid)
+    des = os.path.join(des, "av" + target.aid)
     log.i("正在下載 av{0}_{1} cid名稱:{2}".format(
         target.aid, target.cid[p-1], target.cid_name[p-1]))
     for no, url in zip(range(len(target.durl)), target.durl):
         _download_b_video(url, p, target.cid[p-1], target.aid, no)
-    concat_list = [i for i in os.listdir(".") if re.match(r"^\d+-part\d+.flv$", i)]
+    concat_list = [i for i in os.listdir(
+        ".") if re.match(r"^\d+-part\d+.flv$", i)]
     os.makedirs(des)
     video_contact.contact_by_manifest(
         concat_list, des, target.cid[p-1])
@@ -86,7 +87,7 @@ def real_time_comments_crawler(url):
     return target.comments[target.cid[int(url_info["p"])-1]]
 
 
-def info_crawler(url, des=__root + os.path.join("file", "crawler", "bilibili"), save=False):
+def info_crawler(url, des=os.path.join(__root, "file", "crawler", "bilibili"), save=False):
     """
     獲取影片資料
     url: b站影片網址
@@ -136,4 +137,3 @@ if __name__ == "__main__":
     # b.save()
     file_crawler(
         "https://www.bilibili.com/video/av25219896?from=search&seid=16811196391356959694")
-
