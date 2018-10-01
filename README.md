@@ -1,7 +1,5 @@
 <p align="center">
-    <a href="https://gitlab.com/T-tour/VeXtract">
-        <img src="rectangle_logo.png" height="130">
-    </a>
+    <img src="rectangle_logo.png" height="130">
 </p>
 <p align="center">
     <a href="#backers" alt="Backers on Open Collective">
