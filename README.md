@@ -1,6 +1,4 @@
-<p style="text-align:center">
-    <img src="rectangle_logo.png" height="130">
-</p>
+<img src="rectangle_logo.png" height="130">
 <p style="text-align:center">
     <a href="#backers" alt="Backers on Open Collective">
         <img src="https://opencollective.com/shields/backers/badge.svg" /></a>
