@@ -46,27 +46,28 @@ def _url_parse(url):
     return return_value
 
 
-def file_crawler(url, des=__root + os.path.join("file", "crawler", "bilibili\\")):
+def file_crawler(url, des=os.path.join(__root, "file", "crawler", "bilibili")):
     """
     下載影片檔案
     url: b站影片網址
     des: 儲存位置
-
     -> None
     """
     url_info = _url_parse(url)
     p = int(url_info["p"])
     target = fetch_bilibili_av(url_info["avnumber"], p)
-    os.makedirs(
-        des + "av{}/{}_{}/".format(target.aid, p, target.cid[p-1]), exist_ok=True)
-    os.chdir(des + "av{}/{}_{}/".format(target.aid, p, target.cid[p-1]))
+    des = os.path.join(des, "av" + target.aid)
     log.i("正在下載 av{0}_{1} cid名稱:{2}".format(
         target.aid, target.cid[p-1], target.cid_name[p-1]))
     for no, url in zip(range(len(target.durl)), target.durl):
         _download_b_video(url, p, target.cid[p-1], target.aid, no)
-    concat_list = os.listdir(".")
+    concat_list = [i for i in os.listdir(
+        ".") if re.match(r"^\d+-part\d+.flv$", i)]
+    os.makedirs(des)
     video_contact.contact_by_manifest(
-        concat_list, des + "av{}/{}.flv".format(target.aid, target.cid[p-1]))
+        concat_list, des, target.cid[p-1])
+    for concats in concat_list:
+        os.remove(concats)
 
 
 def real_time_comments_crawler(url):
@@ -86,7 +87,7 @@ def real_time_comments_crawler(url):
     return target.comments[target.cid[int(url_info["p"])-1]]
 
 
-def info_crawler(url, des=__root + os.path.join("file", "crawler", "bilibili"), save=False):
+def info_crawler(url, des=os.path.join(__root, "file", "crawler", "bilibili"), save=False):
     """
     獲取影片資料
     url: b站影片網址
@@ -134,7 +135,5 @@ if __name__ == "__main__":
     # b = fetch_bilibili_av("av29311976")
     # b.fetch_comment_score(limitation=5000)
     # b.save()
-    a = comment_crawler(
-        "https://www.bilibili.com/video/av30906149/?spm_id_from=333.334.bili_douga.11")
-
-    print(a)
+    file_crawler(
+        "https://www.bilibili.com/video/av25219896?from=search&seid=16811196391356959694")
