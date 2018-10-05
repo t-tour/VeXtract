@@ -12,7 +12,6 @@ sys.path.append(__root)
 from helper import logger
 log = logger.Logger(__name__)
 
-import subprocess
 
 from crawler.bilibili import bilibili, bilibili_info
 from analyzer.algorithm import video_algorithm
