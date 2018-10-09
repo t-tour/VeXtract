@@ -11,14 +11,19 @@
   
 ## 可選參數output_location
 > 請輸入輸出的資料夾路徑，不用+檔名，  
-> 如果不輸入則預設為__root/file底下。  
+> 如果不輸入則預設為__root/file/generator底下。  
   
 ## 可選參數ifMain
 > 控制log要不要顯示---Strat func()---,---End func()---  
 > 預設為True  
    
-## 輸出檔案
-> 輸出檔案都會被自動放到file資料夾裡。  
+## 可選參數ifLog
+> 控制要不要把python-ffmpeg執行過程轉換成ffmpeg的cmd指令顯示在log，複寫ifMain  
+> 預設為False   
+  
+## 可選參數ifStdout  
+> 控制要不要顯示ffmpeg的stdout訊息，否則只顯示error訊息，預設為False  
+> 預設為False  
   
 ## video_algorithm（位於alalyzer/algorithm）
 > 
@@ -35,6 +40,7 @@ ___
 > > start_time: 切割開始的時間點  
 > > frame_number: 要切的frame張數  
 > > output_location: 輸出位置(不包含檔案)，預設為__root/file/generator   
+> > bitrate: 影片位元速率，越大圖片畫質越好，檔案容量也越大，預設為5000k  
 > > frames的輸出: 會在output_location產生一個[filename的檔案名稱]+_frames的資料夾，並存放切出的frames，如果有存在相同資料夾，則會自動在後面加上_1,_2,...，frames會以影片名稱-編號.jpg命名。  
 > ### split_by_manifest(filename, split_start, split_length, output_location="", output_name="", bitrate="5000k")  
 > > 說明： 依照自訂義時間切割影片  
