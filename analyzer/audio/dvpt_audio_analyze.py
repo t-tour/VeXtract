@@ -55,7 +55,7 @@ def analyze_audio_list(file, frame_size=44100, noverlap=None):
     for seg in range(1, time_segment_length-1, 1):
         segment_tuple = (time_segment[seg]-time_segment[seg+1])
         frequency_corresponds_to_strength_temp_list = [
-            [[frequency[num], each_frequency_strength_corresponds_to_time_segment[num, segment]] for num in range(frequency_block_num)]]
+            [frequency[num], each_frequency_strength_corresponds_to_time_segment[num, segment]] for num in range(frequency_block_num)]
         segment_dict = dict(
             {'time': segment, 'spectrum': frequency_corresponds_to_strength_temp_list})
         channel_information_list.append(segment_dict)
