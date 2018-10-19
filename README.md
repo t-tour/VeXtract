@@ -1,2 +1,4 @@
-<a href="https://gitlab.com/T-tour/VeXtract"><img src="rectangle_logo.png" alt="drawing" width="200"/></a>
+<a href="https://gitlab.com/T-tour/VeXtract/">
+    <img src="rectangle_logo.png" height="150">
+
 # 影粹 VeXtract
