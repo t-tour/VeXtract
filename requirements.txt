@@ -5,8 +5,10 @@ google-api-python-client
 google-auth
 google-auth-httplib2
 lxml
+matplotlib
 numpy
 pafy
+pydub
 pylint
 pytest
 pytube
