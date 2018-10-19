@@ -47,4 +47,5 @@ def get_video_fps(filename):
 
 if __name__ == "__main__":
     # 測試用
-    get_video_fps(__root + "file\\algorithm\\123.mp4")
+    filename = os.path.join(__root, "test\\test_file", "test_video.mp4")
+    get_video_fps(filename)
