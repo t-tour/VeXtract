@@ -13,29 +13,9 @@ from helper import logger
 log = logger.Logger(__name__)
 
 
-from crawler.bilibili import bilibili, bilibili_info
-from analyzer.algorithm import video_algorithm
-
-
-def _generate_segments(video):
-    """
-    隨意產生OAO
-    """
-    log.i('Start generate_segments with {}'.format(video))
-    video_length = video_algorithm.get_video_length(video)
-    video_length = int(video_length*1000)
-    sep = 5000
-    
-
-    segments_list = list()
-    for i in range(0, video_length, sep):
-        if i+sep > video_length:
-            segments_list.pop()
-            segments_list.append(((i-sep)/1000, (video_length)/1000))
-            continue
-        segments_list.append((i/1000, (i+sep)/1000))
-    log.i('sements_list is: {}'.format(segments_list))
-    return segments_list
+from crawler.bilibili import bilibili
+from analyzer.algorithm import segment_generator
+from generator.video import video_process
 
 
 def _grade_segments(segments, real_time_comments=None, comments=None, audio=None, video=None):
@@ -81,7 +61,7 @@ def count_wanted_length(length, video, real_time_comments=None, comments=None):
     length: 總時長不超過 length
     video: 影片位置
     """
-    segments = _generate_segments(video)
+    segments = segment_generator.generate_segments(video)
     segments_graded = _grade_segments(segments, real_time_comments)
     segments_graded = sorted(
         segments_graded, key=lambda segment: segment["total_score"], reverse=True)
@@ -121,35 +101,6 @@ if __name__ == "__main__":
     wanted_tuple_list = count_wanted_length(
         600, VIDEO_PATH, b_info.comments[b_info.cid[0]])
     wanted_tuple_list = sorted(wanted_tuple_list, key=lambda i: i[0])
-    segs = _generate_segments(VIDEO_PATH)
+    segs = segment_generator.generate_segments(VIDEO_PATH)
     graded_segs = _grade_segments(segs, b_info.comments[b_info.cid[0]])
     vp.video_process(VIDEO_PATH, wanted_tuple_list, True, "ten_min.mp4")
-
-"""
-    from matplotlib import pyplot as pt
-    pt.figure(1)
-    pt.subplot(211).set_title("abs value")
-    pt.plot(range(5, int(b_info.timelength/1000), 5),
-            [i["total_score"] for i in graded_segs])
-    pt.xlabel("time")
-    pt.ylabel("score")
-    pt.subplot(212).set_title("avs value(K)")
-    y = 0
-    y_ax = list()
-    for i, graded_seg in zip(range(len(graded_segs)), graded_segs):
-        y += graded_seg["total_score"]
-        if i < 5:
-            opt = y/(i+1)
-        else:
-            y -= graded_segs[i-5]["total_score"]
-            opt = y/5
-        y_ax.append(opt)
-    pt.plot(range(5, int(b_info.timelength/1000), 5), y_ax)
-    pt.ylim([0,25])
-    pt.xlabel("time")
-    pt.ylabel("25s avs score")
-    pt.show()
-"""
-
-    # 做裁剪
-    # vp.video_process(VIDEO_PATH, wanted_tuple_list, temp_Keep=True, output_name="ss")

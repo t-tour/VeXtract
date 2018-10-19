@@ -31,6 +31,10 @@ def get_video_length(filename):
     return video_length
 
 
+def get_video_length_milisecond(filename):
+    return int(get_video_length(filename) * 1000)
+
+
 def get_video_fps(filename):
     ouput = subprocess.Popen("ffmpeg -i \"{}\"".format(filename), stdout=subprocess.PIPE,
                              stderr=subprocess.PIPE, stdin=subprocess.PIPE)
