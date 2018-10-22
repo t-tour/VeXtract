@@ -93,14 +93,16 @@ if __name__ == "__main__":
     from analyzer.text import natural_lang_process
     log.i('time_tagger Start!')
     URL = "https://www.bilibili.com/video/av8733186?from=search&seid=4119483458303784416"
-    b_info = bilibili.Bilibili_file_info.load(
-        os.path.join(__root, "av8733186.json"))
-    VIDEO_PATH = os.path.join(
-        __root, "file\\crawler\\bilibili\\av{}\\{}.flv".format(b_info.aid, b_info.cid[0]))
-    b_info.save(os.path.join(__root, "file\\algorithm\\"))
-    wanted_tuple_list = count_wanted_length(
-        600, VIDEO_PATH, b_info.comments[b_info.cid[0]])
-    wanted_tuple_list = sorted(wanted_tuple_list, key=lambda i: i[0])
-    segs = segment_generator.generate_segments(VIDEO_PATH)
-    graded_segs = _grade_segments(segs, b_info.comments[b_info.cid[0]])
-    vp.video_process(VIDEO_PATH, wanted_tuple_list, True, "ten_min.mp4")
+    b_info = bilibili.info_crawler(URL)
+    print(b_info)
+    print(b_info.comments)
+    
+    # VIDEO_PATH = os.path.join(
+    #     __root, "file\\crawler\\bilibili\\av{}\\{}.flv".format(b_info.aid, b_info.cid[0]))
+    # b_info.save(os.path.join(__root, "file\\algorithm\\"))
+    # wanted_tuple_list = count_wanted_length(
+    #     600, VIDEO_PATH, b_info.comments[b_info.cid[0]])
+    # wanted_tuple_list = sorted(wanted_tuple_list, key=lambda i: i[0])
+    # segs = segment_generator.generate_segments(VIDEO_PATH)
+    # graded_segs = _grade_segments(segs, b_info.comments[b_info.cid[0]])
+    # vp.video_process(VIDEO_PATH, wanted_tuple_list, True, "ten_min.mp4")

@@ -13,7 +13,8 @@ from helper import logger
 log = logger.Logger(__name__)
 
 from generator.video import video_process
-from analyzer.audio import fake_analyzer
+from analyzer.audio import dvpt_audio_analyze
+
 
 def generate_segments(video, minimum_length=5000, vocal_frequency_range=(15, 30), trigger=0.3, stability="Not Use Now"):
     """
@@ -32,7 +33,7 @@ def generate_segments(video, minimum_length=5000, vocal_frequency_range=(15, 30)
     video_audio = os.path.join(
         __root, "file", "generator", video_name + ".wav")
 
-    spectrum = fake_analyzer.analyze_audio_list(video_audio)
+    spectrum = dvpt_audio_analyze.analyze_audio_list(video_audio)
 
     # 獲取不會觸發trigger的聲音平均強度
     hz_avg_strength_list = list()
