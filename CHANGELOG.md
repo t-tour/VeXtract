@@ -4,6 +4,10 @@
 格式基於 [Keep a Changelog](http://keepachangelog.com/zh-TW/1.0.0/)
 這個項目堅持 [Semantic Versioning](http://semver.org/spec/v2.0.0.html)
 
+## [0.0.15] - 2018-10-22
+### Added
+- 新增 `analyzer/audio/dvpt_audio_analyze.py` 音訊分析
+
 ## [0.0.14] - 2018-09-25
 ### Fixed
 - 修正 `time_tagger.py` 的排序
