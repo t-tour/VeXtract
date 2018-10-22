@@ -1,3 +1,8 @@
+import numpy as np
+from scipy.io import wavfile
+from scipy import signal
+from matplotlib import pyplot as plt
+from helper import logger
 import os
 import sys
 __root = os.path.abspath(
@@ -9,13 +14,7 @@ __root = os.path.abspath(
     )) + os.sep
 sys.path.append(__root)
 
-from helper import logger
 log = logger.Logger(__name__)
-
-from matplotlib import pyplot as plt
-from scipy import signal
-from scipy.io import wavfile
-import numpy as np
 
 
 def analyze_audio_list(file, frame_size=44100, noverlap=None):
@@ -51,13 +50,13 @@ def analyze_audio_list(file, frame_size=44100, noverlap=None):
     frequency_block_num = frequency.size
     channel_information_list = list()
     for seg in range(1, time_segment_length-1, 1):
-        segment_tuple = (time_segment[seg]-time_segment[seg+1])
+        segment_tuple = (time_segment[seg-1], time_segment[seg])
         frequency_corresponds_to_strength_temp_list = [
-            [frequency[num], each_frequency_strength_corresponds_to_time_segment[num, segment]] for num in range(frequency_block_num)]
+            [frequency[num], each_frequency_strength_corresponds_to_time_segment[num, seg]] for num in range(frequency_block_num)]
         segment_dict = dict(
-            {'time': segment, 'spectrum': frequency_corresponds_to_strength_temp_list})
+            {'time': segment_tuple, 'spectrum': frequency_corresponds_to_strength_temp_list})
         channel_information_list.append(segment_dict)
-    print(channel_information_list)
+    print(channel_information_list[:5])
     return channel_information_list
 
     # # Analyze the left and right channels method
@@ -101,4 +100,4 @@ def analyze_audio_list(file, frame_size=44100, noverlap=None):
 
 
 if __name__ == "__main__":
-    analyze_audio_list('./audio/a-0101.wav')
+    analyze_audio_list(os.path.join(__root, "file", "tt.wav"))
