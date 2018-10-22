@@ -1,6 +1,7 @@
 # Sort by alphabet
 bs4
 cssselect
+ffmpeg-python
 google-api-python-client
 google-auth
 google-auth-httplib2
@@ -13,5 +14,5 @@ pylint
 pytest
 pytube
 requests
+scipy
 youtube-dl
-ffmpeg-python
