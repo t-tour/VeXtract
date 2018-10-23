@@ -2,8 +2,8 @@ import os
 import sys
 __root = os.path.abspath(
     os.path.dirname(os.path.abspath(__file__)) + (os.sep + '..') * (
-        len(os.path.dirname(os.path.abspath(__file__)).split(os.sep)) -
-        os.path.dirname(os.path.abspath(__file__)).split(os.sep).index(
+        len(os.path.dirname(os.path.abspath(__file__)).split(os.sep))
+        - os.path.dirname(os.path.abspath(__file__)).split(os.sep).index(
             'VeXtract'
         ) - 1
     )) + os.sep
@@ -16,7 +16,7 @@ from generator.video import video_process
 from analyzer.audio import dvpt_audio_analyze
 
 
-def generate_segments(video, minimum_length=5000, vocal_frequency_range=(15, 30), trigger=0.3, stability="Not Use Now"):
+def generate_segments(video, minimum_length=5000, vocal_frequency_range=(125, 400), trigger=0.3, stability="Not Use Now"):
     """
     video:影片
     minimum_length:最小長度 milisecond
@@ -33,27 +33,27 @@ def generate_segments(video, minimum_length=5000, vocal_frequency_range=(15, 30)
     video_audio = os.path.join(
         __root, "file", "generator", video_name + ".wav")
 
-    spectrum = dvpt_audio_analyze.analyze_audio_list(video_audio)
+    spectrums = dvpt_audio_analyze.analyze_audio_list(video_audio)
 
     # 獲取不會觸發trigger的聲音平均強度
     hz_avg_strength_list = list()
     avg_strength = float()
-    for time in spectrum:
+    for spectrum in spectrums:
         hz_avg_strength_list.append(
-            _segment_strength(time[1], vocal_frequency_range))
+            _segment_strength(spectrum["spectrum"], vocal_frequency_range))
     hz_avg_strength_list.sort()
-    thirty_percent = int(len(hz_avg_strength_list)*trigger)
+    thirty_percent = int(len(hz_avg_strength_list) * trigger)
     avg_strength = sum(
         hz_avg_strength_list[0:thirty_percent]) / float(thirty_percent)
 
     # 區分高於平均與否的segments
     above_avg = list()
     below_avg = list()
-    for time in spectrum:
-        if _segment_strength(time[1], vocal_frequency_range) >= avg_strength:
-            above_avg.append(time[0])
+    for spectrum in spectrums:
+        if _segment_strength(spectrum["spectrum"], vocal_frequency_range) >= avg_strength:
+            above_avg.append(spectrum["time"])
         else:
-            below_avg.append(time[0])
+            below_avg.append(spectrum["time"])
 
     segments_list = _tiny_segments_concat(
         above_avg) + _tiny_segments_concat(below_avg)
@@ -67,7 +67,7 @@ def _segment_strength(segment, vocal_frequency_range):
     vocal_hz_strength = list()
     for hz_strength in segment:
         if hz_strength[0] > vocal_frequency_range[0]:
-            vocal_hz_strength.append(hz_strength[1])
+            vocal_hz_strength.append(abs(hz_strength[1]))
             if not hz_strength[0] < vocal_frequency_range[1]:
                 vocal_hz_strength.pop()
                 return sum(vocal_hz_strength) / float(len(vocal_hz_strength))
