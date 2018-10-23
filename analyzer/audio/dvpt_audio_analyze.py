@@ -1,8 +1,4 @@
-import numpy as np
-from scipy.io import wavfile
-from scipy import signal
-from matplotlib import pyplot as plt
-from helper import logger
+
 import os
 import sys
 __root = os.path.abspath(
@@ -14,7 +10,13 @@ __root = os.path.abspath(
     )) + os.sep
 sys.path.append(__root)
 
+from helper import logger
 log = logger.Logger(__name__)
+
+import numpy as np
+from scipy.io import wavfile
+from scipy import signal
+from matplotlib import pyplot as plt
 
 
 def analyze_audio_list(file, frame_size=44100, noverlap=None):
@@ -22,23 +24,23 @@ def analyze_audio_list(file, frame_size=44100, noverlap=None):
     利用STFT分析音訊(.wav)，獲取對應時間點中包含頻率值與其強度
 
     Parameters:
-                file(str): 檔案路徑
-                frame_size(int): 音框大小 ※預設 44100
-                noverlap(int): 音框樣本重疊數 ※預設 None
+        file(str): 檔案路徑
+        frame_size(int): 音框大小 ※預設 44100
+        noverlap(int): 音框樣本重疊數 ※預設 None
     Returns:
         each frequency and strength corresponds to cast point
         Architecture:
-                [
-                        {
-                                "time" : (start_time, end_time),  # 單位:秒和小數點
-                                "spectrum" : [
-                                        (
-                                                頻率值,
-                                                強度
-                                        ),...  # 排序:以強度由小至大
-                                ]
-                        },...
-                ]
+            [
+                {
+                    "time" : (start_time, end_time),  # 單位:秒和小數點
+                    "spectrum" : [
+                        (
+                            頻率值,
+                            強度
+                        ),...  # 排序:以強度由小至大
+                    ]
+                },...
+            ]
         """
     sampling_rate, audio_wave_data = wavfile.read(file)
 
@@ -49,8 +51,8 @@ def analyze_audio_list(file, frame_size=44100, noverlap=None):
     time_segment_length = time_segment.size
     frequency_block_num = frequency.size
     channel_information_list = list()
-    for seg in range(1, time_segment_length-1, 1):
-        segment_tuple = (time_segment[seg-1], time_segment[seg])
+    for seg in range(1, time_segment_length - 1, 1):
+        segment_tuple = (time_segment[seg - 1], time_segment[seg])
         frequency_corresponds_to_strength_temp_list = [
             [frequency[num], each_frequency_strength_corresponds_to_time_segment[num, seg]] for num in range(frequency_block_num)]
         segment_dict = dict(
