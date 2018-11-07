@@ -52,7 +52,7 @@ def _grade_segments(segments, real_time_comments=None, comments=None, audio=None
             "sec": segment,
             "total_score": total_score
         })
-    log.i('grade_list is: {}'.format(graded_list))
+    log.i('grade_list is: {}...'.format(graded_list[:3]))
     return graded_list
 
 
@@ -74,7 +74,7 @@ def count_wanted_length(length, video, real_time_comments=None, comments=None):
         if total_length > length:
             segments_list.pop()
             break
-    log.i('segments_list: {}'.format(segments_list))
+    log.i('segments_list: {}...'.format(segments_list[:5]))
     segments_list = sorted(segments_list, key=lambda foo: foo[0])
     return segments_list
 
