@@ -20,15 +20,6 @@ AVJSON_PATH = os.path.join(
     __root, "test\\test_file\\{av}.json".format(av=AVNUMBER))
 VIDEO = os.path.join(__root, "test\\test_file\\{av}.mp4".format(av=AVNUMBER))
 
-def test__generate_segments():
-    log.i('Strat test__generate_segments.')
-    a = time_tagger._generate_segments(VIDEO)
-    assert_total_length = video_algorithm.get_video_length(VIDEO)
-    total_length = 0
-    for time in a:
-        total_length += time[1] - time[0]
-    assert assert_total_length == total_length
-
 
 def test_wanted_length():
     log.i('Start test_wanted_length.')
