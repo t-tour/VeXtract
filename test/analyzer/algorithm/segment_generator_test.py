@@ -22,7 +22,6 @@ VIDEO_AUDIO = os.path.join(
     __root, "test", "test_file", "Ns_interval_vocal_with_noise.wav")
 SEGMENTS = dvpt_audio_analyze.analyze_audio_list(VIDEO_AUDIO)
 
-
 def test_generate_segments():
     log.i('Strat test_generate_segments.')
     a = segment_generator.generate_segments(VIDEO_AUDIO)
@@ -50,3 +49,19 @@ def test__segments_concat():
                      (7.6, 8.4), (8.4, 9.6)]
     concated_segments = segment_generator._segments_concat(test_segments)
     assert [(0.5, 3.7), (4.8, 5.9), (7.6, 9.6)] == concated_segments
+
+
+def test__file_path_transfer():
+    file_path1 = "D:{sep}my_root{sep}aaa.wav".format(sep=os.sep)
+    file_path2 = "{sep}home{sep}dd QA.wav.wav".format(sep=os.sep)
+    file_path3 = "123.dd"
+    a, b = segment_generator.file_path_transfer(file_path1)
+    assert a == "aaa"
+    assert b == "wav"
+    a, b = segment_generator.file_path_transfer(file_path2)
+    assert a == "dd QA.wav"
+    assert b == "wav"
+    a, b = segment_generator.file_path_transfer(file_path3)
+    assert a == "123"
+    assert b == "dd"
+    

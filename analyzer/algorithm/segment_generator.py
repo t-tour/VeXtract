@@ -2,8 +2,8 @@ import os
 import sys
 __root = os.path.abspath(
     os.path.dirname(os.path.abspath(__file__)) + (os.sep + '..') * (
-        len(os.path.dirname(os.path.abspath(__file__)).split(os.sep))
-        - os.path.dirname(os.path.abspath(__file__)).split(os.sep).index(
+        len(os.path.dirname(os.path.abspath(__file__)).split(os.sep)) -
+        os.path.dirname(os.path.abspath(__file__)).split(os.sep).index(
             'VeXtract'
         ) - 1
     )) + os.sep
@@ -18,7 +18,7 @@ from generator.video import video_process
 from analyzer.audio import dvpt_audio_analyze
 
 
-MINIMUM_LENGTH = 5000
+MINIMUM_LENGTH = 2000
 VOCAL_FREQUENCY_REANGE = (125, 400)
 TRIGGER = 0.3
 TRIGGER_MULTIPLE = 2
@@ -36,11 +36,14 @@ def generate_segments(video_or_audio, minimum_length=MINIMUM_LENGTH, vocal_frequ
     log.i('Start generate_segments with {}'.format(video_or_audio))
 
     # video轉聲訊
-    video_name = "".join(video_or_audio.split(os.sep)[-1].split(".")[0:-1])
-    video_process.video_encoding(video_or_audio, os.path.join(
-        __root, "file", "generator"), video_name + ".wav", ifMain=False)
-    video_audio_path = os.path.join(
-        __root, "file", "generator", video_name + ".wav")
+    file_name, file_extension = file_path_transfer(video_or_audio)
+    if file_extension != "wav":
+        video_process.video_encoding(video_or_audio, os.path.join(
+            __root, "file", "generator"), file_name + ".wav", ifMain=False)
+        video_audio_path = os.path.join(
+            __root, "file", "generator", file_name + ".wav")
+    else:
+        video_audio_path = video_or_audio
 
     spectrums = dvpt_audio_analyze.analyze_audio_list(
         video_audio_path, frame_size=48000)
@@ -62,21 +65,34 @@ def generate_segments(video_or_audio, minimum_length=MINIMUM_LENGTH, vocal_frequ
     segments_list.sort(key=lambda foo: foo[0])
 
     # segments過短合併
-    minimum_concated_segments_list = segments_list_minimum_base_concat(
+    minimum_concated_segments_list = _segments_list_minimum_base_concat(
         segments_list, minimum_length)
     return minimum_concated_segments_list
 
 
-def segments_list_minimum_base_concat(segments_list, minimum_length):
+def file_path_transfer(file_path):
+    file_path_list = file_path.split(os.sep)
+    full_file_name = file_path_list[-1]
+    file_name = ".".join(full_file_name.split(".")[0:-1])
+    file_extension = full_file_name.split(".")[-1]
+    return file_name, file_extension
+
+
+def _segments_list_minimum_base_concat(origin_segments_list, minimum_length):
     selected_segments_list = list()
     new_segments_list = list()
-    for selected_segment in segments_list:
+    for selected_segment, i in zip(origin_segments_list, range(len(origin_segments_list))):
         selected_segments_list.append(selected_segment)
-        selected_segments_list = _segments_concat(selected_segments_list)
-        if (selected_segments_list[0][1] - selected_segments_list[0][0]) * 1000 < minimum_length:
+        selected_segment = _segments_concat(selected_segments_list)[0]
+        if (selected_segment[1] - selected_segment[0]) * 1000 < minimum_length:
+            if i == len(origin_segments_list) - 1:
+                back_one = new_segments_list.pop()
+                new_segments_list.append(
+                    _segments_concat([back_one, selected_segment]).pop())
             continue
         else:
-            new_segments_list.append(selected_segments_list.pop())
+            selected_segments_list = list()
+            new_segments_list.append(selected_segment)
     return new_segments_list
 
 
@@ -117,7 +133,6 @@ def _segments_concat(segments: list):
         return segments
 
     concated_segments = list()
-
     segments.reverse()
     start_time, end_time = segments.pop()
     segments.reverse()
@@ -129,4 +144,5 @@ def _segments_concat(segments: list):
         else:
             concated_segments.append((start_time, end_time))
             start_time, end_time = segment
+    segments = concated_segments
     return concated_segments
