@@ -225,6 +225,10 @@ def get_b_comments(aid, p):
 def get_comment_pages_count(aid):
     req = requests.get(COMMENT_REQ_URL.format(page=1, aid=aid), headers=HEADER)
     js = json.loads(req.text)
-    pages_c = (js["data"]["page"]["count"] - 1) // 20
+    pages_c = int()
+    try:
+        pages_c = (js["data"]["page"]["count"] - 1) // 20
+    except KeyError as identifier:
+        raise Exception("連接失效")
     return pages_c + 1  # 補餘數
     
