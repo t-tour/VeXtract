@@ -58,7 +58,6 @@ def analyze_audio_list(file, frame_size=44100, noverlap=None):
         segment_dict = dict(
             {'time': segment_tuple, 'spectrum': frequency_corresponds_to_strength_temp_list})
         channel_information_list.append(segment_dict)
-    print(channel_information_list[:5])
     return channel_information_list
 
     # # Analyze the left and right channels method
