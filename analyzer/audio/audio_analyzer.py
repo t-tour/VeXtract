@@ -64,7 +64,7 @@ class AudioAnalyzer():
         total = 0
         for _ in range(10):
             frame = self.get_frame(random.randint(0, self.count_frame() - 1))
-            total += frame.get_frequency_strength(self.vocal_interval)
+            total += frame.get_frequency_strength()
         return total / 10
 
     def get_frame(self, index: int) -> AudioFrame:
@@ -80,7 +80,7 @@ class AudioAnalyzer():
         ) else self.audio.wave.getnframes()
         end_time_at = end_bit_at / bit_rate
         target_frame_bits = self.audio.bits[start_bit_at:end_bit_at]
-        return AudioFrame((start_time_at, end_time_at), bit_rate, target_frame_bits)
+        return AudioFrame((start_time_at, end_time_at), bit_rate, self.vocal_interval, target_frame_bits)
 
     def count_frame(self) -> int:
         bit_count = self.audio.wave.getnframes()
@@ -88,9 +88,6 @@ class AudioAnalyzer():
         overlap = self.get_overlap()
         frame_count = math.ceil(bit_count / (frame_size - overlap))
         return frame_count
-
-    def set_offset(self, position):
-        self.position = position - 1
 
     def __iter__(self):
         return self
