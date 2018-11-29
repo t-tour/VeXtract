@@ -14,7 +14,7 @@ log = logger.Logger(__name__)
 
 class Segment(object):
 
-    def __init__(self):
-        self.time = tuple()
+    def __init__(self, time):
+        self.time = time
+        self.score = float()
         
-    

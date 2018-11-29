@@ -19,7 +19,7 @@ import numpy as np
 from scipy import signal
 from scipy.io import wavfile
 
-from analyzer.audio.frame import AudioFrame
+from analyzer.audio.frame import AudioAnalyzerFrame
 from analyzer.audio.audio import Audio
 
 
@@ -67,7 +67,7 @@ class AudioAnalyzer():
             total += frame.get_frequency_strength()
         return total / 10
 
-    def get_frame(self, index: int) -> AudioFrame:
+    def get_frame(self, index: int) -> AudioAnalyzerFrame:
         if index >= self.count_frame():
             raise IndexError
 
@@ -80,7 +80,7 @@ class AudioAnalyzer():
         ) else self.audio.wave.getnframes()
         end_time_at = end_bit_at / bit_rate
         target_frame_bits = self.audio.bits[start_bit_at:end_bit_at]
-        return AudioFrame((start_time_at, end_time_at), bit_rate, self.vocal_interval, target_frame_bits)
+        return AudioAnalyzerFrame((start_time_at, end_time_at), bit_rate, self.vocal_interval, target_frame_bits)
 
     def count_frame(self) -> int:
         bit_count = self.audio.wave.getnframes()
@@ -92,7 +92,7 @@ class AudioAnalyzer():
     def __iter__(self):
         return self
 
-    def __next__(self) -> AudioFrame:
+    def __next__(self) -> AudioAnalyzerFrame:
         if self.position == self.count_frame() - 1:
             raise StopIteration
         self.position += 1

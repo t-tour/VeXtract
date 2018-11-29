@@ -21,7 +21,7 @@ from scipy import signal
 from analyzer.segment import Segment
 
 
-class AudioFrame():
+class AudioAnalyzerFrame():
 
     def __init__(self, time: tuple, bitrate: int, vocal_interval: tuple, bits_data):
         self.time = time
@@ -33,7 +33,7 @@ class AudioFrame():
     def set_bits_data(self, bits_data):
         shape = len(bits_data.shape)
         if shape == 2:
-            self.bits_data = np.average(self.bits_data, 1)
+            self.bits_data = np.average(bits_data, 1)
         elif shape > 2:
             raise Exception('unSupport nchannel')
         else:
