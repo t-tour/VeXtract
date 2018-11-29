@@ -54,8 +54,8 @@ class AudioAnalyzerFrame():
             total += abs(self.spectrum[index])
         return total / (endat - startat)
 
-    def get_time(self):
-        return self.time
+    def get_interval(self):
+        return self.time[1] - self.time[0]
 
-    def frame2segment(self):
-        return Segment(self.time)
+    def frame2segment(self, isvocal):
+        return Segment(self.time, isvocal)
