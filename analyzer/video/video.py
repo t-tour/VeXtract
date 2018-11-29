@@ -18,12 +18,14 @@ import math
 from analyzer.audio.audio import Audio
 from analyzer.audio.audio_analyzer import AudioAnalyzer
 from analyzer.segment import Segment
+from analyzer.scene import Scene
 from analyzer.evaluation_resources import EvaluationResources
 
 
 class Video(object):
 
     segments: List[Segment]
+    scenes: List[Scene]
 
     def __init__(self, path):
         self.MINIMUM_LENGTH = 2000
@@ -32,8 +34,9 @@ class Video(object):
         self.TRIGGER_MULTIPLE = 2
         self.audio = Audio(path)
         self.segments = list()
+        self.scenes = list()
 
-    def generate_split_segments(self):
+    def generate_segments(self):
         analyzer = AudioAnalyzer(
             self.audio, vocal_interval=self.VOCAL_FREQUENCY_REANGE)
         avg_strength = analyzer.get_avg_strength_by_estimate()
@@ -41,6 +44,22 @@ class Video(object):
             frame_strength = audio_frame.get_frequency_strength()
             isvocal = frame_strength > avg_strength
             self.segments.append(audio_frame.frame2segment(isvocal))
+
+    def generate_split_scenes(self):
+        scene = Scene()
+
+        for segment in self.segments:
+            if scene.istooshort():
+                scene.add_segment(segment)
+            elif scene.istoolong():
+                self.scenes.append(scene)
+                scene = Scene()
+            else:
+                if segment.isvocal == scene.is_accept_vocal():
+                    scene.add_segment(segment)
+                else:
+                    self.scenes.append(scene)
+                    scene = Scene()
 
     def set_evaluation_resources(self, er: EvaluationResources):
         self.evaluation_resources = er
@@ -53,7 +72,8 @@ class Video(object):
             for comment in er.get_real_time_comments():
                 index_of_segment = math.floor(comment.get_timeat() / interval)
                 try:
-                    self.segments[index_of_segment].add_score(3)  # 暫時措施 所有文字分數皆為3分
+                    self.segments[index_of_segment].add_score(
+                        3)  # 暫時措施 所有文字分數皆為3分
                 except IndexError:
                     print('評分資料與影片 時長不一致')
                     log.e('評分資料與影片 時長不一致')
