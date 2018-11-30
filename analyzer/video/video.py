@@ -2,8 +2,8 @@ import os
 import sys
 __root = os.path.abspath(
     os.path.dirname(os.path.abspath(__file__)) + (os.sep + '..') * (
-        len(os.path.dirname(os.path.abspath(__file__)).split(os.sep)) -
-        os.path.dirname(os.path.abspath(__file__)).split(os.sep).index(
+        len(os.path.dirname(os.path.abspath(__file__)).split(os.sep))
+        - os.path.dirname(os.path.abspath(__file__)).split(os.sep).index(
             'VeXtract'
         ) - 1
     )) + os.sep
@@ -27,11 +27,10 @@ class Video(object):
     segments: List[Segment]
     scenes: List[Scene]
 
-    def __init__(self, path):
-        self.MINIMUM_LENGTH = 2000
+    def __init__(self, path, scene_minimum_length=2, scene_maximum_length=60):
+        self.scene_minimum_length = scene_minimum_length
+        self.scene_maximum_length = scene_maximum_length
         self.VOCAL_FREQUENCY_REANGE = (125, 400)
-        self.TRIGGER = 0.5
-        self.TRIGGER_MULTIPLE = 2
         self.audio = Audio(path)
         self.segments = list()
         self.scenes = list()
@@ -46,20 +45,29 @@ class Video(object):
             self.segments.append(audio_frame.frame2segment(isvocal))
 
     def generate_split_scenes(self):
-        scene = Scene()
-
+        # FIXME: 最後一個scene太短收不到
+        empty_scene = Scene(self.scene_minimum_length,
+                            self.scene_maximum_length)
+        scene = empty_scene.copy()
         for segment in self.segments:
             if scene.istooshort():
                 scene.add_segment(segment)
             elif scene.istoolong():
                 self.scenes.append(scene)
-                scene = Scene()
+                scene = empty_scene.copy()
+                scene.add_segment(segment)
             else:
                 if segment.isvocal == scene.is_accept_vocal():
                     scene.add_segment(segment)
                 else:
                     self.scenes.append(scene)
-                    scene = Scene()
+                    scene = empty_scene.copy()
+                    scene.add_segment(segment)
+        if scene.istooshort():
+            for segment in scene.segments:
+                self.scenes[-1].add_segment(segment)
+        elif scene != self.scenes[-1]:
+            self.scenes.append(scene)
 
     def set_evaluation_resources(self, er: EvaluationResources):
         self.evaluation_resources = er

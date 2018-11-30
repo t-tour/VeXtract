@@ -62,10 +62,10 @@ class AudioAnalyzer():
 
     def get_avg_strength_by_estimate(self) -> float:
         total = 0
-        for _ in range(10):
+        for _ in range(10000):
             frame = self.get_frame(random.randint(0, self.count_frame() - 1))
             total += frame.get_frequency_strength()
-        return total / 10
+        return total / 10000
 
     def get_frame(self, index: int) -> AudioAnalyzerFrame:
         if index >= self.count_frame():

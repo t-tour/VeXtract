@@ -21,8 +21,10 @@ class Scene(object):
 
     segments: List[Segment]
 
-    def __init__(self):
+    def __init__(self, minimum_length, maximum_length):
         self.segments = list()
+        self.minimum_length = minimum_length
+        self.maximum_length = maximum_length
 
     def add_segment(self, segment):
         self.segments.append(segment)
@@ -34,15 +36,21 @@ class Scene(object):
                 amount += 1
         return amount > 0.5
 
+    def is_have_segment(self):
+        return len(self.segments) != 0
+
+    def get_interval(self):
+        return self.segments[-1].get_end_time() - self.segments[0].get_start_time()
+
     def istooshort(self):
-        if len(self.segments) == 0:
+        if not self.is_have_segment():
             return True
-        return (self.segments[-1].get_end_time() - self.segments[0].get_start_time()) < 5
+        return self.get_interval() < self.minimum_length
 
     def istoolong(self):
-        if len(self.segments) == 0:
+        if not self.is_have_segment:
             return False
-        return (self.segments[-1].get_end_time() - self.segments[0].get_start_time()) > 60
+        return self.get_interval() > self.maximum_length
 
     def get_avg_score(self):
         amount = 0
@@ -52,3 +60,6 @@ class Scene(object):
 
     def get_cut_time(self):
         return (self.segments[0].get_start_time(), self.segments[-1].get_end_time())
+
+    def copy(self):
+        return Scene(self.minimum_length, self.maximum_length)
