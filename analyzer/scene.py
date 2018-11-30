@@ -29,12 +29,13 @@ class Scene(object):
     def add_segment(self, segment):
         self.segments.append(segment)
 
-    def is_accept_vocal(self):
+    def get_vocal_avg(self):
         amount = 0
         for segment in self.segments:
             if segment.isvocal:
                 amount += 1
-        return amount > 0.5
+        avg = amount / len(self.segments)
+        return avg
 
     def is_have_segment(self):
         return len(self.segments) != 0
@@ -63,3 +64,13 @@ class Scene(object):
 
     def copy(self):
         return Scene(self.minimum_length, self.maximum_length)
+
+    @staticmethod
+    def join_scenes(scenes_list: list):
+        if len(scenes_list) == 1:
+            return scenes_list[0]
+        first_scene = scenes_list[0]
+        for i in range(1, len(scenes_list)):
+            for segment in scenes_list[i].segments:
+                first_scene.add_segment(segment)
+        return first_scene

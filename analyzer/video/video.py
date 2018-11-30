@@ -35,7 +35,12 @@ class Video(object):
         self.segments = list()
         self.scenes = list()
 
-    def generate_segments(self):
+    def generate_scenes(self):
+        self._generate_segments()
+        self._generate_split_scenes()
+        self._concat_scenes()
+
+    def _generate_segments(self):
         analyzer = AudioAnalyzer(
             self.audio, vocal_interval=self.VOCAL_FREQUENCY_REANGE)
         avg_strength = analyzer.get_avg_strength_by_estimate()
@@ -44,30 +49,42 @@ class Video(object):
             isvocal = frame_strength > avg_strength
             self.segments.append(audio_frame.frame2segment(isvocal))
 
-    def generate_split_scenes(self):
-        # FIXME: 最後一個scene太短收不到
+    def _generate_split_scenes(self):
+        # TODO: 重構需求現階段先排除segment震盪問題，往後可能需要語者分析與更穩定的VAD方法
         empty_scene = Scene(self.scene_minimum_length,
                             self.scene_maximum_length)
         scene = empty_scene.copy()
+
         for segment in self.segments:
-            if scene.istooshort():
+            if len(scene.segments) == 0:
                 scene.add_segment(segment)
-            elif scene.istoolong():
-                self.scenes.append(scene)
-                scene = empty_scene.copy()
+            segment_is_vocal = 1 if segment.isvocal else 0
+            if scene.get_vocal_avg() == segment_is_vocal:
                 scene.add_segment(segment)
             else:
-                if segment.isvocal == scene.is_accept_vocal():
-                    scene.add_segment(segment)
-                else:
-                    self.scenes.append(scene)
-                    scene = empty_scene.copy()
-                    scene.add_segment(segment)
-        if scene.istooshort():
-            for segment in scene.segments:
-                self.scenes[-1].add_segment(segment)
-        elif scene != self.scenes[-1]:
-            self.scenes.append(scene)
+                self.scenes.append(scene)
+                scene = empty_scene.copy()
+        # add the last one scene
+        self.scenes.append(scene)
+
+    def _concat_scenes(self):
+        new_scenes_list = list()
+        compare_scenes_list = list()
+
+        for add_scene in self.scenes:
+            compare_scenes_list.append(add_scene)
+            amount = 0
+            for scene in compare_scenes_list:
+                amount += scene.get_interval()
+            if amount > scene.minimum_length:
+                new_scenes_list.append(Scene.join_scenes(compare_scenes_list))
+                compare_scenes_list = list()
+            else:
+                continue
+        if len(compare_scenes_list) != 0:
+            new_scenes_list.append(Scene.join_scenes(
+                compare_scenes_list.insert(0, new_scenes_list.pop())))
+        self.scenes = new_scenes_list
 
     def set_evaluation_resources(self, er: EvaluationResources):
         self.evaluation_resources = er
