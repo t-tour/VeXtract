@@ -120,7 +120,7 @@ class Video(object):
         cut_list: List[Scene]
 
         if method == "basic":
-            scenes = sorted(self.scenes, key=lambda foo: foo.get_avg_score())
+            scenes = sorted(self.scenes, key=lambda foo: foo.get_avg_score(), reverse=True)
             amount = 0
             for scene in scenes:
                 amount += scene.get_interval()
