@@ -43,6 +43,10 @@ class Scene(object):
     def get_interval(self):
         return self.segments[-1].get_end_time() - self.segments[0].get_start_time()
 
+    def get_time(self):
+        self.time = (self.segments[0].get_start_time(), self.segments[-1].get_end_time())
+        return self.time
+
     def istooshort(self):
         if not self.is_have_segment():
             return True
@@ -57,10 +61,11 @@ class Scene(object):
         amount = 0
         for segment in self.segments:
             amount += segment.score
+        self.avg_score = amount / len(self.segments)
         return amount / len(self.segments)
 
-    def get_cut_time(self):
-        return (self.segments[0].get_start_time(), self.segments[-1].get_end_time())
+    def get_startat(self):
+        return self.segments[0].get_start_time()
 
     def copy(self):
         return Scene(self.minimum_length, self.maximum_length)

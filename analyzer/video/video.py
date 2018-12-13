@@ -12,7 +12,8 @@ sys.path.append(__root)
 from helper import logger
 log = logger.Logger(__name__)
 
-from typing import List
+from typing import List, Tuple
+from pathlib import Path
 import math
 
 from analyzer.audio.audio import Audio
@@ -20,6 +21,9 @@ from analyzer.audio.audio_analyzer import AudioAnalyzer
 from analyzer.segment import Segment
 from analyzer.scene import Scene
 from analyzer.evaluation_resources import EvaluationResources
+from generator.video import video_process
+
+_ROOT = __root
 
 
 class Video(object):
@@ -27,7 +31,8 @@ class Video(object):
     segments: List[Segment]
     scenes: List[Scene]
 
-    def __init__(self, path, scene_minimum_length=2, scene_maximum_length=60):
+    def __init__(self, path: Path, scene_minimum_length=2, scene_maximum_length=60):
+        self.row_video_path = path
         self.scene_minimum_length = scene_minimum_length
         self.scene_maximum_length = scene_maximum_length
         self.VOCAL_FREQUENCY_REANGE = (125, 400)
@@ -64,6 +69,7 @@ class Video(object):
             else:
                 self.scenes.append(scene)
                 scene = empty_scene.copy()
+                scene.add_segment(segment)
         # add the last one scene
         self.scenes.append(scene)
 
@@ -82,8 +88,10 @@ class Video(object):
             else:
                 continue
         if len(compare_scenes_list) != 0:
-            new_scenes_list.append(Scene.join_scenes(
-                compare_scenes_list.insert(0, new_scenes_list.pop())))
+            last_scene = new_scenes_list.pop()
+            compare_scenes_list.insert(0, last_scene)
+            new_last_scene = Scene.join_scenes(compare_scenes_list)
+            new_scenes_list.append(new_last_scene)
         self.scenes = new_scenes_list
 
     def set_evaluation_resources(self, er: EvaluationResources):
@@ -104,6 +112,49 @@ class Video(object):
                     log.e('評分資料與影片 時長不一致')
                     break
 
-    def extract(self):
-        # TODO: Implement Request.
-        raise Exception("Not Implment yet!")
+    def extract(self, method="basic", length = 60):
+        if len(self.scenes) == 0:
+            raise Exception("extract before generate scenes")
+
+        cut_list = list()
+        cut_list: List[Scene]
+
+        if method == "basic":
+            scenes = sorted(self.scenes, key=lambda foo: foo.get_avg_score())
+            amount = 0
+            for scene in scenes:
+                amount += scene.get_interval()
+                if amount < length:
+                    cut_list.append(scene)
+
+        else:
+            raise Exception("unknow method")
+        # TODO: lambda linting
+        cut_list = sorted(cut_list, key=lambda foo: foo.get_startat())
+        segments = [scene.get_time() for scene in cut_list]
+
+        concated_segments = list()
+        segments.reverse()
+        start_time, end_time = segments.pop()
+        segments.reverse()
+        segments.append((-1.0, -1.0))  # 終止信號
+
+        for segment in segments:
+            if segment[0] == end_time:
+                end_time = segment[1]
+            else:
+                concated_segments.append((start_time, end_time))
+                start_time, end_time = segment
+        time_tags = concated_segments
+
+        # TODO: 舊版func使用單純的path路徑
+        path_str = self.row_video_path.as_posix()
+        # TODO: 舊版func使用單純的time標籤
+        self.new_path = Path(_ROOT, "file", "new_video_storage_path",
+                             self.row_video_path.stem + " 10min" + self.row_video_path.suffix)
+        # TODO: 舊版的func使用名稱與路徑分開
+        location = self.new_path.parent.as_posix()
+        filename = self.new_path.name
+
+        video_process.video_process(
+            path_str, time_tags, output_location=location, output_name=filename)
