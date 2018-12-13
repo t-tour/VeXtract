@@ -19,8 +19,8 @@ import numpy as np
 from scipy import signal
 from scipy.io import wavfile
 
-from analyzer.audio.frame import AudioAnalyzerFrame
-from analyzer.audio.audio import Audio
+from core.common.frame import AudioAnalyzerFrame
+from core.audio import Audio
 
 
 class AudioAnalyzer():

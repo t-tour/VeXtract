@@ -18,7 +18,7 @@ import numpy as np
 from numpy.fft import fft
 from scipy import signal
 
-from analyzer.segment import Segment
+from core.common.segment import Segment
 
 
 class AudioAnalyzerFrame():

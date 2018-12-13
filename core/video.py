@@ -16,11 +16,11 @@ from typing import List, Tuple
 from pathlib import Path
 import math
 
-from analyzer.audio.audio import Audio
-from analyzer.audio.audio_analyzer import AudioAnalyzer
-from analyzer.segment import Segment
-from analyzer.scene import Scene
-from analyzer.evaluation_resources import EvaluationResources
+from core.audio import Audio
+from core.common.audio_analyzer import AudioAnalyzer
+from core.common.segment import Segment
+from core.common.scene import Scene
+from core.common.evaluation_resources import EvaluationResources
 from generator.video import video_process
 
 _ROOT = __root
