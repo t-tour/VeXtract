@@ -14,7 +14,7 @@ log = logger.Logger(__name__)
 
 from typing import List
 
-from analyzer.segment import Segment
+from core.common.segment import Segment
 
 
 class Scene(object):
