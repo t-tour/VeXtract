@@ -16,3 +16,4 @@ pytube
 requests
 scipy
 youtube-dl
+graphviz
