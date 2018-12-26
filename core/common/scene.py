@@ -79,3 +79,9 @@ class Scene(object):
             for segment in scenes_list[i].segments:
                 first_scene.add_segment(segment)
         return first_scene
+
+    def __str__(self):
+        return str(self.get_time())
+
+    def __repr__(self):
+        return self.__str__()
