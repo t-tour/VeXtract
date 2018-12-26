@@ -70,6 +70,7 @@ class Ffmpeg_process():
         # TODO: Implement Request.
         raise NotImplementedError
 
+    @log.logit
     def _estublish_cmd(self, scenes: List[Scene]):
         inputfile = self.input_media_path.as_posix()
         outputfile = self.output_media_path.as_posix()
