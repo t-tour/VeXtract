@@ -46,7 +46,7 @@ class Logger():
         @wraps(func)
         def wapper(*args, **kwargs):
             
-            self.i("calling func {} with {}, {}".format(func.__name__, str(args[1:]), kwargs))
+            self.i("calling func {} with {}, {}".format(func.__name__, args[1:], kwargs))
             return func(*args, **kwargs)
 
         return wapper
