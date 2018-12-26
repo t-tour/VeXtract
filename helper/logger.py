@@ -1,4 +1,5 @@
 from datetime import datetime
+from functools import wraps
 import logging
 import os.path
 
@@ -39,3 +40,13 @@ class Logger():
             self.log_adapter.info(msg)
         elif level == 'e':
             self.log_adapter.error(msg)
+
+    def logit(self, func, *args, **kwargs):
+
+        @wraps(func)
+        def wapper(*args, **kwargs):
+            
+            self.i("calling func {} with {}, {}".format(func.__name__, str(args[1:]), kwargs))
+            return func(*args, **kwargs)
+
+        return wapper
