@@ -22,7 +22,7 @@ from scipy.io import wavfile
 from core.common.frame import AudioAnalyzerFrame
 from core.audio import Audio
 
-
+# TODO: 需更換VAD算法
 class AudioAnalyzer():
 
     def __init__(self, audio: Audio, frame_time_less_equal_to=0.1, frame_frequency_less_equal_to=25.0, vocal_interval=(125, 450)):

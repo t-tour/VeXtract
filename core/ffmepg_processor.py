@@ -18,7 +18,7 @@ from typing import List
 
 import ffmpeg
 
-from core.common.scene import Scene
+from core.scene.scene import Scene
 
 
 class Error(Exception):

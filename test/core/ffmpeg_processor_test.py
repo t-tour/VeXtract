@@ -16,7 +16,7 @@ from pathlib import Path
 import hashlib
 
 from core.ffmepg_processor import Ffmpeg_process
-from core.common.scene import Scene
+from core.scene.scene import Scene
 from core.common.segment import Segment
 
 INPUT_PATH = Path(__root, "test", "test_file", "90s_video.mp4")
@@ -24,9 +24,9 @@ OUTPUT_PATH = Path(__root, "test", "test_file", "output.mp4")
 fp = Ffmpeg_process(INPUT_PATH, OUTPUT_PATH)
 
 
-SCENE1 = Scene(0, 0)
+SCENE1 = Scene()
 SCENE1.add_segment(Segment((20.0, 22.0), True))
-SCENE2 = Scene(0, 0)
+SCENE2 = Scene()
 SCENE2.add_segment(Segment((25.0, 27.0), True))
 SCENES_LIST = [SCENE1, SCENE2]
 
