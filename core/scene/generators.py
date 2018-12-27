@@ -19,6 +19,7 @@ from typing import List
 from core.scene.generator import Generator
 from core.common.segment import Segment
 from core.scene.scene import Scene
+from core.common.evaluation_resources import EvaluationResources
 
 
 class GeneratorVAD(Generator):
@@ -69,11 +70,31 @@ class GeneratorVAD(Generator):
 
 
 class GeneratorComment(Generator):
+
+    def __init__(self, er: EvaluationResources):
+        # TODO: Implement Request.
+        raise NotImplementedError
+
     def generate_scenes(self):
         return super().generate_scenes()
 
 
 class GeneratorStatic(Generator):
-    def generate_scenes(self):
-        return super().generate_scenes()
 
+    def __init__(self, segments: List[Segment], interval=5.0):
+        self.segments = segments
+        self.interval = interval         
+
+    def generate_scenes(self):
+        scene_list = list()
+        scene = Scene()
+        for segment in self.segments:
+            scene.add_segment(segment)
+            if scene.get_interval() > self.interval:
+                seg = scene.segments.pop()
+                scene_list.append(scene)
+                scene = Scene()
+                scene.add_segment(seg)
+        if scene_list[-1] != scene:
+            scene_list.append(scene)
+        return scene_list

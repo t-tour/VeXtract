@@ -36,3 +36,19 @@ def test_generatorVAD_geneate_scenes():
     scene = scenes[1]
     assert len(scenes) == 3
     assert scene.get_time() == (15.0, 45.0)
+
+def init_generatorstatic():
+    s1 = Segment((0, 1), False)
+    s2 = Segment((1, 2), True)
+    s3 = Segment((2, 3), True)
+    s4 = Segment((3, 4), False)
+    s5 = Segment((4, 5), False)
+    segments = [s1, s2, s3, s4, s5]
+    g = GeneratorStatic(segments, interval=2.0)
+    return g
+
+def test_generatorstatis_geneate_scenes():
+    g = init_generatorstatic()
+    scenes = g.generate_scenes()
+    assert len(scenes) == 3
+    assert scenes[1].get_time() == (2, 4)
