@@ -2,8 +2,8 @@ import os
 import sys
 __root = os.path.abspath(
     os.path.dirname(os.path.abspath(__file__)) + (os.sep + '..') * (
-        len(os.path.dirname(os.path.abspath(__file__)).split(os.sep))
-        - os.path.dirname(os.path.abspath(__file__)).split(os.sep).index(
+        len(os.path.dirname(os.path.abspath(__file__)).split(os.sep)) -
+        os.path.dirname(os.path.abspath(__file__)).split(os.sep).index(
             'VeXtract'
         ) - 1
     )) + os.sep
@@ -15,18 +15,18 @@ log = logger.Logger(__name__)
 
 from core.scene.generator import Generator
 from core.scene.generators import GeneratorVAD, GeneratorComment, GeneratorStatic
-from core.video import Video
+from core.common.evaluation_resources import EvaluationResources
 
 
 class GeneratorFactory():
 
     @staticmethod
-    def product(video: Video, method) -> Generator:
+    def product(video, method) -> Generator:
         if method == 'VAD':
             return GeneratorVAD(video.segments)
         elif method == 'comment':
-            return GeneratorComment()
+            return GeneratorComment(video.segments, video.evaluation_resources)
         elif method == 'static':
-            return GeneratorStatic()
+            return GeneratorStatic(video.segments)
         else:
             raise Exception("no such method.")
