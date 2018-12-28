@@ -32,6 +32,9 @@ class Segment(object):
     def add_score(self, point: float):
         self.score += point
 
+    def get_score(self):
+        return self.score
+
     # @staticmethod
     # def concat(segment1: Segment, segment2: Segment):
     #     new_start_timeat = float()

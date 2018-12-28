@@ -2,8 +2,8 @@ import os
 import sys
 __root = os.path.abspath(
     os.path.dirname(os.path.abspath(__file__)) + (os.sep + '..') * (
-        len(os.path.dirname(os.path.abspath(__file__)).split(os.sep))
-        - os.path.dirname(os.path.abspath(__file__)).split(os.sep).index(
+        len(os.path.dirname(os.path.abspath(__file__)).split(os.sep)) -
+        os.path.dirname(os.path.abspath(__file__)).split(os.sep).index(
             'VeXtract'
         ) - 1
     )) + os.sep
@@ -71,19 +71,43 @@ class GeneratorVAD(Generator):
 
 class GeneratorComment(Generator):
 
-    def __init__(self, er: EvaluationResources):
-        # TODO: Implement Request.
-        raise NotImplementedError
+    def __init__(self, segments: List[Segment], er: EvaluationResources, windows_size=30):
+        self.segments = segments
+        self.er = er
+        self.windows_size = windows_size
 
     def generate_scenes(self):
-        return super().generate_scenes()
+        start = self.windows_size // 2
+        end = len(self.segments) - start
+
+        scene = Scene()
+        scene_list = list()
+        for i, segment in enumerate(self.segments):
+            if i >= start and i < end:
+                if self._is_local_miniment(i):
+                    scene_list.append(scene)
+                    scene = Scene()
+            scene.add_segment(segment)
+
+        scene_list.append(scene)
+        return scene_list
+
+    def _is_local_miniment(self, index) -> bool:
+        half = self.windows_size // 2
+        t1 = self.segments[index - half - 1] + self.segments[index + half - 1]
+        t2 = self.segments[index - half] + self.segments[index + half]
+        t3 = self.segments[index - half + 1] + self.segments[index + half + 1]
+        if p2 - p1 <= 0 and p3 - p2 > 0:
+            return True
+        else:
+            return False
 
 
 class GeneratorStatic(Generator):
 
     def __init__(self, segments: List[Segment], interval=5.0):
         self.segments = segments
-        self.interval = interval         
+        self.interval = interval
 
     def generate_scenes(self):
         scene_list = list()
@@ -98,3 +122,35 @@ class GeneratorStatic(Generator):
         if scene_list[-1] != scene:
             scene_list.append(scene)
         return scene_list
+
+
+class GeneratorScore(Generator):
+
+    def __init__(self, segments: List[Segment], windows_size=30):
+        self.segments = segments
+        self.windows_size = windows_size
+
+    def generate_scenes(self):
+
+        scene = Scene()
+        scene_list = list()
+        for i, segment in enumerate(self.segments):
+            if i >= self.windows_size and i < len(self.segments) - 1:
+                if self._is_local_minimum(i):
+                    scene_list.append(scene)
+                    scene = Scene()
+            scene.add_segment(segment)
+        scene_list.append(scene)
+        return scene_list
+
+    def _is_local_minimum(self, index) -> bool:
+        p1 = p2 = p3 = float()
+
+        for i in range(index - self.windows_size + 1, index + 1):
+            p1 += self.segments[i - 1].get_score()
+            p2 += self.segments[i].get_score()
+            p3 += self.segments[i + 1].get_score()
+        if p2 - p1 <= 0 and p3 - p2 > 0:
+            return True
+        else:
+            return False
