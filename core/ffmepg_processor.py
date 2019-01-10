@@ -16,6 +16,7 @@ log = logger.Logger(__name__)
 from pathlib import Path
 from typing import List, Tuple
 import re
+import subprocess
 
 import ffmpeg
 
@@ -75,6 +76,9 @@ class Ffmpeg_process():
             f.write(groups["filter_complex"])
         return new_cmd, self.SCRIPT_TEMP_PATH
 
+    @log.logit
     def cut(self, scenes: List[Scene]):
         cmd = self._estublish_cmd(scenes)
-        ffmpeg.run(self.stream)
+        scripted_cmd, _ = self._estublish_filterscript(cmd)
+        subprocess.run(scripted_cmd, check=True, encoding='utf-8')
+        self.SCRIPT_TEMP_PATH.unlink()

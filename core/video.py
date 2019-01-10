@@ -43,6 +43,8 @@ class Video(object):
 
     @log.logit
     def generate_scenes(self, method='static'):
+        if not self.segments:
+            raise Exception("generate_scenes before generate_segment")
         self.generator = GeneratorFactory.product(self, method)
         self.scenes = self.generator.generate_scenes()
 
@@ -75,7 +77,7 @@ class Video(object):
                     break
 
     @log.logit
-    def select_scenes(self, method='greddy', length=60):
+    def select_scenes(self, method='greedy', length=60):
         """這是用來選取scenes用的，method表示使用的演算法"""
         if len(self.scenes) == 0:
             raise Exception("select_scenes before generate scenes")
@@ -150,22 +152,24 @@ class Video(object):
 
     @log.logit
     def extract(self):
+        if not self.selected_scenes_list:
+            raise Exception("extract before select_scenes")
 
-        # fp = Ffmpeg_process(self.row_video_path, self.new_path)
-        # fp.cut(self.selected_scenes_list)
+        fp = Ffmpeg_process(self.row_video_path, self.new_path)
+        fp.cut(self.selected_scenes_list)
 
 
 
-        time_tags = [scene.get_time() for scene in self.selected_scenes_list]
-        # TODO: 舊版func使用單純的path路徑
-        path_str = self.row_video_path.as_posix()
-        # TODO: 舊版func使用單純的time標籤
-        self.new_path = Path(_ROOT, "file", "new_video_storage_path",
-                             self.row_video_path.stem + " 10min" + self.row_video_path.suffix)
-        # TODO: 舊版的func使用名稱與路徑分開
-        location = self.new_path.parent.as_posix()
-        location.replace("/", "\\")
-        filename = self.new_path.name
+        # time_tags = [scene.get_time() for scene in self.selected_scenes_list]
+        # # TODO: 舊版func使用單純的path路徑
+        # path_str = self.row_video_path.as_posix()
+        # # TODO: 舊版func使用單純的time標籤
+        # self.new_path = Path(_ROOT, "file", "new_video_storage_path",
+        #                      self.row_video_path.stem + " 10min" + self.row_video_path.suffix)
+        # # TODO: 舊版的func使用名稱與路徑分開
+        # location = self.new_path.parent.as_posix()
+        # location = location.replace("/", os.sep)
+        # filename = self.new_path.name
 
-        video_process.video_process(
-            path_str, time_tags, output_location=location, output_name=filename)
+        # video_process.video_process(
+        #     path_str, time_tags, output_location=location, output_name=filename)
