@@ -21,7 +21,7 @@ import wave
 
 from generator.video import video_process as vp
 
-LOCATION_STORAG = os.path.join(__root, "file", "audio_storage_path")
+AUDIO_STORAGE_LOCATION = os.path.join(__root, "file", "audio_storage_path")
 
 
 class Audio():
@@ -34,8 +34,8 @@ class Audio():
             self.path = path
         else:
             video_path_str = path.as_posix()  # 原先的path並非 pathlib的Path 而是能表示位置的string
-            audio_path_str = LOCATION_STORAG
-            self.path = Path(LOCATION_STORAG, path.stem + ".wav")
+            audio_path_str = AUDIO_STORAGE_LOCATION
+            self.path = Path(AUDIO_STORAGE_LOCATION, path.stem + ".wav")
             vp.video_encoding(video_path_str, audio_path_str, self.path.name)
         wave_file_str = self.path.as_posix()
         _, self.bits = wavfile.read(wave_file_str)
