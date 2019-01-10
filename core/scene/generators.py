@@ -69,40 +69,6 @@ class GeneratorVAD(Generator):
     #     self.scenes = new_scenes_list
 
 
-class GeneratorComment(Generator):
-
-    def __init__(self, segments: List[Segment], er: EvaluationResources, windows_size=30):
-        self.segments = segments
-        self.er = er
-        self.windows_size = windows_size
-
-    def generate_scenes(self):
-        start = self.windows_size // 2
-        end = len(self.segments) - start
-
-        scene = Scene()
-        scene_list = list()
-        for i, segment in enumerate(self.segments):
-            if i >= start and i < end:
-                if self._is_local_miniment(i):
-                    scene_list.append(scene)
-                    scene = Scene()
-            scene.add_segment(segment)
-
-        scene_list.append(scene)
-        return scene_list
-
-    def _is_local_miniment(self, index) -> bool:
-        half = self.windows_size // 2
-        t1 = self.segments[index - half - 1] + self.segments[index + half - 1]
-        t2 = self.segments[index - half] + self.segments[index + half]
-        t3 = self.segments[index - half + 1] + self.segments[index + half + 1]
-        if p2 - p1 <= 0 and p3 - p2 > 0:
-            return True
-        else:
-            return False
-
-
 class GeneratorStatic(Generator):
 
     def __init__(self, segments: List[Segment], interval=5.0):

@@ -14,7 +14,7 @@ from helper import logger
 log = logger.Logger(__name__)
 
 from core.scene.generator import Generator
-from core.scene.generators import GeneratorVAD, GeneratorComment, GeneratorStatic
+from core.scene.generators import GeneratorVAD, GeneratorStatic, GeneratorScore
 from core.common.evaluation_resources import EvaluationResources
 
 
@@ -24,9 +24,9 @@ class GeneratorFactory():
     def product(video, method) -> Generator:
         if method == 'VAD':
             return GeneratorVAD(video.segments)
-        elif method == 'comment':
-            return GeneratorComment(video.segments, video.evaluation_resources)
         elif method == 'static':
             return GeneratorStatic(video.segments)
+        elif method == 'score':
+            return GeneratorScore(video.segments)
         else:
             raise Exception("no such method.")

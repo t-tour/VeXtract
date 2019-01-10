@@ -15,7 +15,7 @@ log = logger.Logger(__name__)
 
 from pathlib import Path
 
-from core.scene.generators import GeneratorComment, GeneratorStatic, GeneratorVAD, GeneratorScore
+from core.scene.generators import GeneratorStatic, GeneratorVAD, GeneratorScore
 from core.common.segment import Segment
 from core.common.evaluation_resources import EvaluationResources
 
@@ -52,27 +52,6 @@ def test_generatorstatis_geneate_scenes():
     scenes = g.generate_scenes()
     assert len(scenes) == 3
     assert scenes[1].get_time() == (2, 4)
-
-
-def init_generatorcomment():
-    comment1 = {"text": "te", "sec": 4.7}
-    comment2 = {"text": "te", "sec": 15.5}
-    comment3 = {"text": "te", "sec": 16}
-    comment4 = {"text": "te", "sec": 16.5}
-    comment5 = {"text": "te", "sec": 17.5}
-    comments = [comment1, comment2, comment3, comment4, comment5]
-    er = EvaluationResources(comments)
-    segments = [Segment((i / 10.0, (i + 1) / 10.0), False)
-                for i in range(500)]  # 50 個 segment 0 ~ 50 秒
-    g = GeneratorComment(segments, er)
-    return g
-
-
-def test_generatorcomment_generate_scenes():
-    g = init_generatorcomment()
-    scenes = g.generate_scenes()
-    assert len(scenes) == 5
-    assert scenes[1].get_time() == (3.2, 6.2)
 
 
 def init_generatorscore():
