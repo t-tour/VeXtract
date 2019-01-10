@@ -158,12 +158,12 @@ def fetch_bilibili_av(av_number, p):
         elif m is not None and m is re_playinfo:
             log.i('__playinfo__ json detected.')
             results = json.loads(m.group(1))
-            for url in results["durl"]:
+            for url in results["data"]["durl"]:
                 as_av_info.durl.append(url["url"])
-            as_av_info.timelength = results["timelength"]
-            as_av_info.accept_format = results["accept_format"]
-            as_av_info.accept_quality = results["accept_quality"]
-            as_av_info.accept_description = results["accept_description"]
+            as_av_info.timelength = results["data"]["timelength"]
+            as_av_info.accept_format = results["data"]["accept_format"]
+            as_av_info.accept_quality = results["data"]["accept_quality"]
+            as_av_info.accept_description = results["data"]["accept_description"]
     comments_dict = dict()
     log.i('start download comments.')
     for cid in as_av_info.cid:
