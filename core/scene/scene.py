@@ -21,10 +21,8 @@ class Scene(object):
 
     segments: List[Segment]
 
-    def __init__(self, minimum_length, maximum_length):
+    def __init__(self):
         self.segments = list()
-        self.minimum_length = minimum_length
-        self.maximum_length = maximum_length
 
     def add_segment(self, segment):
         self.segments.append(segment)
@@ -47,16 +45,6 @@ class Scene(object):
         self.time = (self.segments[0].get_start_time(), self.segments[-1].get_end_time())
         return self.time
 
-    def istooshort(self):
-        if not self.is_have_segment():
-            return True
-        return self.get_interval() < self.minimum_length
-
-    def istoolong(self):
-        if not self.is_have_segment:
-            return False
-        return self.get_interval() > self.maximum_length
-
     def get_avg_score(self):
         amount = 0
         for segment in self.segments:
@@ -66,9 +54,6 @@ class Scene(object):
 
     def get_startat(self):
         return self.segments[0].get_start_time()
-
-    def copy(self):
-        return Scene(self.minimum_length, self.maximum_length)
 
     @staticmethod
     def join_scenes(scenes_list: list):

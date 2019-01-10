@@ -16,7 +16,7 @@ from pathlib import Path
 import hashlib
 
 from core.ffmepg_processor import Ffmpeg_process
-from core.common.scene import Scene
+from core.scene.scene import Scene
 from core.common.segment import Segment
 
 INPUT_PATH = Path(__root, "test", "test_file", "90s_video.mp4")
@@ -24,9 +24,9 @@ OUTPUT_PATH = Path(__root, "test", "test_file", "output.mp4")
 fp = Ffmpeg_process(INPUT_PATH, OUTPUT_PATH)
 
 
-SCENE1 = Scene(0, 0)
+SCENE1 = Scene()
 SCENE1.add_segment(Segment((20.0, 22.0), True))
-SCENE2 = Scene(0, 0)
+SCENE2 = Scene()
 SCENE2.add_segment(Segment((25.0, 27.0), True))
 SCENES_LIST = [SCENE1, SCENE2]
 
@@ -46,6 +46,13 @@ ffmpeg -i {input_path} \
 -map [s4] -map [s9] {output_path}\
 """.format(input_path=INPUT_PATH.as_posix(), output_path=OUTPUT_PATH.as_posix())
 
+NEW_CMD = """\
+ffmpeg -i {input_path} \
+-filter_complex_script d:/Graduate_project/VeXtract/file/temp/ffmpeg_filtergraph.txt \
+-map [s4] -map [s9] {output_path}\
+""".format(input_path=INPUT_PATH.as_posix(), output_path=OUTPUT_PATH.as_posix())
+
+
 def test_cut():
     fp.cut(SCENES_LIST)
     sha256 = hashlib.sha256()
@@ -54,6 +61,13 @@ def test_cut():
     assert sha256.hexdigest() == HASH
     OUTPUT_PATH.unlink()
 
+
 def test_estublish_cmd():
     cmd = fp._estublish_cmd(SCENES_LIST)
     assert cmd == CMD
+
+
+def test_estublish_filterscript():
+    newcmd, path = fp._estublish_filterscript(CMD)
+    path.unlink()
+    assert newcmd == NEW_CMD
