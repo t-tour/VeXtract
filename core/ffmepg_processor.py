@@ -14,51 +14,19 @@ from helper import logger
 log = logger.Logger(__name__)
 
 from pathlib import Path
-from typing import List
+from typing import List, Tuple
+import re
 
 import ffmpeg
 
 from core.scene.scene import Scene
 
 
-class Error(Exception):
-    """Base class for exceptions in this module."""
-    pass
-
-
-class InputError(Error):
-    """Exception raised for errors in the input.
-
-    Attributes:
-        expression -- input expression in which the error occurred
-        message -- explanation of the error
-    """
-
-    def __init__(self, expression, message):
-        self.expression = expression
-        self.message = message
-
-
-class TransitionError(Error):
-    """Raised when an operation attempts a state transition that's not
-    allowed.
-
-    Attributes:
-        previous -- state at beginning of transition
-        next -- attempted new state
-        message -- explanation of why the specific transition is not allowed
-    """
-
-    def __init__(self, previous, next, message):
-        self.previous = previous
-        self.next = next
-        self.message = message
-
-
 class Ffmpeg_process():
 
     def __init__(self, input_media_path: Path, output_media_path: Path):
-        self.TEMP_PATH = Path(_ROOT, "file", "temp")
+        self.SCRIPT_TEMP_PATH = Path(
+            _ROOT, "file", "temp", "ffmpeg_filtergraph.txt")
         self.input_media_path = input_media_path
         self.output_media_path = output_media_path
 
@@ -87,7 +55,6 @@ class Ffmpeg_process():
                 stream, 'atrim', start=start, duration=duration)
             a_clip_stream = ffmpeg.filter_(
                 a_clip_stream, 'asetpts', 'PTS-STARTPTS')
-
             video_streams.append(v_clip_stream)
             audio_streams.append(a_clip_stream)
         v_stream = ffmpeg.concat(
@@ -99,6 +66,15 @@ class Ffmpeg_process():
         self.stream = stream
         return ' '.join(ffmpeg.compile(stream))
 
+    def _estublish_filterscript(self, cmd) -> Tuple[str, Path]:
+        groups = re.match(
+            r'ffmpeg -i (?P<input>.*) -filter_complex (?P<filter_complex>.*?) (?P<maps>-.*]) (?P<output>.*)', cmd)
+        new_cmd = "ffmpeg -i {input_path} -filter_complex_script {script} {maps} {output_path}".format(
+            input_path=groups["input"], output_path=groups["output"], maps=groups["maps"], script=self.SCRIPT_TEMP_PATH.as_posix())
+        with self.SCRIPT_TEMP_PATH.open('w', encoding='utf-8') as f:
+            f.write(groups["filter_complex"])
+        return new_cmd, self.SCRIPT_TEMP_PATH
+
     def cut(self, scenes: List[Scene]):
-        self._estublish_cmd(scenes)
+        cmd = self._estublish_cmd(scenes)
         ffmpeg.run(self.stream)

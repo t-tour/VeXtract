@@ -46,6 +46,13 @@ ffmpeg -i {input_path} \
 -map [s4] -map [s9] {output_path}\
 """.format(input_path=INPUT_PATH.as_posix(), output_path=OUTPUT_PATH.as_posix())
 
+NEW_CMD = """\
+ffmpeg -i {input_path} \
+-filter_complex_script d:/Graduate_project/VeXtract/file/temp/ffmpeg_filtergraph.txt \
+-map [s4] -map [s9] {output_path}\
+""".format(input_path=INPUT_PATH.as_posix(), output_path=OUTPUT_PATH.as_posix())
+
+
 def test_cut():
     fp.cut(SCENES_LIST)
     sha256 = hashlib.sha256()
@@ -54,6 +61,13 @@ def test_cut():
     assert sha256.hexdigest() == HASH
     OUTPUT_PATH.unlink()
 
+
 def test_estublish_cmd():
     cmd = fp._estublish_cmd(SCENES_LIST)
     assert cmd == CMD
+
+
+def test_estublish_filterscript():
+    newcmd, path = fp._estublish_filterscript(CMD)
+    path.unlink()
+    assert newcmd == NEW_CMD
