@@ -98,8 +98,9 @@ class Video(object):
         # TODO: lambda linting
         self.selected_scenes_list = sorted(
             selected_scenes_list, key=lambda foo: foo.get_startat())
+
         filename = "{}-{}-{}-{}{}".format(self.row_video_path.stem, type(
-            self.generator).__name__, method, length, self.row_video_path.suffix)
+            self.generator).__name__, method, length, ".webm")
         self.new_path = Path(_ROOT, "file", "new_video_storage_path", filename)
 
     # Not Need right now

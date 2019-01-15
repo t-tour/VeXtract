@@ -57,13 +57,13 @@ def file_crawler(url, des=os.path.join(__root, "file", "crawler", "bilibili")):
     p = int(url_info["p"])
     target = fetch_bilibili_av(url_info["avnumber"], p)
     des = os.path.join(des, "av" + target.aid)
+    os.makedirs(des, exist_ok=True)
     log.i("正在下載 av{0}_{1} cid名稱:{2}".format(
         target.aid, target.cid[p-1], target.cid_name[p-1]))
     for no, url in zip(range(len(target.durl)), target.durl):
         _download_b_video(url, p, target.cid[p-1], target.aid, no)
     concat_list = [i for i in os.listdir(
         ".") if re.match(r"^\d+-part\d+.flv$", i)]
-    os.makedirs(des)
     video_contact.contact_by_manifest(
         concat_list, des, target.cid[p-1])
     for concats in concat_list:

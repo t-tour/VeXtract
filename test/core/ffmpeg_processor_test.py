@@ -20,7 +20,7 @@ from core.scene.scene import Scene
 from core.common.segment import Segment
 
 INPUT_PATH = Path(__root, "test", "test_file", "90s_video.mp4")
-OUTPUT_PATH = Path(__root, "test", "test_file", "output.mp4")
+OUTPUT_PATH = Path(__root, "test", "test_file", "output.webm")
 fp = Ffmpeg_process(INPUT_PATH, OUTPUT_PATH)
 
 
@@ -34,7 +34,12 @@ SCENES_LIST = [SCENE1, SCENE2]
 if OUTPUT_PATH.exists():
     raise Exception("輸出檔案存在")
 
-HASH = "9aa2c5b199a2afc35fffe5d9bfe3072142434e0f483ec53b20947e6b6462bbae"
+CONFIG_720P = """\
+-b:v 1800k -c:a libopus -c:v libvpx-vp9 -crf 32 -g 240 -maxrate 2610k -minrate 900k \
+-quality good -speed 4 -threads 8 -tile-columns 2\
+"""
+
+HASH = "b875cc5c65d334e862586d584ddb3f5b4b158da09dbffccc61aaec81162cac0e"
 CMD = """\
 ffmpeg -i {input_path} \
 -filter_complex [0]trim=duration=2.0:start=20.0[s0];[s0]setpts=PTS-STARTPTS[s1];\
@@ -43,14 +48,15 @@ ffmpeg -i {input_path} \
 [0]atrim=duration=2.0:start=20.0[s5];[s5]asetpts=PTS-STARTPTS[s6];\
 [0]atrim=duration=2.0:start=25.0[s7];[s7]asetpts=PTS-STARTPTS[s8];\
 [s6][s8]concat=a=1:n=2:v=0[s9] \
--map [s4] -map [s9] {output_path}\
-""".format(input_path=INPUT_PATH.as_posix(), output_path=OUTPUT_PATH.as_posix())
+-map [s4] -map [s9] {config} \
+{output_path}\
+""".format(input_path=INPUT_PATH.as_posix(), config=CONFIG_720P, output_path=OUTPUT_PATH.as_posix())
 
 NEW_CMD = """\
 ffmpeg -i {input_path} \
 -filter_complex_script d:/Graduate_project/VeXtract/file/temp/ffmpeg_filtergraph.txt \
--map [s4] -map [s9] {output_path}\
-""".format(input_path=INPUT_PATH.as_posix(), output_path=OUTPUT_PATH.as_posix())
+-map [s4] -map [s9] {config} {output_path}\
+""".format(input_path=INPUT_PATH.as_posix(), config=CONFIG_720P, output_path=OUTPUT_PATH.as_posix())
 
 
 def test_cut():
