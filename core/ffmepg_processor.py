@@ -25,7 +25,10 @@ from core.scene.scene import Scene
 
 class Ffmpeg_process():
 
+    # TODO: google建議的vp9編碼參數詳見: https://developers.google.com/media/vp9/settings/vod/
     def __init__(self, input_media_path: Path, output_media_path: Path):
+        self.CONFIG_720P = {'b:v': '1800k', 'minrate': '900k', 'maxrate': '2610k', 'tile-columns': '2', 'g': '240',
+                            'threads': '8', 'quality': 'good', 'crf': '32', 'c:v': 'libvpx-vp9', 'c:a': 'libopus', 'speed': '4'}
         self.SCRIPT_TEMP_PATH = Path(
             _ROOT, "file", "temp", "ffmpeg_filtergraph.txt")
         self.input_media_path = input_media_path
@@ -62,7 +65,8 @@ class Ffmpeg_process():
             *video_streams, n=len(video_streams), v=1, a=0)
         a_stream = ffmpeg.concat(
             *audio_streams, n=len(audio_streams), v=0, a=1)
-        stream = ffmpeg.output(v_stream, a_stream, outputfile)
+        stream = ffmpeg.output(
+            v_stream, a_stream, outputfile, **self.CONFIG_720P)
         # ffmpeg.view(stream)  # Debug
         self.stream = stream
         return ' '.join(ffmpeg.compile(stream))
