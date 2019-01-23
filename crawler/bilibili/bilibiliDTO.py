@@ -31,7 +31,7 @@ class BilibiliCrawlableInfo(CrawlableInfo):
                  title: str, description: str, pubdate_UTC: int, thumbnail_url: str, tags: List[str],
                  uploader: str, views: int):
         super().__init__(f'{title}_{cid_name}',
-                         f'{aid}_{cid}', uploader, views, description)
+                         f'av{aid}_{cid}', uploader, views, description)
         self.length_millisecond = length_millisecond
         self.pubdate_UTC = pubdate_UTC
         self.thumbnail_url = thumbnail_url
