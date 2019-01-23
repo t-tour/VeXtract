@@ -34,5 +34,6 @@ class Crawler(metaclass=ABCMeta):
     def real_time_comments_crawler(self, url) -> List[RealTimeComment]:
         pass
 
+    @abstractmethod
     def comments_crawler(self, url) -> List[Comment]:
         pass
