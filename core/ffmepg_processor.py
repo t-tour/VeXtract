@@ -26,6 +26,7 @@ from core.scene.scene import Scene
 class Ffmpeg_process():
 
     # TODO: google建議的vp9編碼參數詳見: https://developers.google.com/media/vp9/settings/vod/
+    # TODO: 需要concate的功能
     def __init__(self, input_media_path: Path, output_media_path: Path):
         self.CONFIG_720P = {'b:v': '1800k', 'minrate': '900k', 'maxrate': '2610k', 'tile-columns': '2', 'g': '240',
                             'threads': '8', 'quality': 'good', 'crf': '32', 'c:v': 'libvpx-vp9', 'c:a': 'libopus', 'speed': '4'}
