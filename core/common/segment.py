@@ -15,10 +15,9 @@ log = logger.Logger(__name__)
 
 class Segment(object):
 
-    def __init__(self, time, isvocal: bool):
+    def __init__(self, time):
         self.time = time
         self.score = 0.0
-        self.isvocal = isvocal
 
     def get_start_time(self):
         return self.time[0]

@@ -25,9 +25,9 @@ fp = Ffmpeg_process(INPUT_PATH, OUTPUT_PATH)
 
 
 SCENE1 = Scene()
-SCENE1.add_segment(Segment((20.0, 22.0), True))
+SCENE1.add_segment(Segment((20.0, 22.0)))
 SCENE2 = Scene()
-SCENE2.add_segment(Segment((25.0, 27.0), True))
+SCENE2.add_segment(Segment((25.0, 27.0)))
 SCENES_LIST = [SCENE1, SCENE2]
 
 

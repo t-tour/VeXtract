@@ -2,8 +2,8 @@ import os
 import sys
 __root = os.path.abspath(
     os.path.dirname(os.path.abspath(__file__)) + (os.sep + '..') * (
-        len(os.path.dirname(os.path.abspath(__file__)).split(os.sep)) -
-        os.path.dirname(os.path.abspath(__file__)).split(os.sep).index(
+        len(os.path.dirname(os.path.abspath(__file__)).split(os.sep))
+        - os.path.dirname(os.path.abspath(__file__)).split(os.sep).index(
             'VeXtract'
         ) - 1
     )) + os.sep
@@ -37,7 +37,6 @@ class Video(object):
 
     def __init__(self, path: Path):
         self.row_video_path = path
-        self.audio = Audio(path)
         self.segments = list()
         self.scenes = list()
 
@@ -50,12 +49,9 @@ class Video(object):
 
     @log.logit
     def generate_segments(self):
-        analyzer = AudioAnalyzer(self.audio)
-        avg_strength = analyzer.get_avg_strength_by_estimate()
-        for audio_frame in analyzer:
-            frame_strength = audio_frame.get_frequency_strength()
-            isvocal = frame_strength > avg_strength
-            self.segments.append(audio_frame.frame2segment(isvocal))
+        duration = Ffmpeg_process.get_duration(self.row_video_path)
+        for second in range(int(duration)):
+            self.segments.append(Segment((second, second + 1)))
 
     def set_evaluation_resources(self, er: EvaluationResources):
         self.evaluation_resources = er
@@ -118,39 +114,6 @@ class Video(object):
                 # TODO: Implement Request.
                 raise NotImplementedError
 
-        # concated_cut_scenes_list = list()
-        # end_scene = Scene()
-        # end_scene.add_segment(Segment((-1, -1), False))
-
-        # self.cut_scenes_list.reverse()
-        # start_scene = self.cut_scenes_list.pop()
-        # self.cut_scenes_list.reverse()
-        # self.cut_scenes_list.append(end_scene)
-
-        # temp_list_group = list()
-        # for scene in self.cut_scenes_list:
-        #     if start_scene.get_endat() == scene.get_startat():
-        #         temp_list_group.append(scene)
-        #     else:
-        #         # TODO: Implement Request.
-        #         raise NotImplementedError
-
-        # segments = [scene.get_time() for scene in cut_scenes_list]
-
-        # concated_segments = list()
-        # segments.reverse()
-        # start_time, end_time = segments.pop()
-        # segments.reverse()
-        # segments.append((-1.0, -1.0))  # 終止信號
-
-        # for segment in segments:
-        #     if segment[0] == end_time:
-        #         end_time = segment[1]
-        #     else:
-        #         concated_segments.append((start_time, end_time))
-        #         start_time, end_time = segment
-        # time_tags = concated_segments
-
     @log.logit
     def extract(self):
         if not self.selected_scenes_list:
@@ -158,19 +121,3 @@ class Video(object):
 
         fp = Ffmpeg_process(self.row_video_path, self.new_path)
         fp.cut(self.selected_scenes_list)
-
-
-
-        # time_tags = [scene.get_time() for scene in self.selected_scenes_list]
-        # # TODO: 舊版func使用單純的path路徑
-        # path_str = self.row_video_path.as_posix()
-        # # TODO: 舊版func使用單純的time標籤
-        # self.new_path = Path(_ROOT, "file", "new_video_storage_path",
-        #                      self.row_video_path.stem + " 10min" + self.row_video_path.suffix)
-        # # TODO: 舊版的func使用名稱與路徑分開
-        # location = self.new_path.parent.as_posix()
-        # location = location.replace("/", os.sep)
-        # filename = self.new_path.name
-
-        # video_process.video_process(
-        #     path_str, time_tags, output_location=location, output_name=filename)
