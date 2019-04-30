@@ -17,3 +17,5 @@ requests
 scipy
 youtube-dl
 graphviz
+keras==2.2.3
+tenserflow-gpu
