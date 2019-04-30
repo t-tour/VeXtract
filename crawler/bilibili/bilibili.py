@@ -20,7 +20,6 @@ import xml.etree.ElementTree as ET
 import requests
 from bs4 import BeautifulSoup
 
-from analyzer.text import natural_lang_process
 from crawler.bilibili.bilibili_info import Bilibili_file_info,\
     fetch_bilibili_av, _download_b_video, get_b_comments, get_comment_pages_count
 from generator.video import video_contact
@@ -135,5 +134,6 @@ if __name__ == "__main__":
     # b = fetch_bilibili_av("av29311976")
     # b.fetch_comment_score(limitation=5000)
     # b.save()
-    file_crawler(
+    a = info_crawler(
         "https://www.bilibili.com/video/av25219896?from=search&seid=16811196391356959694")
+    print()
