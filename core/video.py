@@ -27,9 +27,25 @@ from core.common.evaluation_resources import EvaluationResources
 from core.ffmepg_processor import Ffmpeg_process
 
 _ROOT = __root
-
+VIDEO_STORAGE_LOCATION = Path(_ROOT, "file", "extracted_video_storage_path")
 
 class Video(object):
+    """Video 整個執行環境的主體，new出來需要有影片路徑\n
+    剪出來的影片之後會儲存在 VIDEO_STORAGE_LOCATION\n
+    路徑上\n
+    example:
+    ```
+    from core.common.evaluation_resources import EvaluationResources
+
+    v = Video("c.mp4")
+    er = EvaluationResources(Crawler的資料)
+    v.set_evaluation_resources(er)
+    v.generate_segments()
+    v.generate_scenes()
+    v.select_scenes()
+    v.extract()
+    ```
+    """
 
     segments: List[Segment]
     scenes: List[Scene]
@@ -97,22 +113,7 @@ class Video(object):
 
         filename = "{}-{}-{}-{}{}".format(self.row_video_path.stem, type(
             self.generator).__name__, method, length, ".webm")
-        self.new_path = Path(_ROOT, "file", "new_video_storage_path", filename)
-
-    # Not Need right now
-    @log.logit
-    def _concat_selected_scenes(self):
-        if not self.selected_scenes_list:
-            raise Exception("_concat_selected_scenes before select_scenes")
-
-        front_scene = self.selected_scenes_list[0]
-
-        for index, scene in enumerate(self.selected_scenes_list):
-            if front_scene.isconected(scene):
-                front_scene = scene
-            else:
-                # TODO: Implement Request.
-                raise NotImplementedError
+        self.new_path = Path(VIDEO_STORAGE_LOCATION, filename)
 
     @log.logit
     def extract(self):
