@@ -2,8 +2,8 @@ import os
 import sys
 __root = os.path.abspath(
     os.path.dirname(os.path.abspath(__file__)) + (os.sep + '..') * (
-        len(os.path.dirname(os.path.abspath(__file__)).split(os.sep)) -
-        os.path.dirname(os.path.abspath(__file__)).split(os.sep).index(
+        len(os.path.dirname(os.path.abspath(__file__)).split(os.sep))
+        - os.path.dirname(os.path.abspath(__file__)).split(os.sep).index(
             'VeXtract'
         ) - 1
     )) + os.sep
@@ -27,6 +27,7 @@ HEADER = {
     "user-agent": ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
                    "AppleWebKit/537.36 (KHTML, like Gecko) "
                    "Chrome/67.0.3396.99 Safari/537.36"),
+    "Cookie": "stardustvideo=-1",
     "Referer": "https://www.bilibili.com",
     "origin": "https://www.bilibili.com"
 }
@@ -104,10 +105,10 @@ class Bilibili_file_info():
 
     def __str__(self):
         return str.format(
-            "aid:{0}\tvideo_title:{1}\n" +
-            "cid:{2}\tcid_title:{3}"
-            "timelength:{4}\ttags:{5}\n" +
-            "durl:{6}",
+            "aid:{0}\tvideo_title:{1}\n"
+            + "cid:{2}\tcid_title:{3}"
+            "timelength:{4}\ttags:{5}\n"
+            + "durl:{6}",
             self.aid,
             self.video_title,
             self.cid,
@@ -129,13 +130,13 @@ def fetch_bilibili_av(av_number, p):
     scripts_tag = bf.find_all("script")
     start_initial = re.escape("window.__INITIAL_STATE__=")
     end_initial = re.escape(
-        ";(function(){var s;(s=document.currentScript||document.scripts[document.scripts.length-1])" +
-        ".parentNode.removeChild(s);}());")
+        ";(function(){var s;(s=document.currentScript||document.scripts[document.scripts.length-1])"
+        + ".parentNode.removeChild(s);}());")
     start_play = re.escape("window.__playinfo__=")
     as_av_info = Bilibili_file_info()
     for tag in scripts_tag:
-        re_initial = re.match(start_initial + "(.+)" +
-                              end_initial, str(tag.string))
+        re_initial = re.match(start_initial + "(.+)"
+                              + end_initial, str(tag.string))
         re_playinfo = re.match(start_play + "(.+)", str(tag.string))
         m = re_initial if re_initial is not None else re_playinfo
         if m is not None and m is re_initial:
@@ -158,12 +159,12 @@ def fetch_bilibili_av(av_number, p):
         elif m is not None and m is re_playinfo:
             log.i('__playinfo__ json detected.')
             results = json.loads(m.group(1))
-            for url in results["data"]["durl"]:
+            for url in results["durl"]:
                 as_av_info.durl.append(url["url"])
-            as_av_info.timelength = results["data"]["timelength"]
-            as_av_info.accept_format = results["data"]["accept_format"]
-            as_av_info.accept_quality = results["data"]["accept_quality"]
-            as_av_info.accept_description = results["data"]["accept_description"]
+            as_av_info.timelength = results["timelength"]
+            as_av_info.accept_format = results["accept_format"]
+            as_av_info.accept_quality = results["accept_quality"]
+            as_av_info.accept_description = results["accept_description"]
     comments_dict = dict()
     log.i('start download comments.')
     for cid in as_av_info.cid:
@@ -207,17 +208,18 @@ def _download_b_video(url, p, cid, aid, no):
                 f.write(chunk)
             log.i('finish download.')
 
+
 def get_b_comments(aid, p):
     req = requests.get(COMMENT_REQ_URL.format(page=p, aid=aid), headers=HEADER)
     js = json.loads(req.text)
     return_list = list()
-    for reply in js["data"]["replies"]:
+    for reply in js["replies"]:
         comment = dict()
-        comment.update({"user":reply["member"]["mid"]})
-        comment.update({"text":reply["content"]["message"]})
-        comment.update({"like":reply["like"]})
-        comment.update({"inline_rcount":reply["rcount"]})
-        comment.update({"pub_date":reply["ctime"]})
+        comment.update({"user": reply["member"]["mid"]})
+        comment.update({"text": reply["content"]["message"]})
+        comment.update({"like": reply["like"]})
+        comment.update({"inline_rcount": reply["rcount"]})
+        comment.update({"pub_date": reply["ctime"]})
         return_list.append(comment)
     return return_list
 
@@ -227,8 +229,7 @@ def get_comment_pages_count(aid):
     js = json.loads(req.text)
     pages_c = int()
     try:
-        pages_c = (js["data"]["page"]["count"] - 1) // 20
+        pages_c = (js["page"]["count"] - 1) // 20
     except KeyError as identifier:
         raise Exception("連接失效")
     return pages_c + 1  # 補餘數
-    
