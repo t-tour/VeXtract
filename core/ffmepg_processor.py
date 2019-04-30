@@ -39,9 +39,19 @@ class Ffmpeg_process():
         # TODO: Implement Request.
         raise NotImplementedError
 
-    def get_duration(self):
-        # TODO: Implement Request.
-        raise NotImplementedError
+    @staticmethod
+    def get_duration(path:Path):
+        ouput = subprocess.Popen("ffmpeg -i \"{}\"".format(path.as_posix()), stdout=subprocess.PIPE,
+                                 stderr=subprocess.PIPE, stdin=subprocess.PIPE)
+        _, stderr = ouput.communicate()
+        time = re.search(r"Duration: (\d+):(\d+):(\d+\.\d+)",
+                         str(stderr, encoding='utf-8'))
+        log.i('time length: {}:{}:{}'.format(
+            time.group(1), time.group(2), time.group(3)))
+        video_length = int(time.group(1)) * 3600 + \
+            int(time.group(2)) * 60 + float(time.group(3))
+        log.i("影片長度為：{:.2f}秒".format(video_length))
+        return video_length
 
     @log.logit
     def _estublish_cmd(self, scenes: List[Scene]):
