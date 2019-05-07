@@ -18,6 +18,12 @@ class RealTimeComment():
         self.text = text
         self.id_ = id_
 
+    def get_timeat_milisecond(self):
+        return self.timeat
+
+    def get_timeat_second(self):
+        return int(self.timeat / 1000)
+
     def __repr__(self):
         return f'{self.timeat} <{self.id_}> {self.text}'
 

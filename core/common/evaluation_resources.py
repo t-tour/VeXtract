@@ -14,30 +14,22 @@ log = logger.Logger(__name__)
 
 from typing import List
 
-
-class RealTimeComment():
-
-    def __init__(self, timeat, text):
-        self.timeat = timeat
-        self.text = text
-
-    def get_text(self):
-        return self.text
-
-    def get_timeat(self):
-        return float(self.timeat)
+from crawler.DTO import RealTimeComment
 
 
 class EvaluationResources(object):
 
     def __init__(self, real_time_comments):
         self.real_time_comments = list()
-        for comment in real_time_comments:
-            timeat = comment['sec']
-            text = comment['text']
-            self.real_time_comments.append(RealTimeComment(timeat, text))
+        if isinstance(real_time_comments[0], tuple):
+            for comment in real_time_comments:
+                timeat = comment['sec']
+                text = comment['text']
+                self.real_time_comments.append(RealTimeComment(timeat, text))
+        elif isinstance(real_time_comments[0], RealTimeComment):
+            self.real_time_comments = real_time_comments
         self.real_time_comments = sorted(
-            self.real_time_comments, key=lambda foo: foo.get_timeat())
+            self.real_time_comments, key=lambda foo: foo.get_timeat_milisecond())
 
     def is_real_time_comment_exist(self):
         return len(self.real_time_comments) > 0

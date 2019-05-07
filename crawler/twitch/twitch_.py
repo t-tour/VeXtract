@@ -22,13 +22,12 @@ from crawler.DTO import *
 
 
 class TwitchCrawler(Crawler):
-
-    CRAWLER_REPOSITORY_PATH = Path(_ROOT, "file", "crawler", "tiwitch")
-    CLIENT_ID = "miwy5zk23vh2he94san0bzj5ks1r0p"
+    """
+    t = TwitchCrawler(url)
+    """
+    CRAWLER_REPOSITORY_PATH = Path(_ROOT, "file", "crawler", "twitch")
 
     def __init__(self, url: str):
-        os.makedirs(
-            TwitchCrawler.CRAWLER_REPOSITORY_PATH.as_posix(), exist_ok=True)
         self.url = url
         self.vid: str = None
         matched = re.match(r"https?://www\.twitch\.tv/videos/(\d+)\?.*", url)
@@ -44,11 +43,11 @@ class TwitchCrawler(Crawler):
         raise NotImplementedError
 
     def file_crawler(self) -> Path:
-        p = subprocess.Popen(["twitch-dl", 'download', "--no-color",
+        proc = subprocess.Popen(["twitch-dl", 'download', "--no-color",
                               self.vid], stdin=subprocess.PIPE, encoding='utf-8')
-        p.stdin.write('4\n')
-        p.stdin.flush()
-        p.wait()
+        proc.stdin.write('4\n')
+        proc.stdin.flush()
+        proc.wait()
         for workdirfile in os.listdir(_ROOT):
             matched = re.match(r'\d+_' + self.vid + r'_.+\.mkv', workdirfile)
             if matched:

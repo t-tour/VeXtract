@@ -84,7 +84,7 @@ class Video(object):
 
     @log.logit
     def evaluate(self):
-        interval = self.segments[0].get_interval()
+        interval = self.segments[0].get_interval()  # Scene 裡面每個seg都是1S  在stataic 情況下
 
         if not self.evaluation_resources:
             cap = cv2.VideoCapture(self.row_video_path.as_posix())
@@ -103,7 +103,7 @@ class Video(object):
                     segment.score = prdicted_data[index]
         else:
             for comment in self.evaluation_resources.get_real_time_comments():
-                index_of_segment = math.floor(comment.get_timeat() / interval)
+                index_of_segment = math.floor(comment.get_timeat_second() / interval)
                 try:
                     self.segments[index_of_segment].add_score(
                         3)  # 暫時措施 所有文字分數皆為3分
