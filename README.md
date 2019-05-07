@@ -15,6 +15,8 @@
 | cudnn | 7.5 for cuda10.0 |
 | ffmpeg | 4.* |
 
+Twitch Clinet ID = "miwy5zk23vh2he94san0bzj5ks1r0p"
+
 ```windows cmd
 pip install -r requirements.txt
 ```
