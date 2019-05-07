@@ -17,12 +17,12 @@ from core.scene.scene import Scene
 from core.common.segment import Segment
 
 SCENE = Scene()
-SCENE.add_segment(Segment((2,15.5), False))
-SCENE.add_segment(Segment((25,30), True))
+SCENE.add_segment(Segment((2,15.5)))
+SCENE.add_segment(Segment((25,30)))
 
 SCENE2 = Scene()
-SCENE2.add_segment(Segment((11,15.5), False))
-SCENE2.add_segment(Segment((25,27), True))
+SCENE2.add_segment(Segment((11,15.5)))
+SCENE2.add_segment(Segment((25,27)))
 
 SCENE_LIST = [SCENE, SCENE2]
 

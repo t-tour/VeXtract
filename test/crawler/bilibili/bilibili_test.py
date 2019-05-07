@@ -27,7 +27,7 @@ URL_WITH_ERROR = "https://gitlab.com/T-tour/VeXtract/network/master"
 def test_info_crawler():
     log.i('start test_info_crawler:')
     a = bilibili.info_crawler(URL)
-    assert a.video_title == "校花投怀送抱，屌丝却无动于衷，原因竟如此不忍直视...2018最让人瞎眼的动画"
+    assert a.video_title == "2018最让人瞎眼的动画，看完笑傻了"
 
 
 def test_info_crawler_save_destination():

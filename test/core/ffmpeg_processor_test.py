@@ -32,7 +32,7 @@ SCENES_LIST = [SCENE1, SCENE2]
 
 
 if OUTPUT_PATH.exists():
-    raise Exception("輸出檔案存在")
+    OUTPUT_PATH.unlink()
 
 CONFIG_720P = """\
 -b:v 1800k -c:a libopus -c:v libvpx-vp9 -crf 32 -g 240 -maxrate 2610k -minrate 900k \

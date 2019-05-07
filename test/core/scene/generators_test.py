@@ -15,34 +15,15 @@ log = logger.Logger(__name__)
 
 from pathlib import Path
 
-from core.scene.generators import GeneratorStatic, GeneratorVAD, GeneratorScore
+from core.scene.generators import GeneratorStatic, GeneratorScore
 from core.common.segment import Segment
 from core.common.evaluation_resources import EvaluationResources
 
 # 一般來說 segment 不會這麼大，測試所以忽略scene是由更多小segment組成的
 
 
-def init_generatorVAD():
-    s1 = Segment((0, 15), False)
-    s2 = Segment((15, 30), True)
-    s3 = Segment((30, 45), True)
-    s4 = Segment((45, 60), False)
-    s5 = Segment((60, 75), False)
-    segments = [s1, s2, s3, s4, s5]
-    g = GeneratorVAD(segments)
-    return g
-
-
-def test_generatorVAD_geneate_scenes():
-    g = init_generatorVAD()
-    scenes = g.generate_scenes()
-    scene = scenes[1]
-    assert len(scenes) == 3
-    assert scene.get_time() == (15.0, 45.0)
-
-
 def init_generatorstatic():
-    segments = [Segment((i, i + 1), False) for i in range(5)]
+    segments = [Segment((i, i + 1)) for i in range(5)]
     g = GeneratorStatic(segments, interval=2.0)
     return g
 
@@ -57,7 +38,7 @@ def test_generatorstatis_geneate_scenes():
 def init_generatorscore():
     segments = list()
     for i in range(500):
-        seg = Segment((i / 10.0, (i + 1) / 10.0), False)
+        seg = Segment((i / 10.0, (i + 1) / 10.0))
         seg.add_score(i % 100)
         segments.append(seg)
     g = GeneratorScore(segments)
@@ -74,7 +55,7 @@ def test_generatorscore_generate_scenes():
 def test_generatorscore_local_minimum():
     segments = list()
     for i in range(10):
-        seg = Segment((i, i + 1), False)
+        seg = Segment((i, i + 1))
         seg.add_score(i % 5)
         segments.append(seg)
     g = GeneratorScore(segments, windows_size=4)
