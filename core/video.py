@@ -49,6 +49,7 @@ class Video(object):
     v.set_evaluation_resources(er)
     v.generate_segments()
     v.generate_scenes()
+    v.evaluate()
     v.select_scenes()
     v.extract()
     ```
@@ -86,47 +87,20 @@ class Video(object):
         interval = self.segments[0].get_interval()
 
         if not self.evaluation_resources:
-            with tempfile.TemporaryDirectory() as temparchive:
-                cap = cv2.VideoCapture(self.row_video_path.as_posix())
-                duration = int(cap.get(cv2.CAP_PROP_FRAME_COUNT) / 30)
-                for i in range(duration // 5):
-                    video = ffmpeg.input(
-                        self.row_video_path.as_posix())
-                    video = ffmpeg.output(
-                        video, f'{temparchive}/{i:010}.mp4', ss=i * 5, t=5, strict=" -2", s='128:72', r=4)
-                    ffmpeg.run(video)
-                data = []
-                for index in range(duration // 5):
-                    cap = cv2.VideoCapture(
-                        f'{temparchive}/{index:010}.mp4')
-                    length = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
-                    ret, frame = cap.read()
-                    frame_size = (length,) + frame.shape
-                    frames = np.zeros(frame_size, dtype=int)
-                    print(frames.shape)
-                    cap.release()
-                    cap = cv2.VideoCapture(
-                        f'{temparchive}/{index:010}.mp4')
+            cap = cv2.VideoCapture(self.row_video_path.as_posix())
 
-                    frame_cnt = 0
-                    while(cap.isOpened()):
-                        ret, frame = cap.read()
-                        if ret == True:
-                            frames[frame_cnt] = frame
-                            frame_cnt += 1
-                        else:
-                            break
-                    # Release everything if job is finished
-                    cap.release()
-                    data.append(frames)
-                    frames = None
-                model = tf.contrib.keras.models.load_model(
-                    os.path.join(_ROOT, 'models/model2_timeTestc.h5'))
-                data = np.asarray(data)
-                prdicted_data = model.predict(data, batch_size=1, verbose=0)
-                for index, scene in enumerate(self.scenes) :
-                    for segment in scene.segments:
-                        segment.score = prdicted_data[i]
+            fps = cap.get(cv2.CAP_PROP_FPS)
+            total_frames = cap.get(cv2.CAP_PROP_FRAME_COUNT)
+            need_frames =  int(total_frames * 4 / fps)
+
+            data = np.asarray([cv2.resize(cap.read(int(n * fps / 4))[1], (128, 72)) for n in range(need_frames)])
+            data = np.reshape(data, (int(need_frames / 20), 20, 72, 128, 3))
+            model = tf.contrib.keras.models.load_model(
+                os.path.join(_ROOT, 'models/model2_100ep.h5'))
+            prdicted_data = model.predict(data, batch_size=1, verbose=0)
+            for index, scene in enumerate(self.scenes) :
+                for segment in scene.segments:
+                    segment.score = prdicted_data[index]
         else:
             for comment in self.evaluation_resources.get_real_time_comments():
                 index_of_segment = math.floor(comment.get_timeat() / interval)
