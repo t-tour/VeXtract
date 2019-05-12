@@ -23,8 +23,14 @@ from crawler.DTO import *
 
 class TwitchCrawler(Crawler):
     """
+    Download video will save to `CRAWLER_REPOSITORY_PATH`
+
+    ``` python
     t = TwitchCrawler(url)
+    path: Path = t.file_crawler()
+    ```
     """
+    
     CRAWLER_REPOSITORY_PATH = Path(_ROOT, "file", "crawler", "twitch")
 
     def __init__(self, url: str):
