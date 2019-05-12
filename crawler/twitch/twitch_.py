@@ -36,7 +36,7 @@ class TwitchCrawler(Crawler):
     def __init__(self, url: str):
         self.url = url
         self.vid: str = None
-        matched = re.match(r"https?://www\.twitch\.tv/videos/(\d+)\?.*", url)
+        matched = re.match(r"https?://www\.twitch\.tv/videos/(\d+)\??.*", url)
         subprocess.run(
             ["tcd", "--client-id", "miwy5zk23vh2he94san0bzj5ks1r0p"], capture_output=True)
         if not matched:
