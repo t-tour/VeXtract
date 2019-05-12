@@ -43,17 +43,23 @@ class TwitchCrawler(Crawler):
         raise NotImplementedError
 
     def file_crawler(self) -> Path:
+        #
+        default_path = Path(os.path.join(
+            TwitchCrawler.CRAWLER_REPOSITORY_PATH, self.vid + '.mkv'))
+        if default_path.is_file():
+            return default_path
+
         proc = subprocess.Popen(["twitch-dl", 'download', "--no-color",
-                              self.vid], stdin=subprocess.PIPE, encoding='utf-8')
+                                 self.vid], stdin=subprocess.PIPE, encoding='utf-8')
         proc.stdin.write('4\n')
         proc.stdin.flush()
-        proc.wait()
+        proc.wait()  # FIXME: 有可能造成系統卡死(如果沒有4: 720p這個選項的時候)
         for workdirfile in os.listdir(_ROOT):
             matched = re.match(r'\d+_' + self.vid + r'_.+\.mkv', workdirfile)
             if matched:
                 shutil.move(os.path.join(_ROOT, matched.group(0)),
-                           os.path.join(TwitchCrawler.CRAWLER_REPOSITORY_PATH, matched.group(0)))
-                return Path(os.path.join(TwitchCrawler.CRAWLER_REPOSITORY_PATH, matched.group(0)))
+                            default_path)
+                return default_path
 
     def real_time_comments_crawler(self) -> List[RealTimeComment]:
         realtimecomments = []
