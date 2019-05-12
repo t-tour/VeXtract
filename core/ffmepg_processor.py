@@ -17,6 +17,7 @@ from pathlib import Path
 from typing import List, Tuple
 import re
 import subprocess
+import tempfile
 
 import ffmpeg
 
@@ -30,8 +31,8 @@ class Ffmpeg_process():
     def __init__(self, input_media_path: Path, output_media_path: Path):
         self.CONFIG_720P = {'b:v': '1800k', 'minrate': '900k', 'maxrate': '2610k', 'tile-columns': '2', 'g': '240',
                             'threads': '8', 'quality': 'good', 'crf': '32', 'c:v': 'libvpx-vp9', 'c:a': 'libopus', 'speed': '4'}
-        self.SCRIPT_TEMP_PATH = Path(
-            _ROOT, "file", "temp", "ffmpeg_filtergraph.txt")
+        self.SCRIPT_TEMP_PATH = tempfile.NamedTemporaryFile(
+            mode='w', encoding='utf-8', delete=False)
         self.input_media_path = input_media_path
         self.output_media_path = output_media_path
 
@@ -40,7 +41,7 @@ class Ffmpeg_process():
         raise NotImplementedError
 
     @staticmethod
-    def get_duration(path:Path):
+    def get_duration(path: Path):
         ouput = subprocess.Popen("ffmpeg -i \"{}\"".format(path.as_posix()), stdout=subprocess.PIPE,
                                  stderr=subprocess.PIPE, stdin=subprocess.PIPE)
         _, stderr = ouput.communicate()
@@ -86,14 +87,13 @@ class Ffmpeg_process():
         groups = re.match(
             r'ffmpeg -i (?P<input>.*) -filter_complex (?P<filter_complex>.*?) (?P<maps>-.*]) (?P<output>.*)', cmd)
         new_cmd = "ffmpeg -i {input_path} -filter_complex_script {script} {maps} {output_path}".format(
-            input_path=groups["input"], output_path=groups["output"], maps=groups["maps"], script=self.SCRIPT_TEMP_PATH.as_posix())
-        with self.SCRIPT_TEMP_PATH.open('w', encoding='utf-8') as f:
-            f.write(groups["filter_complex"])
+            input_path=groups["input"], output_path=groups["output"], maps=groups["maps"], script=self.SCRIPT_TEMP_PATH.name)
+        self.SCRIPT_TEMP_PATH.write(groups["filter_complex"])
         return new_cmd, self.SCRIPT_TEMP_PATH
 
     @log.logit
     def cut(self, scenes: List[Scene]):
         cmd = self._estublish_cmd(scenes)
         scripted_cmd, _ = self._estublish_filterscript(cmd)
+        del(self.SCRIPT_TEMP_PATH)
         subprocess.run(scripted_cmd, check=True, encoding='utf-8')
-        self.SCRIPT_TEMP_PATH.unlink()
