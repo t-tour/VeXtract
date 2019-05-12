@@ -60,7 +60,7 @@ class Video(object):
     selected_scenes_list: List[Scene]
 
     def __init__(self, path: Path):
-        if  not path.is_file():
+        if not path.is_file():
             raise Exception("path not found")
         self.row_video_path = path
         self.segments = list()
@@ -73,6 +73,7 @@ class Video(object):
             raise Exception("generate_scenes before generate_segment")
         self.generator = GeneratorFactory.product(self, method)
         self.scenes = self.generator.generate_scenes()
+
     @log.logit
     def generate_segments(self):
         duration = Ffmpeg_process.get_duration(self.row_video_path)
@@ -84,23 +85,26 @@ class Video(object):
 
     @log.logit
     def evaluate(self):
-        interval = self.segments[0].get_interval()  # Scene 裡面每個seg都是1S  在stataic 情況下
+        # Scene 裡面每個seg都是1S  在stataic 情況下
+        interval = self.segments[0].get_interval()
 
         if not self.evaluation_resources:
             cap = cv2.VideoCapture(self.row_video_path.as_posix())
 
             fps = cap.get(cv2.CAP_PROP_FPS)
             total_frames = cap.get(cv2.CAP_PROP_FRAME_COUNT)
-            need_frames =  int(total_frames * 4 / fps)
+            need_frames = int(total_frames * 4 / fps)
 
-            data = np.asarray([cv2.resize(cap.read(int(n * fps / 4))[1], (128, 72)) for n in range(need_frames)])
+            data = np.asarray(
+                [cv2.resize(cap.read(int(n * fps / 4))[1], (128, 72)) for n in range(need_frames)])
+            data = np.resize(data, (int(need_frames / 20) * 20, 72, 128, 3))
             data = np.reshape(data, (int(need_frames / 20), 20, 72, 128, 3))
             model = tf.contrib.keras.models.load_model(
                 os.path.join(_ROOT, 'models/model2_100ep.h5'))
             prdicted_data = model.predict(data, batch_size=1, verbose=0)
-            for index, scene in enumerate(self.scenes) :
-                for segment in scene.segments:
-                    segment.score = prdicted_data[index]
+            for index, score in enumerate(prdicted_data):
+                for segment in self.scenes[index].segments:
+                    segment.score = score
         else:
             for comment in self.evaluation_resources.get_real_time_comments():
                 index_of_segment = math.floor(comment.get_timeat_second() / interval)
