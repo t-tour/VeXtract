@@ -17,7 +17,7 @@ requests
 scipy
 youtube-dl
 graphviz
-keras==2.2.3
+keras==2.13.1
 tensorflow-gpu
 opencv-python
 twitch-dl
